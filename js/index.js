@@ -164,7 +164,7 @@ define("index", ["require", "exports", "Game", "Player"], function (require, exp
         canvasSizeReset();
         game = new Game_1.Game();
         game.ctx = canvas.getContext('2d');
-        var applePlayer = new Player_1.Player(canvas.width / 2, canvas.height / 2, 46, 48, '../_res/apple2.png', 16, 4, 1 / 12, 'left', 'normal', 0, {
+        var applePlayer = new Player_1.Player(canvas.width / 2, canvas.height / 2, 46, 48, '../res/apple2.png', 16, 4, 1 / 12, 'left', 'normal', 0, {
             front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
             frontStill: 0, leftStill: 4, rightStill: 9, backStill: 12
         });
