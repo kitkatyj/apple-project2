@@ -27,7 +27,7 @@ export function gameInit(){
         canvas.width/2,
         canvas.height/2,
         46,48,
-        '../res/apple2.png',
+        'res/apple2.png',
         16,4,1/12,'left','normal',0,
         {
             front:[0,3],left:[4,7],right:[8,11],back:[12,15],
