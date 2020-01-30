@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <script src="_js/lib/require.js" data-main="_js/index"></script>
+        <style>
+            canvas {
+                image-rendering: -moz-crisp-edges;
+                image-rendering: -webkit-crisp-edges;
+                image-rendering: pixelated;
+                image-rendering: crisp-edges;
+            }
+        </style>
+    </head>
+    <body>
+        <section id="ph">
+            <h1>Apple Project 2</h1>
+            <p>Oops, you need to enable Javascript.</p>
+        </section>
+        <script>
+            require(['index'],function(index){
+                index.gameInit();
+            });
+        </script>
+    </body>
+</html>
