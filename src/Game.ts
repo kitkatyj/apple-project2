@@ -2,14 +2,17 @@ import {Level} from './Level';
 import {Player} from './Player';
 
 export class Game {
+    canvas : HTMLCanvasElement;
     ctx : CanvasRenderingContext2D;
     fps: number = 0;
     frameCount : number = 0;
+    blockLength : number = 32;
 
     level : Level;
 
-    constructor(ctx:CanvasRenderingContext2D,player:Player){
-        this.ctx = ctx;
+    constructor(canvas:HTMLCanvasElement,player:Player){
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
 
         this.loadLevel(player);
 
@@ -33,6 +36,7 @@ export class Game {
                 let levelTemp = JSON.parse(xhr.responseText);
                 
                 thisGame.level = new Level(
+                    thisGame,
                     levelTemp.width,
                     levelTemp.height,
                     levelTemp.floor,

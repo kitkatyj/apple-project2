@@ -127,13 +127,16 @@ define("Level", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Level = (function () {
-        function Level(width, height, floor, entities) {
+        function Level(game, width, height, floor, entities) {
             this.entities = [];
+            this.xPosOffset = 0;
+            this.yPosOffset = 0;
             this.sprites = [];
             this.width = width;
             this.height = height;
             this.floor = floor;
             this.entities = entities;
+            this.setOffset(this.width * game.blockLength / 2, this.height * game.blockLength / 2);
         }
         Level.prototype.addSprite = function (sprite) {
             this.sprites.push(sprite);
@@ -148,7 +151,13 @@ define("Level", ["require", "exports"], function (require, exports) {
         Level.prototype.getPlayer = function () {
             return this.player;
         };
+        Level.prototype.setOffset = function (xPosOffset, yPosOffset) {
+            this.xPosOffset = xPosOffset;
+            this.yPosOffset = yPosOffset;
+        };
         Level.prototype.draw = function (game) {
+            game.ctx.fillStyle = '#000';
+            game.ctx.fillRect(game.canvas.width / 2 - this.xPosOffset, game.canvas.height / 2 - this.yPosOffset, game.blockLength * this.width, game.blockLength * this.height);
         };
         return Level;
     }());
@@ -158,10 +167,12 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Game = (function () {
-        function Game(ctx, player) {
+        function Game(canvas, player) {
             this.fps = 0;
             this.frameCount = 0;
-            this.ctx = ctx;
+            this.blockLength = 32;
+            this.canvas = canvas;
+            this.ctx = canvas.getContext('2d');
             this.loadLevel(player);
             var thisGame = this;
             setInterval(function () {
@@ -177,7 +188,7 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
             xhr.addEventListener("readystatechange", function (e) {
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     var levelTemp = JSON.parse(xhr.responseText);
-                    thisGame.level = new Level_1.Level(levelTemp.width, levelTemp.height, levelTemp.floor, levelTemp.entities);
+                    thisGame.level = new Level_1.Level(thisGame, levelTemp.width, levelTemp.height, levelTemp.floor, levelTemp.entities);
                     thisGame.level.setPlayer(player);
                 }
             });
@@ -206,7 +217,7 @@ define("index", ["require", "exports", "Game", "Player"], function (require, exp
             front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
             frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
         });
-        game = new Game_1.Game(canvas.getContext('2d'), applePlayer);
+        game = new Game_1.Game(canvas, applePlayer);
         window.addEventListener("resize", function (e) {
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(canvasSizeReset, 250);
@@ -215,7 +226,7 @@ define("index", ["require", "exports", "Game", "Player"], function (require, exp
     }
     exports.gameInit = gameInit;
     function draw() {
-        var _a;
+        var _a, _b;
         game.ctx.clearRect(0, 0, canvas.width, canvas.height);
         paintBg(paintBgColor);
         if (frameCounter) {
@@ -225,7 +236,8 @@ define("index", ["require", "exports", "Game", "Player"], function (require, exp
             game.ctx.fillText(game.fps.toString(), canvas.width, 16);
             game.frameCount++;
         }
-        (_a = game.level.getSprites()) === null || _a === void 0 ? void 0 : _a.forEach(function (sprite) {
+        (_a = game.level) === null || _a === void 0 ? void 0 : _a.draw(game);
+        (_b = game.level) === null || _b === void 0 ? void 0 : _b.getSprites().forEach(function (sprite) {
             sprite.draw(game);
         });
         window.requestAnimationFrame(draw);

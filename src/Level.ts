@@ -10,19 +10,22 @@ interface Entity {
 export class Level {
     width : number;
     height: number;
-    xPosOffset : number;
-    yPosOffset : number;
     floor: string;
     entities: Entity[] = [];
+
+    private xPosOffset : number = 0;
+    private yPosOffset : number = 0;
 
     private sprites : Sprite[] = [];
     private player? : Player;
 
-    constructor(width:number,height:number,floor:string,entities?:Entity[]){
+    constructor(game:Game,width:number,height:number,floor:string,entities?:Entity[]){
         this.width = width;
         this.height = height;
         this.floor = floor;
         this.entities = entities;
+
+        this.setOffset(this.width * game.blockLength / 2,this.height * game.blockLength / 2);
     }
 
     addSprite(sprite:Sprite){
@@ -42,7 +45,26 @@ export class Level {
         return this.player;
     }
 
+    setOffset(xPosOffset:number,yPosOffset:number){
+        this.xPosOffset = xPosOffset;
+        this.yPosOffset = yPosOffset;
+    }
+
+    incrementXOffset(increment:number){
+        this.xPosOffset + increment;
+    }
+
+    incrementYOffset(increment:number){
+        this.yPosOffset + increment;
+    }
+
     draw(game:Game){
-        // game.ctx.rect()
+        game.ctx.fillStyle = '#000';
+        game.ctx.fillRect(
+            game.canvas.width/2 - this.xPosOffset,
+            game.canvas.height/2 - this.yPosOffset,
+            game.blockLength * this.width,
+            game.blockLength * this.height
+        );
     }
 }
