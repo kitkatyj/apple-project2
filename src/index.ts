@@ -49,8 +49,9 @@ function draw(){
         game.ctx.font = "bold 16px Courier New";
         game.ctx.textAlign = "right";
         game.ctx.fillStyle = "white";
-        game.ctx.fillText(game.frameCount.toString(),canvas.width,16);
+        game.ctx.fillText(game.fps.toString(),canvas.width,16);
         game.frameCount++;
+        // console.log(game.frameCount);
     }
 
     game.level.getSprites()?.forEach(function(sprite){

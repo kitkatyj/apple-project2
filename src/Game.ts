@@ -3,6 +3,7 @@ import {Player} from './Player';
 
 export class Game {
     ctx : CanvasRenderingContext2D;
+    fps: number = 0;
     frameCount : number = 0;
 
     level : Level;
@@ -11,6 +12,13 @@ export class Game {
         this.ctx = ctx;
 
         this.loadLevel(player);
+
+        let thisGame = this;
+
+        setInterval(function(){
+            thisGame.fps = thisGame.frameCount;
+            thisGame.frameCount = 0;
+        },1000);
     }
 
     loadLevel(player:Player){

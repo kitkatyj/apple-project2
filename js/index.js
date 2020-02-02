@@ -148,6 +148,8 @@ define("Level", ["require", "exports"], function (require, exports) {
         Level.prototype.getPlayer = function () {
             return this.player;
         };
+        Level.prototype.draw = function (game) {
+        };
         return Level;
     }());
     exports.Level = Level;
@@ -157,9 +159,15 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
     Object.defineProperty(exports, "__esModule", { value: true });
     var Game = (function () {
         function Game(ctx, player) {
+            this.fps = 0;
             this.frameCount = 0;
             this.ctx = ctx;
             this.loadLevel(player);
+            var thisGame = this;
+            setInterval(function () {
+                thisGame.fps = thisGame.frameCount;
+                thisGame.frameCount = 0;
+            }, 1000);
         }
         Game.prototype.loadLevel = function (player) {
             var xhr = new XMLHttpRequest();
@@ -214,7 +222,7 @@ define("index", ["require", "exports", "Game", "Player"], function (require, exp
             game.ctx.font = "bold 16px Courier New";
             game.ctx.textAlign = "right";
             game.ctx.fillStyle = "white";
-            game.ctx.fillText(game.frameCount.toString(), canvas.width, 16);
+            game.ctx.fillText(game.fps.toString(), canvas.width, 16);
             game.frameCount++;
         }
         (_a = game.level.getSprites()) === null || _a === void 0 ? void 0 : _a.forEach(function (sprite) {
