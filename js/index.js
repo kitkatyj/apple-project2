@@ -14,7 +14,7 @@ var __extends = (this && this.__extends) || (function () {
 define("Sprite", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var Sprite = /** @class */ (function () {
+    var Sprite = (function () {
         function Sprite(xPos, yPos, width, height, src, totalFrames, framesPerRow, animateSpeed) {
             this.xPos = 0;
             this.yPos = 0;
@@ -50,7 +50,7 @@ define("Sprite", ["require", "exports"], function (require, exports) {
 define("Player", ["require", "exports", "Sprite"], function (require, exports, Sprite_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var Player = /** @class */ (function (_super) {
+    var Player = (function (_super) {
         __extends(Player, _super);
         function Player(xPos, yPos, width, height, src, totalFrames, framesPerRow, animateSpeed, orientation, action, frameCount, orientationFrames) {
             var _this = _super.call(this, xPos, yPos, width, height, src, totalFrames, framesPerRow, animateSpeed) || this;
@@ -65,19 +65,21 @@ define("Player", ["require", "exports", "Sprite"], function (require, exports, S
                 if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) {
                     return false;
                 }
-                thisPlayer.action = 'walking';
-                // left, up, right, down
-                if (e.keyCode === 37) {
+                if (e.keyCode === 37 || e.keyCode === 65) {
                     thisPlayer.orientation = 'left';
+                    thisPlayer.action = 'walking';
                 }
-                else if (e.keyCode === 38) {
+                else if (e.keyCode === 38 || e.keyCode === 87) {
                     thisPlayer.orientation = 'back';
+                    thisPlayer.action = 'walking';
                 }
-                else if (e.keyCode === 39) {
+                else if (e.keyCode === 39 || e.keyCode === 68) {
                     thisPlayer.orientation = 'right';
+                    thisPlayer.action = 'walking';
                 }
-                else if (e.keyCode === 40) {
+                else if (e.keyCode === 40 || e.keyCode === 83) {
                     thisPlayer.orientation = 'front';
+                    thisPlayer.action = 'walking';
                 }
             });
             document.addEventListener("keyup", function (e) {
@@ -121,26 +123,56 @@ define("Player", ["require", "exports", "Sprite"], function (require, exports, S
     }(Sprite_1.Sprite));
     exports.Player = Player;
 });
-define("Game", ["require", "exports"], function (require, exports) {
+define("Level", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var Game = /** @class */ (function () {
-        function Game() {
-            this.frameCount = 0;
+    var Level = (function () {
+        function Level(width, height, floor, entities) {
+            this.entities = [];
             this.sprites = [];
+            this.width = width;
+            this.height = height;
+            this.floor = floor;
+            this.entities = entities;
         }
-        Game.prototype.addSprite = function (sprite) {
+        Level.prototype.addSprite = function (sprite) {
             this.sprites.push(sprite);
         };
-        Game.prototype.getSprites = function () {
+        Level.prototype.getSprites = function () {
             return this.sprites;
         };
-        Game.prototype.setPlayer = function (playerObj) {
+        Level.prototype.setPlayer = function (playerObj) {
             this.player = playerObj;
             this.addSprite(playerObj);
         };
-        Game.prototype.getPlayer = function () {
+        Level.prototype.getPlayer = function () {
             return this.player;
+        };
+        return Level;
+    }());
+    exports.Level = Level;
+});
+define("Game", ["require", "exports", "Level"], function (require, exports, Level_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Game = (function () {
+        function Game(ctx, player) {
+            this.frameCount = 0;
+            this.ctx = ctx;
+            this.loadLevel(player);
+        }
+        Game.prototype.loadLevel = function (player) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', "levels/a1.json", true);
+            xhr.send();
+            var thisGame = this;
+            xhr.addEventListener("readystatechange", function (e) {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    var levelTemp = JSON.parse(xhr.responseText);
+                    thisGame.level = new Level_1.Level(levelTemp.width, levelTemp.height, levelTemp.floor, levelTemp.entities);
+                    thisGame.level.setPlayer(player);
+                }
+            });
         };
         return Game;
     }());
@@ -162,13 +194,11 @@ define("index", ["require", "exports", "Game", "Player"], function (require, exp
         mainBody.style.margin = "0";
         mainBody.appendChild(canvas);
         canvasSizeReset();
-        game = new Game_1.Game();
-        game.ctx = canvas.getContext('2d');
         var applePlayer = new Player_1.Player(canvas.width / 2, canvas.height / 2, 48, 48, 'res/apple4.png', 16, 4, 1 / 12, 'left', 'normal', 0, {
             front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
             frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
         });
-        game.setPlayer(applePlayer);
+        game = new Game_1.Game(canvas.getContext('2d'), applePlayer);
         window.addEventListener("resize", function (e) {
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(canvasSizeReset, 250);
@@ -187,8 +217,7 @@ define("index", ["require", "exports", "Game", "Player"], function (require, exp
             game.ctx.fillText(game.frameCount.toString(), canvas.width, 16);
             game.frameCount++;
         }
-        (_a = game.getSprites()) === null || _a === void 0 ? void 0 : _a.forEach(function (sprite) {
-            // console.log(this);
+        (_a = game.level.getSprites()) === null || _a === void 0 ? void 0 : _a.forEach(function (sprite) {
             sprite.draw(game);
         });
         window.requestAnimationFrame(draw);
@@ -206,4 +235,3 @@ define("index", ["require", "exports", "Game", "Player"], function (require, exp
         game.ctx.fill();
     }
 });
-// window.onload = gameInit;

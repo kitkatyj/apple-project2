@@ -1,27 +1,38 @@
-import {Sprite} from './Sprite';
+import {Level} from './Level';
 import {Player} from './Player';
 
 export class Game {
     ctx : CanvasRenderingContext2D;
     frameCount : number = 0;
 
-    private sprites : Sprite[] = [];
-    private player? : Player;
+    level : Level;
 
-    addSprite(sprite:Sprite){
-        this.sprites.push(sprite);
+    constructor(ctx:CanvasRenderingContext2D,player:Player){
+        this.ctx = ctx;
+
+        this.loadLevel(player);
     }
 
-    getSprites(){
-        return this.sprites;
-    }
+    loadLevel(player:Player){
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET',"levels/a1.json",true);
+        xhr.send();
 
-    setPlayer(playerObj:Player){
-        this.player = playerObj;
-        this.addSprite(playerObj);
-    }
+        let thisGame = this;
 
-    getPlayer():Player{
-        return this.player;
+        xhr.addEventListener("readystatechange",function(e){
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                let levelTemp = JSON.parse(xhr.responseText);
+                
+                thisGame.level = new Level(
+                    levelTemp.width,
+                    levelTemp.height,
+                    levelTemp.floor,
+                    levelTemp.entities
+                );
+
+                thisGame.level.setPlayer(player);
+            }
+        });
     }
 }

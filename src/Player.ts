@@ -32,20 +32,19 @@ export class Player extends Sprite {
             if(e.ctrlKey || e.altKey || e.shiftKey || e.metaKey){
                 return false;
             }
-            thisPlayer.action = 'walking';
             
             // left, up, right, down
-            if(e.keyCode === 37){
-                thisPlayer.orientation = 'left';
+            if(e.keyCode === 37 || e.keyCode === 65){
+                thisPlayer.orientation = 'left'; thisPlayer.action = 'walking';
             }
-            else if(e.keyCode === 38){
-                thisPlayer.orientation = 'back';
+            else if(e.keyCode === 38 || e.keyCode === 87){
+                thisPlayer.orientation = 'back'; thisPlayer.action = 'walking';
             }
-            else if(e.keyCode === 39){
-                thisPlayer.orientation = 'right';
+            else if(e.keyCode === 39 || e.keyCode === 68){
+                thisPlayer.orientation = 'right'; thisPlayer.action = 'walking';
             }
-            else if(e.keyCode === 40){
-                thisPlayer.orientation = 'front';
+            else if(e.keyCode === 40 || e.keyCode === 83){
+                thisPlayer.orientation = 'front'; thisPlayer.action = 'walking';
             }
         });
 

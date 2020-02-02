@@ -19,10 +19,6 @@ export function gameInit(){
 
     canvasSizeReset();
 
-    game = new Game();
-
-    game.ctx = canvas.getContext('2d');
-
     let applePlayer = new Player(
         canvas.width/2,
         canvas.height/2,
@@ -35,7 +31,7 @@ export function gameInit(){
         }
     );
 
-    game.setPlayer(applePlayer);
+    game = new Game(canvas.getContext('2d'),applePlayer);
 
     window.addEventListener("resize",function(e){
         clearTimeout(resizeTimer);
@@ -57,10 +53,9 @@ function draw(){
         game.frameCount++;
     }
 
-    game.getSprites()?.forEach(function(sprite){
-        // console.log(this);
+    game.level.getSprites()?.forEach(function(sprite){
         sprite.draw(game);
-    })
+    });
 
     window.requestAnimationFrame(draw);
 }
