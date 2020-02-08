@@ -8,9 +8,26 @@
                 image-rendering: pixelated;
                 image-rendering: crisp-edges;
             }
+
+            #choices {
+                position: absolute;
+                top:0; left:0;
+                color: white;
+                font-family: Arial, Helvetica, sans-serif;
+            }
         </style>
     </head>
     <body>
+        <section id="choices">
+            <input type="radio" name="player" id="player1" value="player1" checked>
+            <label for="player1">YX's</label>
+
+            <input type="radio" name="player" id="player2" value="player2">
+            <label for="player2">YJ's</label>
+
+            <input type="radio" name="player" id="player3" value="player3">
+            <label for="player3">YY's</label>
+        </section>
         <section id="ph">
             <h1>Apple Project 2</h1>
             <p>Oops, you need to enable Javascript.</p>

@@ -210,7 +210,7 @@ define("index", ["require", "exports", "Game", "Player"], function (require, exp
     var canvas, mainBody, resizeTimer = null;
     var paintBgColor = "#200040";
     var frameCounter = true;
-    var pixelFactor = 2;
+    var pixelFactor = 3;
     function gameInit() {
         console.log("Ready!");
         document.getElementById("ph").remove();
@@ -219,11 +219,10 @@ define("index", ["require", "exports", "Game", "Player"], function (require, exp
         mainBody.style.margin = "0";
         mainBody.appendChild(canvas);
         canvasSizeReset();
-        var applePlayer = new Player_1.Player(canvas.width / 2, canvas.height / 2, 32, 32, 'res/apple5.png', 20, 5, 1 / 12, 'front', 'normal', 0, {
-            front: [1, 4], left: [11, 14], right: [16, 19], back: [6, 9],
-            frontStill: 0, leftStill: 10, rightStill: 15, backStill: 5
+        loadGame();
+        document.querySelectorAll("input[name=player]").forEach(function (choice) {
+            choice.addEventListener("change", loadGame);
         });
-        game = new Game_1.Game(canvas, applePlayer);
         window.addEventListener("resize", function (e) {
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(canvasSizeReset, 250);
@@ -231,6 +230,30 @@ define("index", ["require", "exports", "Game", "Player"], function (require, exp
         window.requestAnimationFrame(draw);
     }
     exports.gameInit = gameInit;
+    function loadGame() {
+        var applePlayer;
+        switch (document.querySelector("input[name=player]:checked").getAttribute("value")) {
+            case "player1":
+                applePlayer = new Player_1.Player(canvas.width / 2, canvas.height / 2, 48, 48, 'res/apple4.png', 16, 4, 1 / 12, 'front', 'normal', 0, {
+                    front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
+                    frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
+                });
+                break;
+            case "player2":
+                applePlayer = new Player_1.Player(canvas.width / 2, canvas.height / 2, 32, 32, 'res/apple5.png', 20, 5, 1 / 12, 'front', 'normal', 0, {
+                    front: [1, 4], left: [11, 14], right: [16, 19], back: [6, 9],
+                    frontStill: 0, leftStill: 10, rightStill: 15, backStill: 5
+                });
+                break;
+            case "player3":
+                applePlayer = new Player_1.Player(canvas.width / 2, canvas.height / 2, 32, 32, 'res/apple6.png', 16, 4, 1 / 12, 'front', 'normal', 0, {
+                    front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
+                    frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
+                });
+                break;
+        }
+        game = new Game_1.Game(canvas, applePlayer);
+    }
     function draw() {
         var _a, _b;
         game.ctx.clearRect(0, 0, canvas.width, canvas.height);
