@@ -155,6 +155,12 @@ define("Level", ["require", "exports"], function (require, exports) {
             this.xPosOffset = xPosOffset;
             this.yPosOffset = yPosOffset;
         };
+        Level.prototype.incrementXOffset = function (increment) {
+            this.xPosOffset + increment;
+        };
+        Level.prototype.incrementYOffset = function (increment) {
+            this.yPosOffset + increment;
+        };
         Level.prototype.draw = function (game) {
             game.ctx.fillStyle = '#000';
             game.ctx.fillRect(game.canvas.width / 2 - this.xPosOffset, game.canvas.height / 2 - this.yPosOffset, game.blockLength * this.width, game.blockLength * this.height);
@@ -213,9 +219,9 @@ define("index", ["require", "exports", "Game", "Player"], function (require, exp
         mainBody.style.margin = "0";
         mainBody.appendChild(canvas);
         canvasSizeReset();
-        var applePlayer = new Player_1.Player(canvas.width / 2, canvas.height / 2, 48, 48, 'res/apple4.png', 16, 4, 1 / 12, 'left', 'normal', 0, {
-            front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
-            frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
+        var applePlayer = new Player_1.Player(canvas.width / 2, canvas.height / 2, 32, 32, 'res/apple5.png', 20, 5, 1 / 12, 'front', 'normal', 0, {
+            front: [1, 4], left: [11, 14], right: [16, 19], back: [6, 9],
+            frontStill: 0, leftStill: 10, rightStill: 15, backStill: 5
         });
         game = new Game_1.Game(canvas, applePlayer);
         window.addEventListener("resize", function (e) {

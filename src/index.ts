@@ -19,15 +19,27 @@ export function gameInit(){
 
     canvasSizeReset();
 
+    // let applePlayer = new Player(
+    //     canvas.width/2,
+    //     canvas.height/2,
+    //     48,48,
+    //     'res/apple4.png',
+    //     16,4,1/12,'front','normal',0,
+    //     {
+    //         front:[0,3],left:[4,7],right:[8,11],back:[12,15],
+    //         frontStill:0,leftStill:5,rightStill:9,backStill:12
+    //     }
+    // );
+
     let applePlayer = new Player(
         canvas.width/2,
         canvas.height/2,
-        48,48,
-        'res/apple4.png',
-        16,4,1/12,'left','normal',0,
+        32,32,
+        'res/apple5.png',
+        20,5,1/12,'front','normal',0,
         {
-            front:[0,3],left:[4,7],right:[8,11],back:[12,15],
-            frontStill:0,leftStill:5,rightStill:9,backStill:12
+            front:[1,4],left:[11,14],right:[16,19],back:[6,9],
+            frontStill:0,leftStill:10,rightStill:15,backStill:5
         }
     );
 
