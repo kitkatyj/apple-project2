@@ -34,14 +34,23 @@
                 top:0; left:0;
                 color: white;
             }
+
+            #debug {
+                color:white;
+                position: absolute;
+                bottom:0;
+                left:0;
+                max-width: 240px;
+                z-index: 99;
+            }
         </style>
     </head>
     <body>
         <section id="choices">
-            <input type="radio" name="player" id="player1" value="player1" checked>
+            <input type="radio" name="player" id="player1" value="player1">
             <label for="player1">YX's</label>
 
-            <input type="radio" name="player" id="player2" value="player2">
+            <input type="radio" name="player" id="player2" value="player2" checked>
             <label for="player2">YJ's</label>
 
             <input type="radio" name="player" id="player3" value="player3">
@@ -50,6 +59,9 @@
         <section id="ph">
             <h1>Apple Project</h1>
             <!-- <p>Oops, you need to enable Javascript.</p> -->
+        </section>
+        <section id="debug">
+
         </section>
         <script>
             require(['index'],function(index){

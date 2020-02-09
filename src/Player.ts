@@ -67,10 +67,10 @@ export class Player extends Sprite {
                 this.frameCount++;
 
                 switch(this.orientation){
-                    case 'left':    this.xPos--; break;
-                    case 'right':   this.xPos++; break;
-                    case 'back':    this.yPos--; break;
-                    case 'front':   this.yPos++; break;
+                    case 'left':    this.xPos = Math.floor((this.xPos*100) - 2)/100; break;
+                    case 'right':   this.xPos = Math.floor((this.xPos*100) + 2)/100; break;
+                    case 'back':    this.yPos = Math.floor((this.yPos*100) - 2)/100; break;
+                    case 'front':   this.yPos = Math.floor((this.yPos*100) + 2)/100; break;
                 }
 
                 break;
@@ -79,6 +79,9 @@ export class Player extends Sprite {
         this.frameStartX = (this.frameIndex % this.framesPerRow) * this.width;
         this.frameStartY = (Math.floor(this.frameIndex / this.framesPerRow) % this.rows) * this.height;
 
-        game.ctx.drawImage(this.img,this.frameStartX,this.frameStartY,this.width,this.height,this.xPos,this.yPos,this.width,this.height);
+        this.xPosDraw = Math.floor(game.level.topLeftCornerPosX + this.xPos * game.blockLength);
+        this.yPosDraw = Math.floor(game.level.topLeftCornerPosY + this.yPos * game.blockLength);
+
+        game.ctx.drawImage(this.img,this.frameStartX,this.frameStartY,this.width,this.height,this.xPosDraw,this.yPosDraw,this.width,this.height);
     }
 }

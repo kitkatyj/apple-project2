@@ -3,6 +3,8 @@ import {Game} from './Game';
 export class Sprite {
     xPos : number = 0;
     yPos : number = 0;
+    xPosDraw : number = 0;
+    yPosDraw : number = 0;
     width : number;
     height : number;
     src : string;
@@ -39,6 +41,9 @@ export class Sprite {
         this.frameStartX = (this.frameIndex % this.framesPerRow) * this.width;
         this.frameStartY = (Math.floor(this.frameIndex / this.framesPerRow) % this.rows) * this.height;
 
-        game.ctx.drawImage(this.img,this.frameStartX,this.frameStartY,this.width,this.height,this.xPos,this.yPos,this.width,this.height);
+        this.xPosDraw = game.level.topLeftCornerPosX + this.xPos * game.blockLength;
+        this.yPosDraw = game.level.topLeftCornerPosY + this.yPos * game.blockLength;
+
+        game.ctx.drawImage(this.img,this.frameStartX,this.frameStartY,this.width,this.height,this.xPosDraw,this.yPosDraw,this.width,this.height);
     }
 }

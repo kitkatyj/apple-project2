@@ -8,8 +8,12 @@ interface Entity {
 }
 
 export class Level {
-    width : number;
-    height: number;
+    width : number = 0;
+    height:  number = 0;
+    blockWidth : number = 0;
+    blockHeight: number = 0;
+    topLeftCornerPosX : number = 0;
+    topLeftCornerPosY : number = 0;
     floor: string;
     entities: Entity[] = [];
 
@@ -19,13 +23,23 @@ export class Level {
     private sprites : Sprite[] = [];
     private player? : Player;
 
-    constructor(game:Game,width:number,height:number,floor:string,entities?:Entity[]){
-        this.width = width;
-        this.height = height;
+    constructor(game:Game,blockWidth:number,blockHeight:number,floor:string,entities?:Entity[]){
+        this.blockWidth = blockWidth;
+        this.blockHeight = blockHeight;
+        this.width = blockWidth * game.blockLength;
+        this.height = blockHeight * game.blockLength;
+
         this.floor = floor;
         this.entities = entities;
 
-        this.setOffset(this.width * game.blockLength / 2,this.height * game.blockLength / 2);
+        this.resetTopCorner(game);
+
+        this.setOffset(this.blockWidth * game.blockLength / 2,this.blockHeight * game.blockLength / 2);
+    }
+
+    resetTopCorner(game:Game){
+        this.topLeftCornerPosX = game.canvas.width/2 - this.width/2;
+        this.topLeftCornerPosY = game.canvas.height/2 - this.height/2;
     }
 
     addSprite(sprite:Sprite){
@@ -50,6 +64,10 @@ export class Level {
         this.yPosOffset = yPosOffset;
     }
 
+    getOffset(){
+        return [this.xPosOffset,this.yPosOffset];
+    }
+
     incrementXOffset(increment:number){
         this.xPosOffset + increment;
     }
@@ -63,8 +81,7 @@ export class Level {
         game.ctx.fillRect(
             game.canvas.width/2 - this.xPosOffset,
             game.canvas.height/2 - this.yPosOffset,
-            game.blockLength * this.width,
-            game.blockLength * this.height
+            this.width,this.height
         );
     }
 }
