@@ -92,6 +92,7 @@ define("Player", ["require", "exports", "Sprite"], function (require, exports, S
             return _this;
         }
         Player.prototype.draw = function (game) {
+            var _a, _b;
             switch (this.action) {
                 case 'normal':
                     this.frameIndex = eval('this.orientationFrames.' + this.orientation + 'Still');
@@ -105,16 +106,24 @@ define("Player", ["require", "exports", "Sprite"], function (require, exports, S
                     this.frameCount++;
                     switch (this.orientation) {
                         case 'left':
-                            this.xPos = Math.floor((this.xPos * 100) - 2) / 100;
+                            if (this.xPos > 0) {
+                                this.xPos = Math.floor((this.xPos * 100) - 2) / 100;
+                            }
                             break;
                         case 'right':
-                            this.xPos = Math.floor((this.xPos * 100) + 2) / 100;
+                            if (this.xPos < ((_a = game.level) === null || _a === void 0 ? void 0 : _a.blockWidth) - 1) {
+                                this.xPos = Math.floor((this.xPos * 100) + 2) / 100;
+                            }
                             break;
                         case 'back':
-                            this.yPos = Math.floor((this.yPos * 100) - 2) / 100;
+                            if (this.yPos > 0) {
+                                this.yPos = Math.floor((this.yPos * 100) - 2) / 100;
+                            }
                             break;
                         case 'front':
-                            this.yPos = Math.floor((this.yPos * 100) + 2) / 100;
+                            if (this.yPos < ((_b = game.level) === null || _b === void 0 ? void 0 : _b.blockHeight) - 1) {
+                                this.yPos = Math.floor((this.yPos * 100) + 2) / 100;
+                            }
                             break;
                     }
                     break;

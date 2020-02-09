@@ -67,10 +67,26 @@ export class Player extends Sprite {
                 this.frameCount++;
 
                 switch(this.orientation){
-                    case 'left':    this.xPos = Math.floor((this.xPos*100) - 2)/100; break;
-                    case 'right':   this.xPos = Math.floor((this.xPos*100) + 2)/100; break;
-                    case 'back':    this.yPos = Math.floor((this.yPos*100) - 2)/100; break;
-                    case 'front':   this.yPos = Math.floor((this.yPos*100) + 2)/100; break;
+                    case 'left':
+                        if(this.xPos > 0){
+                            this.xPos = Math.floor((this.xPos*100) - 2)/100; 
+                        }
+                        break;
+                    case 'right':
+                        if(this.xPos < game.level?.blockWidth - 1){
+                            this.xPos = Math.floor((this.xPos*100) + 2)/100; 
+                        }
+                        break;
+                    case 'back': 
+                        if(this.yPos > 0){
+                            this.yPos = Math.floor((this.yPos*100) - 2)/100; 
+                        }
+                        break;
+                    case 'front':
+                        if(this.yPos < game.level?.blockHeight - 1){
+                            this.yPos = Math.floor((this.yPos*100) + 2)/100; 
+                        }
+                        break;
                 }
 
                 break;
