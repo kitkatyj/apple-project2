@@ -19,6 +19,8 @@ export function gameInit(){
 
     canvasSizeReset();
 
+    document.getElementById("choices").style.display = "block";
+
     loadGame();
 
     document.querySelectorAll("input[name=player]").forEach(function(choice){

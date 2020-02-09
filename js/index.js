@@ -219,6 +219,7 @@ define("index", ["require", "exports", "Game", "Player"], function (require, exp
         mainBody.style.margin = "0";
         mainBody.appendChild(canvas);
         canvasSizeReset();
+        document.getElementById("choices").style.display = "block";
         loadGame();
         document.querySelectorAll("input[name=player]").forEach(function (choice) {
             choice.addEventListener("change", loadGame);
