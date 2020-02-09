@@ -4,7 +4,8 @@ import {Player} from './Player';
 let game:Game = null;
 let canvas,mainBody,resizeTimer,debug = null;
 let paintBgColor = "#200040";
-let frameCounter:boolean = true;
+let frameCounter:boolean = false;
+let debugVisible:boolean = false;
 let pixelFactor = 3;
 
 export function gameInit(){
@@ -98,7 +99,7 @@ function draw(){
         sprite.draw(game);
     });
 
-    if(game.level){
+    if(game.level && debugVisible){
         debug.innerHTML = debugStatement();
     }
 

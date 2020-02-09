@@ -240,7 +240,8 @@ define("index", ["require", "exports", "Game", "Player"], function (require, exp
     var game = null;
     var canvas, mainBody, resizeTimer, debug = null;
     var paintBgColor = "#200040";
-    var frameCounter = true;
+    var frameCounter = false;
+    var debugVisible = false;
     var pixelFactor = 3;
     function gameInit() {
         console.log("Ready!");
@@ -302,7 +303,7 @@ define("index", ["require", "exports", "Game", "Player"], function (require, exp
         (_b = game.level) === null || _b === void 0 ? void 0 : _b.getSprites().forEach(function (sprite) {
             sprite.draw(game);
         });
-        if (game.level) {
+        if (game.level && debugVisible) {
             debug.innerHTML = debugStatement();
         }
         window.requestAnimationFrame(draw);
