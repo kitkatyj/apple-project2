@@ -157,8 +157,12 @@ define("Level", ["require", "exports", "Player"], function (require, exports, Pl
             this.blockHeight = blockHeight;
             this.width = blockWidth * game.blockLength;
             this.height = blockHeight * game.blockLength;
-            this.floor = floor;
+            this.floorSrc = floor;
             this.entities = entities;
+            if (this.floorSrc) {
+                this.floorImg = new Image();
+                this.floorImg.src = "res/" + this.floorSrc;
+            }
             var playerPosTemp = playerPos;
             var applePlayer;
             switch (document.querySelector("input[name=player]:checked").getAttribute("value")) {
@@ -186,8 +190,8 @@ define("Level", ["require", "exports", "Player"], function (require, exports, Pl
             this.setOffset(this.blockWidth * game.blockLength / 2, this.blockHeight * game.blockLength / 2);
         }
         Level.prototype.resetTopCorner = function (game) {
-            this.topLeftCornerPosX = game.canvas.width / 2 - this.width / 2;
-            this.topLeftCornerPosY = game.canvas.height / 2 - this.height / 2;
+            this.topLeftCornerPosX = Math.floor(game.canvas.width / 2 - this.width / 2);
+            this.topLeftCornerPosY = Math.floor(game.canvas.height / 2 - this.height / 2);
         };
         Level.prototype.addSprite = function (sprite) {
             this.sprites.push(sprite);
@@ -217,7 +221,12 @@ define("Level", ["require", "exports", "Player"], function (require, exports, Pl
         };
         Level.prototype.draw = function (game) {
             game.ctx.fillStyle = '#000';
-            game.ctx.fillRect(game.canvas.width / 2 - this.xPosOffset, game.canvas.height / 2 - this.yPosOffset, this.width, this.height);
+            game.ctx.fillRect(this.topLeftCornerPosX, this.topLeftCornerPosY, this.width, this.height);
+            for (var i = 0; i < this.blockWidth; i++) {
+                for (var j = 0; j < this.blockHeight; j++) {
+                    game.ctx.drawImage(this.floorImg, this.topLeftCornerPosX + i * game.blockLength, this.topLeftCornerPosY + j * game.blockLength, game.blockLength, game.blockLength);
+                }
+            }
         };
         return Level;
     }());
@@ -263,7 +272,7 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
     var canvas, mainBody, resizeTimer, debug = null;
     var paintBgColor = "#200040";
     var frameCounter = false;
-    var debugVisible = false;
+    var debugVisible = true;
     var pixelFactor = 3;
     function gameInit() {
         console.log("Ready!");

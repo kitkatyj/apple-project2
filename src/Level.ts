@@ -14,8 +14,10 @@ export class Level {
     blockHeight: number = 0;
     topLeftCornerPosX : number = 0;
     topLeftCornerPosY : number = 0;
-    floor: string;
+    floorSrc: string;
     entities: Entity[] = [];
+
+    floorImg: HTMLImageElement;
 
     private xPosOffset : number = 0;
     private yPosOffset : number = 0;
@@ -23,14 +25,19 @@ export class Level {
     private sprites : Sprite[] = [];
     private player? : Player;
 
-    constructor(game:Game,blockWidth:number,blockHeight:number,floor:string,playerPos:number[],entities?:Entity[]){
+    constructor(game:Game,blockWidth:number,blockHeight:number,floor:string,playerPos:number[],entities:Entity[]){
         this.blockWidth = blockWidth;
         this.blockHeight = blockHeight;
         this.width = blockWidth * game.blockLength;
         this.height = blockHeight * game.blockLength;
 
-        this.floor = floor;
+        this.floorSrc = floor;
         this.entities = entities;
+
+        if(this.floorSrc){
+            this.floorImg = new Image();
+            this.floorImg.src = "res/"+this.floorSrc;
+        }
 
         let playerPosTemp = playerPos;
 
@@ -82,8 +89,8 @@ export class Level {
     }
 
     resetTopCorner(game:Game){
-        this.topLeftCornerPosX = game.canvas.width/2 - this.width/2;
-        this.topLeftCornerPosY = game.canvas.height/2 - this.height/2;
+        this.topLeftCornerPosX = Math.floor(game.canvas.width/2 - this.width/2);
+        this.topLeftCornerPosY = Math.floor(game.canvas.height/2 - this.height/2);
     }
 
     addSprite(sprite:Sprite){
@@ -123,9 +130,20 @@ export class Level {
     draw(game:Game){
         game.ctx.fillStyle = '#000';
         game.ctx.fillRect(
-            game.canvas.width/2 - this.xPosOffset,
-            game.canvas.height/2 - this.yPosOffset,
+            this.topLeftCornerPosX,
+            this.topLeftCornerPosY,
             this.width,this.height
         );
+
+        for(let i = 0; i < this.blockWidth; i++){
+            for(let j = 0; j < this.blockHeight; j++){
+                game.ctx.drawImage(
+                    this.floorImg,
+                    this.topLeftCornerPosX + i * game.blockLength,
+                    this.topLeftCornerPosY + j * game.blockLength,
+                    game.blockLength,game.blockLength
+                )
+            }
+        }
     }
 }

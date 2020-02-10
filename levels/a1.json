@@ -1,6 +1,6 @@
 {
-    "width":6,
-    "height":6,
+    "width":5,
+    "height":5,
     "floor":"grass_top.png",
     "entities":[
         {
@@ -8,5 +8,5 @@
             "position":"random"
         }
     ],
-    "playerPos":[3,3]
+    "playerPos":[2,2]
 }

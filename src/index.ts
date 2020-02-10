@@ -5,7 +5,7 @@ let game:Game = null;
 let canvas,mainBody,resizeTimer,debug = null;
 let paintBgColor = "#200040";
 let frameCounter:boolean = false;
-let debugVisible:boolean = false;
+let debugVisible:boolean = true;
 let pixelFactor = 3;
 
 export function gameInit(){
