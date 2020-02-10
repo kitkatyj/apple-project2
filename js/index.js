@@ -284,7 +284,7 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
     var canvas, mainBody, resizeTimer, debug = null;
     var paintBgColor = "#200040";
     var frameCounter = false;
-    var debugVisible = true;
+    var debugVisible = false;
     var pixelFactor = 3;
     function gameInit() {
         console.log("Ready!");
