@@ -4,7 +4,8 @@ import { Game } from './Game';
 
 interface Entity {
     item: string;
-    position: any;
+    itemImg: HTMLImageElement;
+    position: number[][];
 }
 
 export class Level {
@@ -81,6 +82,13 @@ export class Level {
                 break;
         }
 
+        this.entities.forEach(function(entity){
+            if(entity.item){
+                entity.itemImg = new Image();
+                entity.itemImg.src = "res/"+entity.item;
+            }
+        });
+
         this.setPlayer(applePlayer);
 
         this.resetTopCorner(game);
@@ -135,6 +143,9 @@ export class Level {
             this.width,this.height
         );
 
+        let thisLevel = this;
+
+        // draw grass
         for(let i = 0; i < this.blockWidth; i++){
             for(let j = 0; j < this.blockHeight; j++){
                 game.ctx.drawImage(
@@ -142,8 +153,19 @@ export class Level {
                     this.topLeftCornerPosX + i * game.blockLength,
                     this.topLeftCornerPosY + j * game.blockLength,
                     game.blockLength,game.blockLength
-                )
+                );
             }
         }
+
+        this.entities.forEach(function(entity){
+            entity.position.forEach(function(position){
+                game.ctx.drawImage(
+                    entity.itemImg,
+                    thisLevel.topLeftCornerPosX + position[0] * game.blockLength,
+                    thisLevel.topLeftCornerPosY + position[1] * game.blockLength,
+                    game.blockLength,game.blockLength
+                );
+            })
+        });
     }
 }

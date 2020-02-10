@@ -185,6 +185,12 @@ define("Level", ["require", "exports", "Player"], function (require, exports, Pl
                     });
                     break;
             }
+            this.entities.forEach(function (entity) {
+                if (entity.item) {
+                    entity.itemImg = new Image();
+                    entity.itemImg.src = "res/" + entity.item;
+                }
+            });
             this.setPlayer(applePlayer);
             this.resetTopCorner(game);
             this.setOffset(this.blockWidth * game.blockLength / 2, this.blockHeight * game.blockLength / 2);
@@ -222,11 +228,17 @@ define("Level", ["require", "exports", "Player"], function (require, exports, Pl
         Level.prototype.draw = function (game) {
             game.ctx.fillStyle = '#000';
             game.ctx.fillRect(this.topLeftCornerPosX, this.topLeftCornerPosY, this.width, this.height);
+            var thisLevel = this;
             for (var i = 0; i < this.blockWidth; i++) {
                 for (var j = 0; j < this.blockHeight; j++) {
                     game.ctx.drawImage(this.floorImg, this.topLeftCornerPosX + i * game.blockLength, this.topLeftCornerPosY + j * game.blockLength, game.blockLength, game.blockLength);
                 }
             }
+            this.entities.forEach(function (entity) {
+                entity.position.forEach(function (position) {
+                    game.ctx.drawImage(entity.itemImg, thisLevel.topLeftCornerPosX + position[0] * game.blockLength, thisLevel.topLeftCornerPosY + position[1] * game.blockLength, game.blockLength, game.blockLength);
+                });
+            });
         };
         return Level;
     }());
