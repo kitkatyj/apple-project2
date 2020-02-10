@@ -1,5 +1,4 @@
 import {Level} from './Level';
-import {Player} from './Player';
 
 export class Game {
     canvas : HTMLCanvasElement;
@@ -10,11 +9,9 @@ export class Game {
 
     level : Level;
 
-    constructor(canvas:HTMLCanvasElement,player:Player){
+    constructor(canvas:HTMLCanvasElement){
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
-
-        this.loadLevel(player);
 
         let thisGame = this;
 
@@ -22,9 +19,11 @@ export class Game {
             thisGame.fps = thisGame.frameCount;
             thisGame.frameCount = 0;
         },1000);
+
+        this.loadLevel();
     }
 
-    loadLevel(player:Player){
+    loadLevel(){
         let xhr = new XMLHttpRequest();
         xhr.open('GET',"levels/a1.json",true);
         xhr.send();
@@ -40,10 +39,9 @@ export class Game {
                     levelTemp.width,
                     levelTemp.height,
                     levelTemp.floor,
+                    levelTemp.playerPos,
                     levelTemp.entities
                 );
-
-                thisGame.level.setPlayer(player);
             }
         });
     }

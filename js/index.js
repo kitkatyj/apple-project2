@@ -138,11 +138,11 @@ define("Player", ["require", "exports", "Sprite"], function (require, exports, S
     }(Sprite_1.Sprite));
     exports.Player = Player;
 });
-define("Level", ["require", "exports"], function (require, exports) {
+define("Level", ["require", "exports", "Player"], function (require, exports, Player_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Level = (function () {
-        function Level(game, blockWidth, blockHeight, floor, entities) {
+        function Level(game, blockWidth, blockHeight, floor, playerPos, entities) {
             this.width = 0;
             this.height = 0;
             this.blockWidth = 0;
@@ -159,6 +159,29 @@ define("Level", ["require", "exports"], function (require, exports) {
             this.height = blockHeight * game.blockLength;
             this.floor = floor;
             this.entities = entities;
+            var playerPosTemp = playerPos;
+            var applePlayer;
+            switch (document.querySelector("input[name=player]:checked").getAttribute("value")) {
+                case "player1":
+                    applePlayer = new Player_1.Player(playerPosTemp[0], playerPosTemp[1], 48, 48, 'res/apple4.png', 16, 4, 1 / 12, 'front', 'normal', 0, {
+                        front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
+                        frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
+                    });
+                    break;
+                case "player2":
+                    applePlayer = new Player_1.Player(playerPosTemp[0], playerPosTemp[1], 32, 32, 'res/apple5.png', 20, 5, 1 / 12, 'front', 'normal', 0, {
+                        front: [1, 4], left: [11, 14], right: [16, 19], back: [6, 9],
+                        frontStill: 0, leftStill: 10, rightStill: 15, backStill: 5
+                    });
+                    break;
+                case "player3":
+                    applePlayer = new Player_1.Player(playerPosTemp[0], playerPosTemp[1], 32, 32, 'res/apple6.png', 16, 4, 1 / 12, 'front', 'normal', 0, {
+                        front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
+                        frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
+                    });
+                    break;
+            }
+            this.setPlayer(applePlayer);
             this.resetTopCorner(game);
             this.setOffset(this.blockWidth * game.blockLength / 2, this.blockHeight * game.blockLength / 2);
         }
@@ -204,20 +227,20 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Game = (function () {
-        function Game(canvas, player) {
+        function Game(canvas) {
             this.fps = 0;
             this.frameCount = 0;
             this.blockLength = 32;
             this.canvas = canvas;
             this.ctx = canvas.getContext('2d');
-            this.loadLevel(player);
             var thisGame = this;
             setInterval(function () {
                 thisGame.fps = thisGame.frameCount;
                 thisGame.frameCount = 0;
             }, 1000);
+            this.loadLevel();
         }
-        Game.prototype.loadLevel = function (player) {
+        Game.prototype.loadLevel = function () {
             var xhr = new XMLHttpRequest();
             xhr.open('GET', "levels/a1.json", true);
             xhr.send();
@@ -225,8 +248,7 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
             xhr.addEventListener("readystatechange", function (e) {
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     var levelTemp = JSON.parse(xhr.responseText);
-                    thisGame.level = new Level_1.Level(thisGame, levelTemp.width, levelTemp.height, levelTemp.floor, levelTemp.entities);
-                    thisGame.level.setPlayer(player);
+                    thisGame.level = new Level_1.Level(thisGame, levelTemp.width, levelTemp.height, levelTemp.floor, levelTemp.playerPos, levelTemp.entities);
                 }
             });
         };
@@ -234,7 +256,7 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
     }());
     exports.Game = Game;
 });
-define("index", ["require", "exports", "Game", "Player"], function (require, exports, Game_1, Player_1) {
+define("index", ["require", "exports", "Game"], function (require, exports, Game_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var game = null;
@@ -265,28 +287,7 @@ define("index", ["require", "exports", "Game", "Player"], function (require, exp
     }
     exports.gameInit = gameInit;
     function loadGame() {
-        var applePlayer;
-        switch (document.querySelector("input[name=player]:checked").getAttribute("value")) {
-            case "player1":
-                applePlayer = new Player_1.Player(4, 4, 48, 48, 'res/apple4.png', 16, 4, 1 / 12, 'front', 'normal', 0, {
-                    front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
-                    frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
-                });
-                break;
-            case "player2":
-                applePlayer = new Player_1.Player(4, 4, 32, 32, 'res/apple5.png', 20, 5, 1 / 12, 'front', 'normal', 0, {
-                    front: [1, 4], left: [11, 14], right: [16, 19], back: [6, 9],
-                    frontStill: 0, leftStill: 10, rightStill: 15, backStill: 5
-                });
-                break;
-            case "player3":
-                applePlayer = new Player_1.Player(4, 4, 32, 32, 'res/apple6.png', 16, 4, 1 / 12, 'front', 'normal', 0, {
-                    front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
-                    frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
-                });
-                break;
-        }
-        game = new Game_1.Game(canvas, applePlayer);
+        game = new Game_1.Game(canvas);
     }
     function draw() {
         var _a, _b;

@@ -7,5 +7,6 @@
             "item":"grass.png",
             "position":"random"
         }
-    ]
+    ],
+    "playerPos":[3,3]
 }

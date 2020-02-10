@@ -38,46 +38,7 @@ export function gameInit(){
 }
 
 function loadGame(){
-    let applePlayer:Player;
-    switch(document.querySelector("input[name=player]:checked").getAttribute("value")){
-        case "player1":
-            applePlayer = new Player(
-                4,4,
-                48,48,
-                'res/apple4.png',
-                16,4,1/12,'front','normal',0,
-                {
-                    front:[0,3],left:[4,7],right:[8,11],back:[12,15],
-                    frontStill:0,leftStill:5,rightStill:9,backStill:12
-                }
-            );
-            break;
-        case "player2":
-                applePlayer = new Player(
-                4,4,
-                32,32,
-                'res/apple5.png',
-                20,5,1/12,'front','normal',0,
-                {
-                    front:[1,4],left:[11,14],right:[16,19],back:[6,9],
-                    frontStill:0,leftStill:10,rightStill:15,backStill:5
-                }
-            );
-            break;
-        case "player3":
-            applePlayer = new Player(
-                4,4,
-                32,32,
-                'res/apple6.png',
-                16,4,1/12,'front','normal',0,
-                {
-                    front:[0,3],left:[4,7],right:[8,11],back:[12,15],
-                    frontStill:0,leftStill:5,rightStill:9,backStill:12
-                }
-            );
-            break;
-    }
-    game = new Game(canvas,applePlayer);
+    game = new Game(canvas);
 }
 
 function draw(){    

@@ -23,7 +23,7 @@ export class Level {
     private sprites : Sprite[] = [];
     private player? : Player;
 
-    constructor(game:Game,blockWidth:number,blockHeight:number,floor:string,entities?:Entity[]){
+    constructor(game:Game,blockWidth:number,blockHeight:number,floor:string,playerPos:number[],entities?:Entity[]){
         this.blockWidth = blockWidth;
         this.blockHeight = blockHeight;
         this.width = blockWidth * game.blockLength;
@@ -31,6 +31,50 @@ export class Level {
 
         this.floor = floor;
         this.entities = entities;
+
+        let playerPosTemp = playerPos;
+
+        let applePlayer:Player;
+        switch(document.querySelector("input[name=player]:checked").getAttribute("value")){
+            case "player1":
+                applePlayer = new Player(
+                    playerPosTemp[0],playerPosTemp[1],
+                    48,48,
+                    'res/apple4.png',
+                    16,4,1/12,'front','normal',0,
+                    {
+                        front:[0,3],left:[4,7],right:[8,11],back:[12,15],
+                        frontStill:0,leftStill:5,rightStill:9,backStill:12
+                    }
+                );
+                break;
+            case "player2":
+                    applePlayer = new Player(
+                    playerPosTemp[0],playerPosTemp[1],
+                    32,32,
+                    'res/apple5.png',
+                    20,5,1/12,'front','normal',0,
+                    {
+                        front:[1,4],left:[11,14],right:[16,19],back:[6,9],
+                        frontStill:0,leftStill:10,rightStill:15,backStill:5
+                    }
+                );
+                break;
+            case "player3":
+                applePlayer = new Player(
+                    playerPosTemp[0],playerPosTemp[1],
+                    32,32,
+                    'res/apple6.png',
+                    16,4,1/12,'front','normal',0,
+                    {
+                        front:[0,3],left:[4,7],right:[8,11],back:[12,15],
+                        frontStill:0,leftStill:5,rightStill:9,backStill:12
+                    }
+                );
+                break;
+        }
+
+        this.setPlayer(applePlayer);
 
         this.resetTopCorner(game);
 
