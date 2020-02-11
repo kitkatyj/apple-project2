@@ -45,20 +45,15 @@ function draw(){
     game.ctx.clearRect(0,0,canvas.width,canvas.height);
     paintBg(paintBgColor);
 
+    game.level?.draw(game);
+
     if(frameCounter){
         game.ctx.font = "bold 16px Courier New";
         game.ctx.textAlign = "right";
         game.ctx.fillStyle = "white";
         game.ctx.fillText(game.fps.toString(),canvas.width,16);
         game.frameCount++;
-        // console.log(game.frameCount);
     }
-
-    game.level?.draw(game);
-
-    game.level?.getSprites().forEach(function(sprite){
-        sprite.draw(game);
-    });
 
     if(game.level && debugVisible){
         debug.innerHTML = debugStatement();

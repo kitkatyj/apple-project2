@@ -239,6 +239,9 @@ define("Level", ["require", "exports", "Player"], function (require, exports, Pl
                     game.ctx.drawImage(entity.itemImg, thisLevel.topLeftCornerPosX + position[0] * game.blockLength, thisLevel.topLeftCornerPosY + position[1] * game.blockLength, game.blockLength, game.blockLength);
                 });
             });
+            this.sprites.forEach(function (sprite) {
+                sprite.draw(game);
+            });
         };
         return Level;
     }());
@@ -311,9 +314,10 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         game = new Game_1.Game(canvas);
     }
     function draw() {
-        var _a, _b;
+        var _a;
         game.ctx.clearRect(0, 0, canvas.width, canvas.height);
         paintBg(paintBgColor);
+        (_a = game.level) === null || _a === void 0 ? void 0 : _a.draw(game);
         if (frameCounter) {
             game.ctx.font = "bold 16px Courier New";
             game.ctx.textAlign = "right";
@@ -321,10 +325,6 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
             game.ctx.fillText(game.fps.toString(), canvas.width, 16);
             game.frameCount++;
         }
-        (_a = game.level) === null || _a === void 0 ? void 0 : _a.draw(game);
-        (_b = game.level) === null || _b === void 0 ? void 0 : _b.getSprites().forEach(function (sprite) {
-            sprite.draw(game);
-        });
         if (game.level && debugVisible) {
             debug.innerHTML = debugStatement();
         }

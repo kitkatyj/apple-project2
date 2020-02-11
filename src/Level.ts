@@ -145,7 +145,7 @@ export class Level {
 
         let thisLevel = this;
 
-        // draw grass
+        // draw floor
         for(let i = 0; i < this.blockWidth; i++){
             for(let j = 0; j < this.blockHeight; j++){
                 game.ctx.drawImage(
@@ -157,6 +157,7 @@ export class Level {
             }
         }
 
+        // draw entities
         this.entities.forEach(function(entity){
             entity.position.forEach(function(position){
                 game.ctx.drawImage(
@@ -166,6 +167,11 @@ export class Level {
                     game.blockLength,game.blockLength
                 );
             })
+        });
+
+        // draw sprites
+        this.sprites.forEach(function(sprite){
+            sprite.draw(game);
         });
     }
 }
