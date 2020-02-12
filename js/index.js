@@ -121,17 +121,7 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                 this.floorImg = new Image();
                 this.floorImg.src = "res/" + this.floorSrc;
             }
-            var levelEntites = this.entities;
-            entities.forEach(function (entityTemp) {
-                entityTemp.position.forEach(function (position) {
-                    var entity = new Entity_2.Entity({
-                        src: 'res/' + entityTemp.src,
-                        xPos: position[0],
-                        yPos: position[1]
-                    });
-                    levelEntites.push(entity);
-                });
-            });
+            var level = this;
             var playerPosTemp = playerPos;
             var applePlayer;
             switch (document.querySelector("input[name=player]:checked").getAttribute("value")) {
@@ -178,8 +168,19 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                     break;
             }
             this.setPlayer(applePlayer);
+            entities.forEach(function (entityTemp) {
+                entityTemp.position.forEach(function (position) {
+                    var entity = new Entity_2.Entity({
+                        src: 'res/' + entityTemp.src,
+                        xPos: position[0],
+                        yPos: position[1]
+                    });
+                    level.addEntity(entity);
+                });
+            });
             this.resetTopCorner(game);
             this.setOffset(this.blockWidth * game.blockLength / 2, this.blockHeight * game.blockLength / 2);
+            console.log(this.entities);
         }
         Level.prototype.resetTopCorner = function (game) {
             this.topLeftCornerPosX = Math.floor(game.canvas.width / 2 - this.width / 2);
@@ -221,7 +222,7 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
             }
             var _loop_1 = function (yIndex) {
                 this_1.entities.forEach(function (entity) {
-                    if (Math.floor(entity.properties.yPos) == yIndex) {
+                    if (Math.ceil(entity.properties.yPos) == yIndex) {
                         entity.draw(game);
                     }
                 });
@@ -320,7 +321,7 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
     var canvas, mainBody, resizeTimer, debug = null;
     var paintBgColor = "#200040";
     var frameCounter = false;
-    var debugVisible = true;
+    var debugVisible = false;
     var pixelFactor = 3;
     function gameInit() {
         console.log("Ready!");

@@ -32,19 +32,9 @@ export class Level {
             this.floorImg.src = "res/"+this.floorSrc;
         }
 
-        let levelEntites = this.entities;
+        let level = this;
 
-        entities.forEach(function(entityTemp){
-            entityTemp.position.forEach(function(position){
-                let entity = new Entity({
-                    src: 'res/'+entityTemp.src,
-                    xPos: position[0],
-                    yPos: position[1]
-                });
-
-                levelEntites.push(entity);
-            })
-        });
+        
 
         let playerPosTemp = playerPos;
 
@@ -102,9 +92,23 @@ export class Level {
 
         this.setPlayer(applePlayer);
 
+        entities.forEach(function(entityTemp){
+            entityTemp.position.forEach(function(position){
+                let entity = new Entity({
+                    src: 'res/'+entityTemp.src,
+                    xPos: position[0],
+                    yPos: position[1]
+                });
+
+                level.addEntity(entity);
+            })
+        });
+
         this.resetTopCorner(game);
 
         this.setOffset(this.blockWidth * game.blockLength / 2,this.blockHeight * game.blockLength / 2);
+
+        console.log(this.entities);
     }
 
     resetTopCorner(game:Game){
@@ -168,7 +172,7 @@ export class Level {
         // draw entity based on yIndex
         for(let yIndex = 0; yIndex < this.height; yIndex++){
             this.entities.forEach(function(entity){
-                if(Math.floor(entity.properties.yPos) == yIndex){
+                if(Math.ceil(entity.properties.yPos) == yIndex){
                     entity.draw(game);
                 }
             });
