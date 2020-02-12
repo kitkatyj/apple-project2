@@ -180,7 +180,6 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
             });
             this.resetTopCorner(game);
             this.setOffset(this.blockWidth * game.blockLength / 2, this.blockHeight * game.blockLength / 2);
-            console.log(this.entities);
         }
         Level.prototype.resetTopCorner = function (game) {
             this.topLeftCornerPosX = Math.floor(game.canvas.width / 2 - this.width / 2);

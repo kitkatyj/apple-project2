@@ -34,8 +34,6 @@ export class Level {
 
         let level = this;
 
-        
-
         let playerPosTemp = playerPos;
 
         let applePlayer:Player;
@@ -107,8 +105,6 @@ export class Level {
         this.resetTopCorner(game);
 
         this.setOffset(this.blockWidth * game.blockLength / 2,this.blockHeight * game.blockLength / 2);
-
-        console.log(this.entities);
     }
 
     resetTopCorner(game:Game){
