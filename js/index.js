@@ -219,9 +219,17 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                     game.ctx.drawImage(this.floorImg, this.topLeftCornerPosX + i * game.blockLength, this.topLeftCornerPosY + j * game.blockLength, game.blockLength, game.blockLength);
                 }
             }
-            this.entities.forEach(function (entity) {
-                entity.draw(game);
-            });
+            var _loop_1 = function (yIndex) {
+                this_1.entities.forEach(function (entity) {
+                    if (Math.floor(entity.properties.yPos) == yIndex) {
+                        entity.draw(game);
+                    }
+                });
+            };
+            var this_1 = this;
+            for (var yIndex = 0; yIndex < this.height; yIndex++) {
+                _loop_1(yIndex);
+            }
         };
         return Level;
     }());
@@ -312,7 +320,7 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
     var canvas, mainBody, resizeTimer, debug = null;
     var paintBgColor = "#200040";
     var frameCounter = false;
-    var debugVisible = false;
+    var debugVisible = true;
     var pixelFactor = 3;
     function gameInit() {
         console.log("Ready!");

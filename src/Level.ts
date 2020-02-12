@@ -165,9 +165,13 @@ export class Level {
             }
         }
 
-        // draw entity
-        this.entities.forEach(function(entity){
-            entity.draw(game);
-        });
+        // draw entity based on yIndex
+        for(let yIndex = 0; yIndex < this.height; yIndex++){
+            this.entities.forEach(function(entity){
+                if(Math.floor(entity.properties.yPos) == yIndex){
+                    entity.draw(game);
+                }
+            });
+        }        
     }
 }
