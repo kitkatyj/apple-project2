@@ -1,12 +1,6 @@
-import {Sprite} from './Sprite';
+import {Entity} from './Entity';
 import {Player} from './Player';
 import { Game } from './Game';
-
-interface Entity {
-    item: string;
-    itemImg: HTMLImageElement;
-    position: number[][];
-}
 
 export class Level {
     width : number = 0;
@@ -16,40 +10,58 @@ export class Level {
     topLeftCornerPosX : number = 0;
     topLeftCornerPosY : number = 0;
     floorSrc: string;
-    entities: Entity[] = [];
 
     floorImg: HTMLImageElement;
 
     private xPosOffset : number = 0;
     private yPosOffset : number = 0;
 
-    private sprites : Sprite[] = [];
+    private entities : Entity[] = [];
     private player? : Player;
 
-    constructor(game:Game,blockWidth:number,blockHeight:number,floor:string,playerPos:number[],entities:Entity[]){
+    constructor(game:Game,blockWidth:number,blockHeight:number,floor:string,playerPos:number[],entities:any[]){
         this.blockWidth = blockWidth;
         this.blockHeight = blockHeight;
         this.width = blockWidth * game.blockLength;
         this.height = blockHeight * game.blockLength;
 
         this.floorSrc = floor;
-        this.entities = entities;
 
         if(this.floorSrc){
             this.floorImg = new Image();
             this.floorImg.src = "res/"+this.floorSrc;
         }
 
+        let levelEntites = this.entities;
+
+        entities.forEach(function(entityTemp){
+            entityTemp.position.forEach(function(position){
+                let entity = new Entity({
+                    src: 'res/'+entityTemp.src,
+                    xPos: position[0],
+                    yPos: position[1]
+                });
+
+                levelEntites.push(entity);
+            })
+        });
+
         let playerPosTemp = playerPos;
 
         let applePlayer:Player;
         switch(document.querySelector("input[name=player]:checked").getAttribute("value")){
             case "player1":
-                applePlayer = new Player(
-                    playerPosTemp[0],playerPosTemp[1],
-                    48,48,
-                    'res/apple4.png',
-                    16,4,1/12,'front','normal',0,
+                applePlayer = new Player({
+                        xPos:playerPosTemp[0],
+                        yPos:playerPosTemp[1],
+                        width:48,
+                        height:48,
+                        src:'res/apple4.png',
+                        totalFrames:16,
+                        framesPerRow:4,
+                        animateSpeed:1/12
+                    }
+                    ,'front','normal',0,
                     {
                         front:[0,3],left:[4,7],right:[8,11],back:[12,15],
                         frontStill:0,leftStill:5,rightStill:9,backStill:12
@@ -57,11 +69,14 @@ export class Level {
                 );
                 break;
             case "player2":
-                    applePlayer = new Player(
-                    playerPosTemp[0],playerPosTemp[1],
-                    32,32,
-                    'res/apple5.png',
-                    20,5,1/12,'front','normal',0,
+                    applePlayer = new Player({
+                        xPos:playerPosTemp[0],
+                        yPos:playerPosTemp[1],
+                        src:'res/apple5.png',
+                        totalFrames:20,
+                        framesPerRow:5,
+                        animateSpeed:1/12
+                    },'front','normal',0,
                     {
                         front:[1,4],left:[11,14],right:[16,19],back:[6,9],
                         frontStill:0,leftStill:10,rightStill:15,backStill:5
@@ -69,11 +84,14 @@ export class Level {
                 );
                 break;
             case "player3":
-                applePlayer = new Player(
-                    playerPosTemp[0],playerPosTemp[1],
-                    32,32,
-                    'res/apple6.png',
-                    16,4,1/12,'front','normal',0,
+                applePlayer = new Player({
+                    xPos:playerPosTemp[0],
+                    yPos:playerPosTemp[1],
+                    src:'res/apple6.png',
+                    totalFrames:16,
+                    framesPerRow:4,
+                    animateSpeed:1/12
+                },'front','normal',0,
                     {
                         front:[0,3],left:[4,7],right:[8,11],back:[12,15],
                         frontStill:0,leftStill:5,rightStill:9,backStill:12
@@ -81,13 +99,6 @@ export class Level {
                 );
                 break;
         }
-
-        this.entities.forEach(function(entity){
-            if(entity.item){
-                entity.itemImg = new Image();
-                entity.itemImg.src = "res/"+entity.item;
-            }
-        });
 
         this.setPlayer(applePlayer);
 
@@ -101,17 +112,17 @@ export class Level {
         this.topLeftCornerPosY = Math.floor(game.canvas.height/2 - this.height/2);
     }
 
-    addSprite(sprite:Sprite){
-        this.sprites.push(sprite);
+    addEntity(entitiy:Entity){
+        this.entities.push(entitiy);
     }
 
-    getSprites(){
-        return this.sprites;
+    getEntities(){
+        return this.entities;
     }
 
     setPlayer(playerObj:Player){
         this.player = playerObj;
-        this.addSprite(playerObj);
+        this.addEntity(playerObj);
     }
 
     getPlayer():Player{
@@ -142,9 +153,6 @@ export class Level {
             this.topLeftCornerPosY,
             this.width,this.height
         );
-
-        let thisLevel = this;
-
         // draw floor
         for(let i = 0; i < this.blockWidth; i++){
             for(let j = 0; j < this.blockHeight; j++){
@@ -157,21 +165,9 @@ export class Level {
             }
         }
 
-        // draw entities
+        // draw entity
         this.entities.forEach(function(entity){
-            entity.position.forEach(function(position){
-                game.ctx.drawImage(
-                    entity.itemImg,
-                    thisLevel.topLeftCornerPosX + position[0] * game.blockLength,
-                    thisLevel.topLeftCornerPosY + position[1] * game.blockLength,
-                    game.blockLength,game.blockLength
-                );
-            })
-        });
-
-        // draw sprites
-        this.sprites.forEach(function(sprite){
-            sprite.draw(game);
+            entity.draw(game);
         });
     }
 }

@@ -1,5 +1,4 @@
 import {Game} from './Game';
-import {Player} from './Player';
 
 let game:Game = null;
 let canvas,mainBody,resizeTimer,debug = null;
@@ -65,10 +64,10 @@ function draw(){
 function debugStatement(){
     let debug = "";
 
-    debug += "xPos : "+game.level.getPlayer().xPos + "<br>";
-    debug += "yPos : "+game.level.getPlayer().yPos + "<br>";
-    debug += "xPosDraw : "+game.level.getPlayer().xPosDraw + "<br>";
-    debug += "yPosDraw : "+game.level.getPlayer().yPosDraw + "<br>";
+    debug += "xPos : "+game.level.getPlayer().properties.xPos + "<br>";
+    debug += "yPos : "+game.level.getPlayer().properties.yPos + "<br>";
+    debug += "xPosDraw : "+game.level.getPlayer().properties.xPosDraw + "<br>";
+    debug += "yPosDraw : "+game.level.getPlayer().properties.yPosDraw + "<br>";
     debug += "frameIndex : "+game.level.getPlayer().frameIndex + "<br>";
     debug += "width : "+game.level.width + "<br>";
     debug += "height : "+game.level.height + "<br>";

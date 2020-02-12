@@ -11,53 +11,13 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-define("Sprite", ["require", "exports"], function (require, exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var Sprite = (function () {
-        function Sprite(xPos, yPos, width, height, src, totalFrames, framesPerRow, animateSpeed) {
-            this.xPos = 0;
-            this.yPos = 0;
-            this.xPosDraw = 0;
-            this.yPosDraw = 0;
-            this.animateSpeed = 1 / 12;
-            this.rows = 0;
-            this.frameIndex = 0;
-            this.frameStartX = 0;
-            this.frameStartY = 0;
-            this.xPos = xPos;
-            this.yPos = yPos;
-            this.width = width;
-            this.height = height;
-            this.src = src;
-            this.totalFrames = totalFrames;
-            this.framesPerRow = framesPerRow;
-            this.animateSpeed = animateSpeed;
-            this.rows = Math.floor(this.totalFrames / this.framesPerRow);
-            if (this.src) {
-                this.img = new Image();
-                this.img.src = this.src;
-            }
-        }
-        Sprite.prototype.draw = function (game) {
-            this.frameIndex = Math.floor(game.frameCount * this.animateSpeed) % this.totalFrames;
-            this.frameStartX = (this.frameIndex % this.framesPerRow) * this.width;
-            this.frameStartY = (Math.floor(this.frameIndex / this.framesPerRow) % this.rows) * this.height;
-            this.xPosDraw = game.level.topLeftCornerPosX + this.xPos * game.blockLength;
-            this.yPosDraw = game.level.topLeftCornerPosY + this.yPos * game.blockLength;
-            game.ctx.drawImage(this.img, this.frameStartX, this.frameStartY, this.width, this.height, this.xPosDraw, this.yPosDraw, this.width, this.height);
-        };
-        return Sprite;
-    }());
-    exports.Sprite = Sprite;
-});
-define("Player", ["require", "exports", "Sprite"], function (require, exports, Sprite_1) {
+define("Player", ["require", "exports", "Entity"], function (require, exports, Entity_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Player = (function (_super) {
         __extends(Player, _super);
-        function Player(xPos, yPos, width, height, src, totalFrames, framesPerRow, animateSpeed, orientation, action, frameCount, orientationFrames) {
-            var _this = _super.call(this, xPos, yPos, width, height, src, totalFrames, framesPerRow, animateSpeed) || this;
+        function Player(properties, orientation, action, frameCount, orientationFrames) {
+            var _this = _super.call(this, properties) || this;
             _this.orientation = 'front';
             _this.action = 'normal';
             _this.orientation = orientation;
@@ -99,46 +59,46 @@ define("Player", ["require", "exports", "Sprite"], function (require, exports, S
                     this.frameCount = 0;
                     break;
                 case 'walking':
-                    this.frameIndex = Math.floor(this.frameCount * this.animateSpeed) % this.totalFrames;
+                    this.frameIndex = Math.floor(this.frameCount * this.properties.animateSpeed) % this.properties.totalFrames;
                     var totalFramesTemp = eval('this.orientationFrames.' + this.orientation + '[1] - this.orientationFrames.' + this.orientation + '[0] + 1');
                     var startingFrame = eval('this.orientationFrames.' + this.orientation + '[0]');
                     this.frameIndex = startingFrame + this.frameIndex % totalFramesTemp;
                     this.frameCount++;
                     switch (this.orientation) {
                         case 'left':
-                            if (this.xPos > 0) {
-                                this.xPos = Math.floor((this.xPos * 100) - 2) / 100;
+                            if (this.properties.xPos > 0) {
+                                this.properties.xPos = Math.floor((this.properties.xPos * 100) - 2) / 100;
                             }
                             break;
                         case 'right':
-                            if (this.xPos < ((_a = game.level) === null || _a === void 0 ? void 0 : _a.blockWidth) - 1) {
-                                this.xPos = Math.floor((this.xPos * 100) + 2) / 100;
+                            if (this.properties.xPos < ((_a = game.level) === null || _a === void 0 ? void 0 : _a.blockWidth) - 1) {
+                                this.properties.xPos = Math.floor((this.properties.xPos * 100) + 2) / 100;
                             }
                             break;
                         case 'back':
-                            if (this.yPos > 0) {
-                                this.yPos = Math.floor((this.yPos * 100) - 2) / 100;
+                            if (this.properties.yPos > 0) {
+                                this.properties.yPos = Math.floor((this.properties.yPos * 100) - 2) / 100;
                             }
                             break;
                         case 'front':
-                            if (this.yPos < ((_b = game.level) === null || _b === void 0 ? void 0 : _b.blockHeight) - 1) {
-                                this.yPos = Math.floor((this.yPos * 100) + 2) / 100;
+                            if (this.properties.yPos < ((_b = game.level) === null || _b === void 0 ? void 0 : _b.blockHeight) - 1) {
+                                this.properties.yPos = Math.floor((this.properties.yPos * 100) + 2) / 100;
                             }
                             break;
                     }
                     break;
             }
-            this.frameStartX = (this.frameIndex % this.framesPerRow) * this.width;
-            this.frameStartY = (Math.floor(this.frameIndex / this.framesPerRow) % this.rows) * this.height;
-            this.xPosDraw = Math.floor(game.level.topLeftCornerPosX + this.xPos * game.blockLength);
-            this.yPosDraw = Math.floor(game.level.topLeftCornerPosY + this.yPos * game.blockLength);
-            game.ctx.drawImage(this.img, this.frameStartX, this.frameStartY, this.width, this.height, this.xPosDraw, this.yPosDraw, this.width, this.height);
+            this.frameStartX = (this.frameIndex % this.properties.framesPerRow) * this.properties.width;
+            this.frameStartY = (Math.floor(this.frameIndex / this.properties.framesPerRow) % this.rows) * this.properties.height;
+            this.properties.xPosDraw = Math.floor(game.level.topLeftCornerPosX + this.properties.xPos * game.blockLength);
+            this.properties.yPosDraw = Math.floor(game.level.topLeftCornerPosY + this.properties.yPos * game.blockLength);
+            game.ctx.drawImage(this.img, this.frameStartX, this.frameStartY, this.properties.width, this.properties.height, this.properties.xPosDraw, this.properties.yPosDraw, this.properties.width, this.properties.height);
         };
         return Player;
-    }(Sprite_1.Sprite));
+    }(Entity_1.Entity));
     exports.Player = Player;
 });
-define("Level", ["require", "exports", "Player"], function (require, exports, Player_1) {
+define("Level", ["require", "exports", "Entity", "Player"], function (require, exports, Entity_2, Player_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Level = (function () {
@@ -149,48 +109,74 @@ define("Level", ["require", "exports", "Player"], function (require, exports, Pl
             this.blockHeight = 0;
             this.topLeftCornerPosX = 0;
             this.topLeftCornerPosY = 0;
-            this.entities = [];
             this.xPosOffset = 0;
             this.yPosOffset = 0;
-            this.sprites = [];
+            this.entities = [];
             this.blockWidth = blockWidth;
             this.blockHeight = blockHeight;
             this.width = blockWidth * game.blockLength;
             this.height = blockHeight * game.blockLength;
             this.floorSrc = floor;
-            this.entities = entities;
             if (this.floorSrc) {
                 this.floorImg = new Image();
                 this.floorImg.src = "res/" + this.floorSrc;
             }
+            var levelEntites = this.entities;
+            entities.forEach(function (entityTemp) {
+                entityTemp.position.forEach(function (position) {
+                    var entity = new Entity_2.Entity({
+                        src: 'res/' + entityTemp.src,
+                        xPos: position[0],
+                        yPos: position[1]
+                    });
+                    levelEntites.push(entity);
+                });
+            });
             var playerPosTemp = playerPos;
             var applePlayer;
             switch (document.querySelector("input[name=player]:checked").getAttribute("value")) {
                 case "player1":
-                    applePlayer = new Player_1.Player(playerPosTemp[0], playerPosTemp[1], 48, 48, 'res/apple4.png', 16, 4, 1 / 12, 'front', 'normal', 0, {
+                    applePlayer = new Player_1.Player({
+                        xPos: playerPosTemp[0],
+                        yPos: playerPosTemp[1],
+                        width: 48,
+                        height: 48,
+                        src: 'res/apple4.png',
+                        totalFrames: 16,
+                        framesPerRow: 4,
+                        animateSpeed: 1 / 12
+                    }, 'front', 'normal', 0, {
                         front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
                         frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
                     });
                     break;
                 case "player2":
-                    applePlayer = new Player_1.Player(playerPosTemp[0], playerPosTemp[1], 32, 32, 'res/apple5.png', 20, 5, 1 / 12, 'front', 'normal', 0, {
+                    applePlayer = new Player_1.Player({
+                        xPos: playerPosTemp[0],
+                        yPos: playerPosTemp[1],
+                        src: 'res/apple5.png',
+                        totalFrames: 20,
+                        framesPerRow: 5,
+                        animateSpeed: 1 / 12
+                    }, 'front', 'normal', 0, {
                         front: [1, 4], left: [11, 14], right: [16, 19], back: [6, 9],
                         frontStill: 0, leftStill: 10, rightStill: 15, backStill: 5
                     });
                     break;
                 case "player3":
-                    applePlayer = new Player_1.Player(playerPosTemp[0], playerPosTemp[1], 32, 32, 'res/apple6.png', 16, 4, 1 / 12, 'front', 'normal', 0, {
+                    applePlayer = new Player_1.Player({
+                        xPos: playerPosTemp[0],
+                        yPos: playerPosTemp[1],
+                        src: 'res/apple6.png',
+                        totalFrames: 16,
+                        framesPerRow: 4,
+                        animateSpeed: 1 / 12
+                    }, 'front', 'normal', 0, {
                         front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
                         frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
                     });
                     break;
             }
-            this.entities.forEach(function (entity) {
-                if (entity.item) {
-                    entity.itemImg = new Image();
-                    entity.itemImg.src = "res/" + entity.item;
-                }
-            });
             this.setPlayer(applePlayer);
             this.resetTopCorner(game);
             this.setOffset(this.blockWidth * game.blockLength / 2, this.blockHeight * game.blockLength / 2);
@@ -199,15 +185,15 @@ define("Level", ["require", "exports", "Player"], function (require, exports, Pl
             this.topLeftCornerPosX = Math.floor(game.canvas.width / 2 - this.width / 2);
             this.topLeftCornerPosY = Math.floor(game.canvas.height / 2 - this.height / 2);
         };
-        Level.prototype.addSprite = function (sprite) {
-            this.sprites.push(sprite);
+        Level.prototype.addEntity = function (entitiy) {
+            this.entities.push(entitiy);
         };
-        Level.prototype.getSprites = function () {
-            return this.sprites;
+        Level.prototype.getEntities = function () {
+            return this.entities;
         };
         Level.prototype.setPlayer = function (playerObj) {
             this.player = playerObj;
-            this.addSprite(playerObj);
+            this.addEntity(playerObj);
         };
         Level.prototype.getPlayer = function () {
             return this.player;
@@ -228,19 +214,13 @@ define("Level", ["require", "exports", "Player"], function (require, exports, Pl
         Level.prototype.draw = function (game) {
             game.ctx.fillStyle = '#000';
             game.ctx.fillRect(this.topLeftCornerPosX, this.topLeftCornerPosY, this.width, this.height);
-            var thisLevel = this;
             for (var i = 0; i < this.blockWidth; i++) {
                 for (var j = 0; j < this.blockHeight; j++) {
                     game.ctx.drawImage(this.floorImg, this.topLeftCornerPosX + i * game.blockLength, this.topLeftCornerPosY + j * game.blockLength, game.blockLength, game.blockLength);
                 }
             }
             this.entities.forEach(function (entity) {
-                entity.position.forEach(function (position) {
-                    game.ctx.drawImage(entity.itemImg, thisLevel.topLeftCornerPosX + position[0] * game.blockLength, thisLevel.topLeftCornerPosY + position[1] * game.blockLength, game.blockLength, game.blockLength);
-                });
-            });
-            this.sprites.forEach(function (sprite) {
-                sprite.draw(game);
+                entity.draw(game);
             });
         };
         return Level;
@@ -279,6 +259,51 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
         return Game;
     }());
     exports.Game = Game;
+});
+define("Entity", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Entity = (function () {
+        function Entity(properties) {
+            this.rows = 0;
+            this.frameIndex = 0;
+            this.frameStartX = 0;
+            this.frameStartY = 0;
+            this.properties = properties;
+            this.properties.xPosDraw = 0;
+            this.properties.yPosDraw = 0;
+            if (!this.properties.width) {
+                this.properties.width = 32;
+            }
+            if (!this.properties.height) {
+                this.properties.height = 32;
+            }
+            if (!this.properties.totalFrames) {
+                this.properties.totalFrames = 1;
+            }
+            if (!this.properties.framesPerRow) {
+                this.properties.framesPerRow = 1;
+            }
+            if (!this.properties.animateSpeed) {
+                this.properties.animateSpeed = 0;
+            }
+            this.rows = Math.floor(this.properties.totalFrames / this.properties.framesPerRow);
+            if (this.properties.src) {
+                this.img = new Image();
+                this.img.src = this.properties.src;
+            }
+        }
+        Entity.prototype.draw = function (game) {
+            this.frameIndex = Math.floor(game.frameCount * this.properties.animateSpeed) % this.properties.totalFrames;
+            this.frameStartX = (this.frameIndex % this.properties.framesPerRow) * this.properties.width;
+            this.frameStartY = (Math.floor(this.frameIndex / this.properties.framesPerRow) % this.rows) * this.properties.height;
+            this.properties.xPosDraw = game.level.topLeftCornerPosX + this.properties.xPos * game.blockLength;
+            this.properties.yPosDraw = game.level.topLeftCornerPosY + this.properties.yPos * game.blockLength;
+            game.ctx.drawImage(this.img, this.frameStartX, this.frameStartY, this.properties.width, this.properties.height, this.properties.xPosDraw, this.properties.yPosDraw, this.properties.width, this.properties.height);
+        };
+        return Entity;
+    }());
+    exports.Entity = Entity;
 });
 define("index", ["require", "exports", "Game"], function (require, exports, Game_1) {
     "use strict";
@@ -332,10 +357,10 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
     }
     function debugStatement() {
         var debug = "";
-        debug += "xPos : " + game.level.getPlayer().xPos + "<br>";
-        debug += "yPos : " + game.level.getPlayer().yPos + "<br>";
-        debug += "xPosDraw : " + game.level.getPlayer().xPosDraw + "<br>";
-        debug += "yPosDraw : " + game.level.getPlayer().yPosDraw + "<br>";
+        debug += "xPos : " + game.level.getPlayer().properties.xPos + "<br>";
+        debug += "yPos : " + game.level.getPlayer().properties.yPos + "<br>";
+        debug += "xPosDraw : " + game.level.getPlayer().properties.xPosDraw + "<br>";
+        debug += "yPosDraw : " + game.level.getPlayer().properties.yPosDraw + "<br>";
         debug += "frameIndex : " + game.level.getPlayer().frameIndex + "<br>";
         debug += "width : " + game.level.width + "<br>";
         debug += "height : " + game.level.height + "<br>";

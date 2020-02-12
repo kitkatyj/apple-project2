@@ -1,5 +1,5 @@
 import {Game} from './Game';
-import {Sprite} from './Sprite';
+import {Entity,SpriteProperties} from './Entity';
 
 interface OrientationFrames {
     front : number[];
@@ -12,14 +12,14 @@ interface OrientationFrames {
     backStill : number;
 }
 
-export class Player extends Sprite {
+export class Player extends Entity {
     orientation : string = 'front';
     action : string = 'normal';
     frameCount : number;
     orientationFrames : OrientationFrames;
 
-    constructor(xPos:number,yPos:number,width:number,height:number,src:string,totalFrames:number,framesPerRow:number,animateSpeed:number,orientation:string,action:string,frameCount:number,orientationFrames:OrientationFrames){
-        super(xPos,yPos,width,height,src,totalFrames,framesPerRow,animateSpeed);
+    constructor(properties:SpriteProperties,orientation:string,action:string,frameCount:number,orientationFrames:OrientationFrames){
+        super(properties);
 
         this.orientation = orientation;
         this.action = action;
@@ -60,7 +60,7 @@ export class Player extends Sprite {
                 this.frameCount = 0;
                 break;
             case 'walking':
-                this.frameIndex = Math.floor(this.frameCount * this.animateSpeed) % this.totalFrames;
+                this.frameIndex = Math.floor(this.frameCount * this.properties.animateSpeed) % this.properties.totalFrames;
                 let totalFramesTemp = eval('this.orientationFrames.'+this.orientation+'[1] - this.orientationFrames.'+this.orientation+'[0] + 1');
                 let startingFrame = eval('this.orientationFrames.'+this.orientation+'[0]');
                 this.frameIndex = startingFrame + this.frameIndex % totalFramesTemp;
@@ -68,23 +68,23 @@ export class Player extends Sprite {
 
                 switch(this.orientation){
                     case 'left':
-                        if(this.xPos > 0){
-                            this.xPos = Math.floor((this.xPos*100) - 2)/100; 
+                        if(this.properties.xPos > 0){
+                            this.properties.xPos = Math.floor((this.properties.xPos*100) - 2)/100; 
                         }
                         break;
                     case 'right':
-                        if(this.xPos < game.level?.blockWidth - 1){
-                            this.xPos = Math.floor((this.xPos*100) + 2)/100; 
+                        if(this.properties.xPos < game.level?.blockWidth - 1){
+                            this.properties.xPos = Math.floor((this.properties.xPos*100) + 2)/100; 
                         }
                         break;
                     case 'back': 
-                        if(this.yPos > 0){
-                            this.yPos = Math.floor((this.yPos*100) - 2)/100; 
+                        if(this.properties.yPos > 0){
+                            this.properties.yPos = Math.floor((this.properties.yPos*100) - 2)/100; 
                         }
                         break;
                     case 'front':
-                        if(this.yPos < game.level?.blockHeight - 1){
-                            this.yPos = Math.floor((this.yPos*100) + 2)/100; 
+                        if(this.properties.yPos < game.level?.blockHeight - 1){
+                            this.properties.yPos = Math.floor((this.properties.yPos*100) + 2)/100; 
                         }
                         break;
                 }
@@ -92,12 +92,12 @@ export class Player extends Sprite {
                 break;
         }
         
-        this.frameStartX = (this.frameIndex % this.framesPerRow) * this.width;
-        this.frameStartY = (Math.floor(this.frameIndex / this.framesPerRow) % this.rows) * this.height;
+        this.frameStartX = (this.frameIndex % this.properties.framesPerRow) * this.properties.width;
+        this.frameStartY = (Math.floor(this.frameIndex / this.properties.framesPerRow) % this.rows) * this.properties.height;
 
-        this.xPosDraw = Math.floor(game.level.topLeftCornerPosX + this.xPos * game.blockLength);
-        this.yPosDraw = Math.floor(game.level.topLeftCornerPosY + this.yPos * game.blockLength);
+        this.properties.xPosDraw = Math.floor(game.level.topLeftCornerPosX + this.properties.xPos * game.blockLength);
+        this.properties.yPosDraw = Math.floor(game.level.topLeftCornerPosY + this.properties.yPos * game.blockLength);
 
-        game.ctx.drawImage(this.img,this.frameStartX,this.frameStartY,this.width,this.height,this.xPosDraw,this.yPosDraw,this.width,this.height);
+        game.ctx.drawImage(this.img,this.frameStartX,this.frameStartY,this.properties.width,this.properties.height,this.properties.xPosDraw,this.properties.yPosDraw,this.properties.width,this.properties.height);
     }
 }
