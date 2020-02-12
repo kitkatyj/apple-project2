@@ -16,7 +16,7 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
     Object.defineProperty(exports, "__esModule", { value: true });
     var Player = (function (_super) {
         __extends(Player, _super);
-        function Player(properties, orientation, action, frameCount, orientationFrames) {
+        function Player(properties, orientation, action, frameCount, orientationFrames, game) {
             var _this = _super.call(this, properties) || this;
             _this.orientation = 'front';
             _this.action = 'normal';
@@ -25,34 +25,27 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
             _this.frameCount = frameCount;
             _this.orientationFrames = orientationFrames;
             var thisPlayer = _this;
-            window.addEventListener("keydown", function (e) {
-                if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) {
-                    return false;
-                }
-                if (e.keyCode === 37 || e.keyCode === 65) {
-                    thisPlayer.orientation = 'left';
-                    thisPlayer.action = 'walking';
-                }
-                else if (e.keyCode === 38 || e.keyCode === 87) {
-                    thisPlayer.orientation = 'back';
-                    thisPlayer.action = 'walking';
-                }
-                else if (e.keyCode === 39 || e.keyCode === 68) {
-                    thisPlayer.orientation = 'right';
-                    thisPlayer.action = 'walking';
-                }
-                else if (e.keyCode === 40 || e.keyCode === 83) {
-                    thisPlayer.orientation = 'front';
-                    thisPlayer.action = 'walking';
-                }
-            });
-            document.addEventListener("keyup", function (e) {
-                thisPlayer.action = 'normal';
-            });
             return _this;
         }
         Player.prototype.draw = function (game) {
             var _a, _b;
+            this.action = 'normal';
+            if (game.keyState[37] || game.keyState[65]) {
+                this.orientation = 'left';
+                this.action = 'walking';
+            }
+            else if (game.keyState[38] || game.keyState[87]) {
+                this.orientation = 'back';
+                this.action = 'walking';
+            }
+            else if (game.keyState[39] || game.keyState[68]) {
+                this.orientation = 'right';
+                this.action = 'walking';
+            }
+            else if (game.keyState[40] || game.keyState[83]) {
+                this.orientation = 'front';
+                this.action = 'walking';
+            }
             switch (this.action) {
                 case 'normal':
                     this.frameIndex = eval('this.orientationFrames.' + this.orientation + 'Still');
@@ -138,7 +131,7 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                     }, 'front', 'normal', 0, {
                         front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
                         frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
-                    });
+                    }, game);
                     break;
                 case "player2":
                     applePlayer = new Player_1.Player({
@@ -151,7 +144,7 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                     }, 'front', 'normal', 0, {
                         front: [1, 4], left: [11, 14], right: [16, 19], back: [6, 9],
                         frontStill: 0, leftStill: 10, rightStill: 15, backStill: 5
-                    });
+                    }, game);
                     break;
                 case "player3":
                     applePlayer = new Player_1.Player({
@@ -164,7 +157,7 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                     }, 'front', 'normal', 0, {
                         front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
                         frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
-                    });
+                    }, game);
                     break;
             }
             this.setPlayer(applePlayer);
@@ -185,7 +178,6 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
             });
             this.resetTopCorner(game);
             this.setOffset(this.blockWidth * game.blockLength / 2, this.blockHeight * game.blockLength / 2);
-            console.log(this.entities);
         }
         Level.prototype.resetTopCorner = function (game) {
             this.topLeftCornerPosX = Math.floor(game.canvas.width / 2 - this.width / 2);
@@ -249,6 +241,7 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
             this.fps = 0;
             this.frameCount = 0;
             this.blockLength = 32;
+            this.keyState = [];
             this.canvas = canvas;
             this.ctx = canvas.getContext('2d');
             var thisGame = this;
@@ -256,6 +249,15 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
                 thisGame.fps = thisGame.frameCount;
                 thisGame.frameCount = 0;
             }, 1000);
+            document.addEventListener("keydown", function (e) {
+                if (e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) {
+                    return false;
+                }
+                thisGame.keyState[e.keyCode || e.which] = true;
+            });
+            document.addEventListener("keyup", function (e) {
+                thisGame.keyState[e.keyCode || e.which] = false;
+            });
             this.loadLevel();
         }
         Game.prototype.loadLevel = function () {
@@ -326,7 +328,7 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
     var canvas, mainBody, resizeTimer, debug = null;
     var paintBgColor = "#200040";
     var frameCounter = false;
-    var debugVisible = true;
+    var debugVisible = false;
     var pixelFactor = 3;
     function gameInit() {
         console.log("Ready!");
@@ -383,6 +385,7 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         debug += "topLeftCornerPosX : " + game.level.topLeftCornerPosX + "<br>";
         debug += "topLeftCornerPosY : " + game.level.topLeftCornerPosY + "<br>";
         debug += "levelOffset : " + game.level.getOffset() + "<br>";
+        debug += "keyState : " + game.keyState + "<br>";
         return debug;
     }
     function canvasSizeReset() {

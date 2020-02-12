@@ -18,7 +18,7 @@ export class Player extends Entity {
     frameCount : number;
     orientationFrames : OrientationFrames;
 
-    constructor(properties:SpriteProperties,orientation:string,action:string,frameCount:number,orientationFrames:OrientationFrames){
+    constructor(properties:SpriteProperties,orientation:string,action:string,frameCount:number,orientationFrames:OrientationFrames,game:Game){
         super(properties);
 
         this.orientation = orientation;
@@ -28,32 +28,26 @@ export class Player extends Entity {
 
         let thisPlayer = this;
 
-        window.addEventListener("keydown",function(e){
-            if(e.ctrlKey || e.altKey || e.shiftKey || e.metaKey){
-                return false;
-            }
-            
-            // left, up, right, down
-            if(e.keyCode === 37 || e.keyCode === 65){
-                thisPlayer.orientation = 'left'; thisPlayer.action = 'walking';
-            }
-            else if(e.keyCode === 38 || e.keyCode === 87){
-                thisPlayer.orientation = 'back'; thisPlayer.action = 'walking';
-            }
-            else if(e.keyCode === 39 || e.keyCode === 68){
-                thisPlayer.orientation = 'right'; thisPlayer.action = 'walking';
-            }
-            else if(e.keyCode === 40 || e.keyCode === 83){
-                thisPlayer.orientation = 'front'; thisPlayer.action = 'walking';
-            }
-        });
-
-        document.addEventListener("keyup",function(e){
-            thisPlayer.action = 'normal';
-        });
+        
+        
     }
 
     draw(game:Game){
+        this.action = 'normal';
+        
+        if(game.keyState[37] || game.keyState[65]){
+            this.orientation = 'left'; this.action = 'walking';
+        }
+        else if(game.keyState[38] || game.keyState[87]){
+            this.orientation = 'back'; this.action = 'walking';
+        }
+        else if(game.keyState[39] || game.keyState[68]){
+            this.orientation = 'right'; this.action = 'walking';
+        }
+        else if(game.keyState[40] || game.keyState[83]){
+            this.orientation = 'front'; this.action = 'walking';
+        }
+
         switch(this.action){
             case 'normal':
                 this.frameIndex = eval('this.orientationFrames.'+this.orientation+'Still');

@@ -53,7 +53,8 @@ export class Level {
                     {
                         front:[0,3],left:[4,7],right:[8,11],back:[12,15],
                         frontStill:0,leftStill:5,rightStill:9,backStill:12
-                    }
+                    },
+                    game
                 );
                 break;
             case "player2":
@@ -68,7 +69,8 @@ export class Level {
                     {
                         front:[1,4],left:[11,14],right:[16,19],back:[6,9],
                         frontStill:0,leftStill:10,rightStill:15,backStill:5
-                    }
+                    },
+                    game
                 );
                 break;
             case "player3":
@@ -83,7 +85,8 @@ export class Level {
                     {
                         front:[0,3],left:[4,7],right:[8,11],back:[12,15],
                         frontStill:0,leftStill:5,rightStill:9,backStill:12
-                    }
+                    },
+                    game
                 );
                 break;
         }
@@ -110,8 +113,6 @@ export class Level {
         this.resetTopCorner(game);
 
         this.setOffset(this.blockWidth * game.blockLength / 2,this.blockHeight * game.blockLength / 2);
-
-        console.log(this.entities);
     }
 
     resetTopCorner(game:Game){

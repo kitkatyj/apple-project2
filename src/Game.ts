@@ -6,6 +6,7 @@ export class Game {
     fps: number = 0;
     frameCount : number = 0;
     blockLength : number = 32;
+    keyState : boolean[] = [];
 
     level : Level;
 
@@ -19,6 +20,18 @@ export class Game {
             thisGame.fps = thisGame.frameCount;
             thisGame.frameCount = 0;
         },1000);
+
+        document.addEventListener("keydown",function(e){
+            if(e.ctrlKey || e.altKey || e.shiftKey || e.metaKey){
+                return false;
+            }
+
+            thisGame.keyState[e.keyCode || e.which] = true;
+        });
+
+        document.addEventListener("keyup",function(e){
+            thisGame.keyState[e.keyCode || e.which] = false;
+        });
 
         this.loadLevel();
     }
