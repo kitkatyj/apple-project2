@@ -4,7 +4,7 @@ let game:Game = null;
 let canvas,mainBody,resizeTimer,debug = null;
 let paintBgColor = "#200040";
 let frameCounter:boolean = false;
-let debugVisible:boolean = false;
+let debugVisible:boolean = true;
 let pixelFactor = 3;
 
 export function gameInit(){
@@ -51,8 +51,8 @@ function draw(){
         game.ctx.textAlign = "right";
         game.ctx.fillStyle = "white";
         game.ctx.fillText(game.fps.toString(),canvas.width,16);
-        game.frameCount++;
     }
+    game.frameCount++;
 
     if(game.level && debugVisible){
         debug.innerHTML = debugStatement();

@@ -173,13 +173,19 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                     var entity = new Entity_2.Entity({
                         src: 'res/' + entityTemp.src,
                         xPos: position[0],
-                        yPos: position[1]
+                        yPos: position[1],
+                        width: entityTemp.width,
+                        height: entityTemp.height,
+                        totalFrames: entityTemp.totalFrames,
+                        framesPerRow: entityTemp.framesPerRow,
+                        animateSpeed: entityTemp.animateSpeed
                     });
                     level.addEntity(entity);
                 });
             });
             this.resetTopCorner(game);
             this.setOffset(this.blockWidth * game.blockLength / 2, this.blockHeight * game.blockLength / 2);
+            console.log(this.entities);
         }
         Level.prototype.resetTopCorner = function (game) {
             this.topLeftCornerPosX = Math.floor(game.canvas.width / 2 - this.width / 2);
@@ -320,7 +326,7 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
     var canvas, mainBody, resizeTimer, debug = null;
     var paintBgColor = "#200040";
     var frameCounter = false;
-    var debugVisible = false;
+    var debugVisible = true;
     var pixelFactor = 3;
     function gameInit() {
         console.log("Ready!");
@@ -356,8 +362,8 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
             game.ctx.textAlign = "right";
             game.ctx.fillStyle = "white";
             game.ctx.fillText(game.fps.toString(), canvas.width, 16);
-            game.frameCount++;
         }
+        game.frameCount++;
         if (game.level && debugVisible) {
             debug.innerHTML = debugStatement();
         }

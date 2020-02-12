@@ -95,7 +95,12 @@ export class Level {
                 let entity = new Entity({
                     src: 'res/'+entityTemp.src,
                     xPos: position[0],
-                    yPos: position[1]
+                    yPos: position[1],
+                    width: entityTemp.width,
+                    height: entityTemp.height,
+                    totalFrames: entityTemp.totalFrames,
+                    framesPerRow: entityTemp.framesPerRow,
+                    animateSpeed: entityTemp.animateSpeed
                 });
 
                 level.addEntity(entity);
@@ -105,6 +110,8 @@ export class Level {
         this.resetTopCorner(game);
 
         this.setOffset(this.blockWidth * game.blockLength / 2,this.blockHeight * game.blockLength / 2);
+
+        console.log(this.entities);
     }
 
     resetTopCorner(game:Game){
