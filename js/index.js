@@ -16,7 +16,7 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
     Object.defineProperty(exports, "__esModule", { value: true });
     var Player = (function (_super) {
         __extends(Player, _super);
-        function Player(properties, orientation, action, frameCount, orientationFrames, game) {
+        function Player(properties, orientation, action, frameCount, orientationFrames) {
             var _this = _super.call(this, properties) || this;
             _this.orientation = 'front';
             _this.action = 'normal';
@@ -24,25 +24,68 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
             _this.action = action;
             _this.frameCount = frameCount;
             _this.orientationFrames = orientationFrames;
-            var thisPlayer = _this;
+            _this.hitbox = { xPos: 11, yPos: 28, width: 9, height: 3 };
             return _this;
         }
+        Player.prototype.isCollide = function (game) {
+            var isCollide = false;
+            var playerHB = {
+                xPos: this.properties.xPos + (this.hitbox.xPos / game.blockLength),
+                yPos: this.properties.yPos + (this.hitbox.yPos / game.blockLength),
+                width: this.hitbox.width / game.blockLength,
+                height: this.hitbox.height / game.blockLength
+            };
+            var playerOrient = this.orientation;
+            if (playerOrient === 'left' && playerHB.xPos - 0.02 < 0) {
+                isCollide = true;
+            }
+            else if (playerOrient === 'right' && playerHB.xPos + playerHB.width + 0.02 > game.level.blockWidth) {
+                isCollide = true;
+            }
+            else if (playerOrient === 'front' && this.properties.yPos + 1 + 0.02 > game.level.blockHeight) {
+                isCollide = true;
+            }
+            else if (playerOrient === 'back' && playerHB.yPos - 0.02 < 0) {
+                isCollide = true;
+            }
+            else {
+                game.level.getEntities().solid.forEach(function (entity) {
+                    var entityPos = { xPos: entity.properties.xPos, yPos: entity.properties.yPos };
+                    if (playerHB.yPos + playerHB.height >= entityPos.yPos && playerHB.yPos <= entityPos.yPos + 1) {
+                        if (playerOrient === 'left' && playerHB.xPos - 0.02 < entityPos.xPos + 1 && playerHB.xPos + playerHB.width > entityPos.xPos) {
+                            isCollide = true;
+                        }
+                        if (playerOrient === 'right' && playerHB.xPos + playerHB.width + 0.02 > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1) {
+                            isCollide = true;
+                        }
+                    }
+                    if (playerHB.xPos + playerHB.width >= entityPos.xPos && playerHB.xPos <= entityPos.xPos + 1) {
+                        if (playerOrient === 'front' && playerHB.yPos + playerHB.height + 0.02 > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1) {
+                            isCollide = true;
+                        }
+                        if (playerOrient === 'back' && playerHB.yPos - 0.02 < entityPos.yPos + 1 && playerHB.yPos + playerHB.height > entityPos.yPos) {
+                            isCollide = true;
+                        }
+                    }
+                });
+            }
+            return isCollide;
+        };
         Player.prototype.draw = function (game) {
-            var _a, _b;
             this.action = 'normal';
             if (game.keyState[37] || game.keyState[65]) {
                 this.orientation = 'left';
                 this.action = 'walking';
             }
-            else if (game.keyState[38] || game.keyState[87]) {
+            if (game.keyState[38] || game.keyState[87]) {
                 this.orientation = 'back';
                 this.action = 'walking';
             }
-            else if (game.keyState[39] || game.keyState[68]) {
+            if (game.keyState[39] || game.keyState[68]) {
                 this.orientation = 'right';
                 this.action = 'walking';
             }
-            else if (game.keyState[40] || game.keyState[83]) {
+            if (game.keyState[40] || game.keyState[83]) {
                 this.orientation = 'front';
                 this.action = 'walking';
             }
@@ -59,22 +102,22 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
                     this.frameCount++;
                     switch (this.orientation) {
                         case 'left':
-                            if (this.properties.xPos > 0) {
+                            if (!this.isCollide(game)) {
                                 this.properties.xPos = Math.floor((this.properties.xPos * 100) - 2) / 100;
                             }
                             break;
                         case 'right':
-                            if (this.properties.xPos < ((_a = game.level) === null || _a === void 0 ? void 0 : _a.blockWidth) - 1) {
+                            if (!this.isCollide(game)) {
                                 this.properties.xPos = Math.floor((this.properties.xPos * 100) + 2) / 100;
                             }
                             break;
                         case 'back':
-                            if (this.properties.yPos > 0) {
+                            if (!this.isCollide(game)) {
                                 this.properties.yPos = Math.floor((this.properties.yPos * 100) - 2) / 100;
                             }
                             break;
                         case 'front':
-                            if (this.properties.yPos < ((_b = game.level) === null || _b === void 0 ? void 0 : _b.blockHeight) - 1) {
+                            if (!this.isCollide(game)) {
                                 this.properties.yPos = Math.floor((this.properties.yPos * 100) + 2) / 100;
                             }
                             break;
@@ -86,6 +129,10 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
             this.properties.xPosDraw = Math.floor(game.level.topLeftCornerPosX + this.properties.xPos * game.blockLength);
             this.properties.yPosDraw = Math.floor(game.level.topLeftCornerPosY + this.properties.yPos * game.blockLength);
             game.ctx.drawImage(this.img, this.frameStartX, this.frameStartY, this.properties.width, this.properties.height, this.properties.xPosDraw, this.properties.yPosDraw, this.properties.width, this.properties.height);
+            if (game.hitboxVisible) {
+                game.ctx.fillStyle = "#ff0000";
+                game.ctx.fillRect(game.level.topLeftCornerPosX + this.properties.xPos * game.blockLength + this.hitbox.xPos, game.level.topLeftCornerPosY + this.properties.yPos * game.blockLength + this.hitbox.yPos, this.hitbox.width, this.hitbox.height);
+            }
         };
         return Player;
     }(Entity_1.Entity));
@@ -104,7 +151,6 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
             this.topLeftCornerPosY = 0;
             this.xPosOffset = 0;
             this.yPosOffset = 0;
-            this.entities = [];
             this.blockWidth = blockWidth;
             this.blockHeight = blockHeight;
             this.width = blockWidth * game.blockLength;
@@ -114,6 +160,7 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                 this.floorImg = new Image();
                 this.floorImg.src = "res/" + this.floorSrc;
             }
+            this.entities = { bottom: [], solid: [], ground: [], top: [] };
             var level = this;
             var playerPosTemp = playerPos;
             var applePlayer;
@@ -131,7 +178,7 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                     }, 'front', 'normal', 0, {
                         front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
                         frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
-                    }, game);
+                    });
                     break;
                 case "player2":
                     applePlayer = new Player_1.Player({
@@ -144,7 +191,7 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                     }, 'front', 'normal', 0, {
                         front: [1, 4], left: [11, 14], right: [16, 19], back: [6, 9],
                         frontStill: 0, leftStill: 10, rightStill: 15, backStill: 5
-                    }, game);
+                    });
                     break;
                 case "player3":
                     applePlayer = new Player_1.Player({
@@ -157,7 +204,7 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                     }, 'front', 'normal', 0, {
                         front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
                         frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
-                    }, game);
+                    });
                     break;
             }
             this.setPlayer(applePlayer);
@@ -173,7 +220,7 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                         framesPerRow: entityTemp.framesPerRow,
                         animateSpeed: entityTemp.animateSpeed
                     });
-                    level.addEntity(entity);
+                    level.addEntity(entity, entityTemp.layer);
                 });
             });
             this.resetTopCorner(game);
@@ -183,15 +230,28 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
             this.topLeftCornerPosX = Math.floor(game.canvas.width / 2 - this.width / 2);
             this.topLeftCornerPosY = Math.floor(game.canvas.height / 2 - this.height / 2);
         };
-        Level.prototype.addEntity = function (entitiy) {
-            this.entities.push(entitiy);
+        Level.prototype.addEntity = function (entity, layer) {
+            switch (layer) {
+                case 'bottom':
+                    this.entities.bottom.push(entity);
+                    break;
+                case 'solid':
+                    this.entities.solid.push(entity);
+                    break;
+                case 'ground':
+                    this.entities.ground.push(entity);
+                    break;
+                case 'top':
+                    this.entities.top.push(entity);
+                    break;
+            }
         };
         Level.prototype.getEntities = function () {
             return this.entities;
         };
         Level.prototype.setPlayer = function (playerObj) {
             this.player = playerObj;
-            this.addEntity(playerObj);
+            this.addEntity(playerObj, 'ground');
         };
         Level.prototype.getPlayer = function () {
             return this.player;
@@ -217,8 +277,10 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                     game.ctx.drawImage(this.floorImg, this.topLeftCornerPosX + i * game.blockLength, this.topLeftCornerPosY + j * game.blockLength, game.blockLength, game.blockLength);
                 }
             }
+            this.entities.solid.forEach(function (entity) { entity.draw(game); });
+            this.entities.bottom.forEach(function (entity) { entity.draw(game); });
             var _loop_1 = function (yIndex) {
-                this_1.entities.forEach(function (entity) {
+                this_1.entities.ground.forEach(function (entity) {
                     if (Math.ceil(entity.properties.yPos) == yIndex) {
                         entity.draw(game);
                     }
@@ -239,6 +301,7 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
     var Game = (function () {
         function Game(canvas) {
             this.fps = 0;
+            this.hitboxVisible = false;
             this.frameCount = 0;
             this.blockLength = 32;
             this.keyState = [];

@@ -4,6 +4,7 @@ export class Game {
     canvas : HTMLCanvasElement;
     ctx : CanvasRenderingContext2D;
     fps: number = 0;
+    hitboxVisible:boolean = false;
     frameCount : number = 0;
     blockLength : number = 32;
     keyState : boolean[] = [];

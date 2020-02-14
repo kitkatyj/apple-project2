@@ -5,10 +5,16 @@
     "entities":[
         {
             "src":"grass.png",
-            "position":[[0,1],[1,0],[1,4],[1,2],[3,2],[3,0],[4,3]],
+            "position":[[0,1],[1,3],[2,4],[3,0]],
             "totalFrames":6,
             "framesPerRow":6,
-            "animateSpeed":0.04
+            "animateSpeed":0.04,
+            "layer":"ground"
+        },
+        {
+            "src":"rock.png",
+            "position":[[1,0],[1,2],[3,2],[4,3]],
+            "layer":"solid"
         }
     ],
     "playerPos":[2,2]

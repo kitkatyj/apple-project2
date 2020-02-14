@@ -2,6 +2,13 @@ import {Entity} from './Entity';
 import {Player} from './Player';
 import { Game } from './Game';
 
+interface EntityMap {
+    bottom : Entity[];
+    solid: Entity[];
+    ground: Entity[];
+    top: Entity[];
+}
+
 export class Level {
     width : number = 0;
     height:  number = 0;
@@ -16,7 +23,7 @@ export class Level {
     private xPosOffset : number = 0;
     private yPosOffset : number = 0;
 
-    private entities : Entity[] = [];
+    private entities : EntityMap;
     private player? : Player;
 
     constructor(game:Game,blockWidth:number,blockHeight:number,floor:string,playerPos:number[],entities:any[]){
@@ -31,6 +38,8 @@ export class Level {
             this.floorImg = new Image();
             this.floorImg.src = "res/"+this.floorSrc;
         }
+
+        this.entities = {bottom:[],solid:[],ground:[],top:[]}
 
         let level = this;
 
@@ -53,8 +62,7 @@ export class Level {
                     {
                         front:[0,3],left:[4,7],right:[8,11],back:[12,15],
                         frontStill:0,leftStill:5,rightStill:9,backStill:12
-                    },
-                    game
+                    }
                 );
                 break;
             case "player2":
@@ -69,8 +77,7 @@ export class Level {
                     {
                         front:[1,4],left:[11,14],right:[16,19],back:[6,9],
                         frontStill:0,leftStill:10,rightStill:15,backStill:5
-                    },
-                    game
+                    }
                 );
                 break;
             case "player3":
@@ -85,8 +92,7 @@ export class Level {
                     {
                         front:[0,3],left:[4,7],right:[8,11],back:[12,15],
                         frontStill:0,leftStill:5,rightStill:9,backStill:12
-                    },
-                    game
+                    }
                 );
                 break;
         }
@@ -106,9 +112,11 @@ export class Level {
                     animateSpeed: entityTemp.animateSpeed
                 });
 
-                level.addEntity(entity);
+                level.addEntity(entity,entityTemp.layer);
             })
         });
+
+        // console.log(this.entities);
 
         this.resetTopCorner(game);
 
@@ -120,8 +128,13 @@ export class Level {
         this.topLeftCornerPosY = Math.floor(game.canvas.height/2 - this.height/2);
     }
 
-    addEntity(entitiy:Entity){
-        this.entities.push(entitiy);
+    addEntity(entity:Entity,layer:string){
+        switch(layer){
+            case 'bottom': this.entities.bottom.push(entity); break;
+            case 'solid': this.entities.solid.push(entity); break;
+            case 'ground': this.entities.ground.push(entity); break;
+            case 'top': this.entities.top.push(entity); break;
+        }
     }
 
     getEntities(){
@@ -130,7 +143,7 @@ export class Level {
 
     setPlayer(playerObj:Player){
         this.player = playerObj;
-        this.addEntity(playerObj);
+        this.addEntity(playerObj,'ground');
     }
 
     getPlayer():Player{
@@ -173,9 +186,13 @@ export class Level {
             }
         }
 
-        // draw entity based on yIndex
+        // draw bottom and solid entities
+        this.entities.solid.forEach(function(entity){entity.draw(game);});
+        this.entities.bottom.forEach(function(entity){entity.draw(game);});
+
+        // draw ground entities based on yIndex
         for(let yIndex = 0; yIndex < this.height; yIndex++){
-            this.entities.forEach(function(entity){
+            this.entities.ground.forEach(function(entity){
                 if(Math.ceil(entity.properties.yPos) == yIndex){
                     entity.draw(game);
                 }
