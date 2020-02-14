@@ -23,7 +23,7 @@ export class Game {
         },1000);
 
         document.addEventListener("keydown",function(e){
-            if(e.ctrlKey || e.altKey || e.shiftKey || e.metaKey){
+            if(e.ctrlKey || e.altKey || e.metaKey){
                 return false;
             }
 
