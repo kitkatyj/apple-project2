@@ -26,7 +26,10 @@ export class Level {
     private entities : EntityMap;
     private player? : Player;
 
-    constructor(game:Game,blockWidth:number,blockHeight:number,floor:string,playerPos:number[],entities:any[]){
+    seed : string;
+    seedGen : Function;
+
+    constructor(game:Game,blockWidth:number,blockHeight:number,floor:string,playerPos:number[],entities:any[],seed:string){
         this.blockWidth = blockWidth;
         this.blockHeight = blockHeight;
         this.width = blockWidth * game.blockLength;
@@ -40,6 +43,9 @@ export class Level {
         }
 
         this.entities = {bottom:[],solid:[],ground:[],top:[]}
+
+        this.seed = seed;
+        this.seedGen = game.seedFunction(this.seed);
 
         let level = this;
 
@@ -100,20 +106,48 @@ export class Level {
         this.setPlayer(applePlayer);
 
         entities.forEach(function(entityTemp){
-            entityTemp.position.forEach(function(position){
-                let entity = new Entity({
-                    src: 'res/'+entityTemp.src,
-                    xPos: position[0],
-                    yPos: position[1],
-                    width: entityTemp.width,
-                    height: entityTemp.height,
-                    totalFrames: entityTemp.totalFrames,
-                    framesPerRow: entityTemp.framesPerRow,
-                    animateSpeed: entityTemp.animateSpeed
-                });
+            // render based on set positions
+            if(Array.isArray(entityTemp.position)){
+                entityTemp.position.forEach(function(position){
+                    let entity = new Entity({
+                        src: 'res/'+entityTemp.src,
+                        xPos: position[0],
+                        yPos: position[1],
+                        width: entityTemp.width,
+                        height: entityTemp.height,
+                        totalFrames: entityTemp.totalFrames,
+                        framesPerRow: entityTemp.framesPerRow,
+                        animateSpeed: entityTemp.animateSpeed
+                    });
+    
+                    level.addEntity(entity,entityTemp.layer);
+                })
+            }
+            // render based on random seed and threshold
+            else if (entityTemp.position === 'random') {
+                // console.log("seed: "+level.seed);
 
-                level.addEntity(entity,entityTemp.layer);
-            })
+                for(let i = 0; i < level.blockWidth; i++){
+                    for(let j = 0; j < level.blockHeight; j++){
+                        // console.log(level.seedGen());
+                        // console.log([playerPosTemp,'!==',[i,j],playerPosTemp !== [i,j]]);
+                        if(level.seedGen() < entityTemp.threshold && !(playerPosTemp[0] === i && playerPosTemp[1] === j)){
+                            let entity = new Entity({
+                                src: 'res/'+entityTemp.src,
+                                xPos: i,
+                                yPos: j,
+                                width: entityTemp.width,
+                                height: entityTemp.height,
+                                totalFrames: entityTemp.totalFrames,
+                                framesPerRow: entityTemp.framesPerRow,
+                                animateSpeed: entityTemp.animateSpeed
+                            });
+
+                            level.addEntity(entity,entityTemp.layer);
+                        }
+                    }
+                }
+            }
         });
 
         // console.log(this.entities);

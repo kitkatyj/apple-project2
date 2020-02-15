@@ -6,14 +6,20 @@ let paintBgColor = "#200040";
 let frameCounter:boolean = false;
 let debugVisible:boolean = false;
 let pixelFactor = 3;
+let seedFunction:Function;
 
-export function gameInit(){
+export function gameInit(seedFunctionTemp:Function){
+
     console.log("Ready!");
+
+    // console.log(seed('hello.')());
+
     document.getElementById("ph").remove();
 
     canvas = document.createElement("canvas");
     mainBody = document.getElementsByTagName("body")[0];
     debug = document.getElementById("debug");
+    seedFunction = seedFunctionTemp;
 
     mainBody.style.margin = "0";
     mainBody.appendChild(canvas);
@@ -21,12 +27,15 @@ export function gameInit(){
     canvasSizeReset();
 
     document.getElementById("choices").style.display = "block";
+    document.getElementById("seed").style.display = "block";
 
     loadGame();
 
     document.querySelectorAll("input[name=player]").forEach(function(choice){
         choice.addEventListener("change",loadGame);
-    })
+    });
+
+    document.getElementById("seedBtn").addEventListener("click",loadGame);
 
     window.addEventListener("resize",function(e){
         clearTimeout(resizeTimer);
@@ -37,7 +46,8 @@ export function gameInit(){
 }
 
 function loadGame(){
-    game = new Game(canvas);
+    game = new Game(canvas,seedFunction);
+    game.loadLevel((<HTMLInputElement>document.getElementById("seedInput")).value);
 }
 
 function draw(){    

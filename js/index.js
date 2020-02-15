@@ -152,7 +152,7 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Level = (function () {
-        function Level(game, blockWidth, blockHeight, floor, playerPos, entities) {
+        function Level(game, blockWidth, blockHeight, floor, playerPos, entities, seed) {
             this.width = 0;
             this.height = 0;
             this.blockWidth = 0;
@@ -171,6 +171,8 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                 this.floorImg.src = "res/" + this.floorSrc;
             }
             this.entities = { bottom: [], solid: [], ground: [], top: [] };
+            this.seed = seed;
+            this.seedGen = game.seedFunction(this.seed);
             var level = this;
             var playerPosTemp = playerPos;
             var applePlayer;
@@ -219,19 +221,40 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
             }
             this.setPlayer(applePlayer);
             entities.forEach(function (entityTemp) {
-                entityTemp.position.forEach(function (position) {
-                    var entity = new Entity_2.Entity({
-                        src: 'res/' + entityTemp.src,
-                        xPos: position[0],
-                        yPos: position[1],
-                        width: entityTemp.width,
-                        height: entityTemp.height,
-                        totalFrames: entityTemp.totalFrames,
-                        framesPerRow: entityTemp.framesPerRow,
-                        animateSpeed: entityTemp.animateSpeed
+                if (Array.isArray(entityTemp.position)) {
+                    entityTemp.position.forEach(function (position) {
+                        var entity = new Entity_2.Entity({
+                            src: 'res/' + entityTemp.src,
+                            xPos: position[0],
+                            yPos: position[1],
+                            width: entityTemp.width,
+                            height: entityTemp.height,
+                            totalFrames: entityTemp.totalFrames,
+                            framesPerRow: entityTemp.framesPerRow,
+                            animateSpeed: entityTemp.animateSpeed
+                        });
+                        level.addEntity(entity, entityTemp.layer);
                     });
-                    level.addEntity(entity, entityTemp.layer);
-                });
+                }
+                else if (entityTemp.position === 'random') {
+                    for (var i = 0; i < level.blockWidth; i++) {
+                        for (var j = 0; j < level.blockHeight; j++) {
+                            if (level.seedGen() < entityTemp.threshold && !(playerPosTemp[0] === i && playerPosTemp[1] === j)) {
+                                var entity = new Entity_2.Entity({
+                                    src: 'res/' + entityTemp.src,
+                                    xPos: i,
+                                    yPos: j,
+                                    width: entityTemp.width,
+                                    height: entityTemp.height,
+                                    totalFrames: entityTemp.totalFrames,
+                                    framesPerRow: entityTemp.framesPerRow,
+                                    animateSpeed: entityTemp.animateSpeed
+                                });
+                                level.addEntity(entity, entityTemp.layer);
+                            }
+                        }
+                    }
+                }
             });
             this.resetTopCorner(game);
             this.setOffset(this.blockWidth * game.blockLength / 2, this.blockHeight * game.blockLength / 2);
@@ -309,7 +332,7 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Game = (function () {
-        function Game(canvas) {
+        function Game(canvas, seedFunction) {
             this.fps = 0;
             this.hitboxVisible = false;
             this.frameCount = 0;
@@ -317,6 +340,7 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
             this.keyState = [];
             this.canvas = canvas;
             this.ctx = canvas.getContext('2d');
+            this.seedFunction = seedFunction;
             var thisGame = this;
             setInterval(function () {
                 thisGame.fps = thisGame.frameCount;
@@ -331,9 +355,8 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
             document.addEventListener("keyup", function (e) {
                 thisGame.keyState[e.keyCode || e.which] = false;
             });
-            this.loadLevel();
         }
-        Game.prototype.loadLevel = function () {
+        Game.prototype.loadLevel = function (seed) {
             var xhr = new XMLHttpRequest();
             xhr.open('GET', "levels/a1.json", true);
             xhr.send();
@@ -341,7 +364,7 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
             xhr.addEventListener("readystatechange", function (e) {
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     var levelTemp = JSON.parse(xhr.responseText);
-                    thisGame.level = new Level_1.Level(thisGame, levelTemp.width, levelTemp.height, levelTemp.floor, levelTemp.playerPos, levelTemp.entities);
+                    thisGame.level = new Level_1.Level(thisGame, levelTemp.width, levelTemp.height, levelTemp.floor, levelTemp.playerPos, levelTemp.entities, seed);
                 }
             });
         };
@@ -403,20 +426,24 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
     var frameCounter = false;
     var debugVisible = false;
     var pixelFactor = 3;
-    function gameInit() {
+    var seedFunction;
+    function gameInit(seedFunctionTemp) {
         console.log("Ready!");
         document.getElementById("ph").remove();
         canvas = document.createElement("canvas");
         mainBody = document.getElementsByTagName("body")[0];
         debug = document.getElementById("debug");
+        seedFunction = seedFunctionTemp;
         mainBody.style.margin = "0";
         mainBody.appendChild(canvas);
         canvasSizeReset();
         document.getElementById("choices").style.display = "block";
+        document.getElementById("seed").style.display = "block";
         loadGame();
         document.querySelectorAll("input[name=player]").forEach(function (choice) {
             choice.addEventListener("change", loadGame);
         });
+        document.getElementById("seedBtn").addEventListener("click", loadGame);
         window.addEventListener("resize", function (e) {
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(canvasSizeReset, 250);
@@ -425,7 +452,8 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
     }
     exports.gameInit = gameInit;
     function loadGame() {
-        game = new Game_1.Game(canvas);
+        game = new Game_1.Game(canvas, seedFunction);
+        game.loadLevel(document.getElementById("seedInput").value);
     }
     function draw() {
         var _a;

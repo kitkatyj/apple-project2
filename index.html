@@ -30,12 +30,14 @@
                 image-rendering: crisp-edges;
             }
 
-            #choices {
+            #choices,#seed {
                 display:none;
                 position: absolute;
-                top:0; left:0;
                 color: white;
             }
+
+            #choices {top:0; left:0;}
+            #seed {bottom:0; left:0;}
 
             #debug {
                 color:white;
@@ -58,6 +60,11 @@
             <input type="radio" name="player" id="player3" value="player3">
             <label for="player3">YY's</label>
         </section>
+        <section id="seed">
+            <span>seed:</span>
+            <input type="text" name="seedInput" id="seedInput" value="hello!">
+            <input type="button" name="seedBtn" id="seedBtn" value="update">
+        </section>
         <section id="ph">
             <h1>Apple Project</h1>
             <!-- <p>Oops, you need to enable Javascript.</p> -->
@@ -66,8 +73,9 @@
 
         </section>
         <script>
-            require(['index'],function(index){
-                index.gameInit();
+            require(['index','lib/seedrandom'],function(index,seedrandom){
+                // console.log(seedrandom('hello.')());
+                index.gameInit(seedrandom);
             });
         </script>
     </body>

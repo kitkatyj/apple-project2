@@ -9,11 +9,20 @@ export class Game {
     blockLength : number = 32;
     keyState : boolean[] = [];
 
+    seedFunction : Function;
+
     level : Level;
 
-    constructor(canvas:HTMLCanvasElement){
+    constructor(canvas:HTMLCanvasElement,seedFunction:Function){
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
+
+        this.seedFunction = seedFunction;
+
+        // let seedGen = seedFunction('hello.');
+
+        // console.log(seedGen());
+        // console.log(seedGen());
 
         let thisGame = this;
 
@@ -33,11 +42,9 @@ export class Game {
         document.addEventListener("keyup",function(e){
             thisGame.keyState[e.keyCode || e.which] = false;
         });
-
-        this.loadLevel();
     }
 
-    loadLevel(){
+    loadLevel(seed:string){
         let xhr = new XMLHttpRequest();
         xhr.open('GET',"levels/a1.json",true);
         xhr.send();
@@ -54,7 +61,8 @@ export class Game {
                     levelTemp.height,
                     levelTemp.floor,
                     levelTemp.playerPos,
-                    levelTemp.entities
+                    levelTemp.entities,
+                    seed
                 );
             }
         });
