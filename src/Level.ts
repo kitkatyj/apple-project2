@@ -146,7 +146,7 @@ export class Level {
                         pos = level.randomPos();
                     }
 
-                    console.log(levelMap);
+                    // console.log(levelMap);
 
                     levelMap[pos[0]][pos[1]] = true;
                     

@@ -251,7 +251,6 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                         while (levelMap[pos[0]][pos[1]]) {
                             pos = level.randomPos();
                         }
-                        console.log(levelMap);
                         levelMap[pos[0]][pos[1]] = true;
                         var entity = new Entity_2.Entity({
                             src: 'res/' + entityTemp.src,
