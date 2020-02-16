@@ -105,6 +105,15 @@ export class Level {
 
         this.setPlayer(applePlayer);
 
+        let levelMap:boolean[][] = [];
+
+        for(let i = 0; i < level.blockHeight; i++){
+            levelMap[i] = [];
+            for(let j = 0; j < level.blockWidth; j++){
+                levelMap[i][j] = false;
+            }
+        }
+
         entities.forEach(function(entityTemp){
             // render based on set positions
             if(Array.isArray(entityTemp.position)){
@@ -127,25 +136,31 @@ export class Level {
             else if (entityTemp.position === 'random') {
                 // console.log("seed: "+level.seed);
 
-                for(let i = 0; i < level.blockWidth; i++){
-                    for(let j = 0; j < level.blockHeight; j++){
-                        // console.log(level.seedGen());
-                        // console.log([playerPosTemp,'!==',[i,j],playerPosTemp !== [i,j]]);
-                        if(level.seedGen() < entityTemp.threshold && !(playerPosTemp[0] === i && playerPosTemp[1] === j)){
-                            let entity = new Entity({
-                                src: 'res/'+entityTemp.src,
-                                xPos: i,
-                                yPos: j,
-                                width: entityTemp.width,
-                                height: entityTemp.height,
-                                totalFrames: entityTemp.totalFrames,
-                                framesPerRow: entityTemp.framesPerRow,
-                                animateSpeed: entityTemp.animateSpeed
-                            });
+                let entityQty = Math.round(level.blockHeight * level.blockWidth * entityTemp.threshold);
+                
+                for(let i = 0; i < entityQty; i++){
+                    let pos = level.randomPos();
 
-                            level.addEntity(entity,entityTemp.layer);
-                        }
+                    while(levelMap[pos[0]][pos[1]]){
+                        pos = level.randomPos();
                     }
+
+                    // console.log(entityMap);
+
+                    levelMap[pos[0]][pos[1]] = true;
+                    
+                    let entity = new Entity({
+                        src: 'res/'+entityTemp.src,
+                        xPos: pos[0],
+                        yPos: pos[1],
+                        width: entityTemp.width,
+                        height: entityTemp.height,
+                        totalFrames: entityTemp.totalFrames,
+                        framesPerRow: entityTemp.framesPerRow,
+                        animateSpeed: entityTemp.animateSpeed
+                    });
+    
+                    level.addEntity(entity,entityTemp.layer);
                 }
             }
         });
@@ -155,6 +170,12 @@ export class Level {
         this.resetTopCorner(game);
 
         this.setOffset(this.blockWidth * game.blockLength / 2,this.blockHeight * game.blockLength / 2);
+    }
+
+    randomPos(){
+        let posArray = [Math.floor(this.seedGen()*this.blockWidth), Math.floor(this.seedGen()*this.blockHeight)];
+
+        return posArray;
     }
 
     resetTopCorner(game:Game){

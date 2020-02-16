@@ -29,6 +29,10 @@ export function gameInit(seedFunctionTemp:Function){
     document.getElementById("choices").style.display = "block";
     document.getElementById("seed").style.display = "block";
 
+    if(localStorage.getItem("levelSeed")){
+        document.getElementById("seedInput").setAttribute("value",localStorage.getItem("levelSeed"));
+    }
+    
     loadGame();
 
     document.querySelectorAll("input[name=player]").forEach(function(choice){
@@ -47,7 +51,11 @@ export function gameInit(seedFunctionTemp:Function){
 
 function loadGame(){
     game = new Game(canvas,seedFunction);
-    game.loadLevel((<HTMLInputElement>document.getElementById("seedInput")).value);
+
+    let seedInputValue = (<HTMLInputElement>document.getElementById("seedInput")).value;
+
+    game.loadLevel(seedInputValue);
+    localStorage.setItem("levelSeed",seedInputValue);
 }
 
 function draw(){    

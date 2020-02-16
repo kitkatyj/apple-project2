@@ -220,6 +220,13 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                     break;
             }
             this.setPlayer(applePlayer);
+            var levelMap = [];
+            for (var i = 0; i < level.blockHeight; i++) {
+                levelMap[i] = [];
+                for (var j = 0; j < level.blockWidth; j++) {
+                    levelMap[i][j] = false;
+                }
+            }
             entities.forEach(function (entityTemp) {
                 if (Array.isArray(entityTemp.position)) {
                     entityTemp.position.forEach(function (position) {
@@ -237,28 +244,34 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                     });
                 }
                 else if (entityTemp.position === 'random') {
-                    for (var i = 0; i < level.blockWidth; i++) {
-                        for (var j = 0; j < level.blockHeight; j++) {
-                            if (level.seedGen() < entityTemp.threshold && !(playerPosTemp[0] === i && playerPosTemp[1] === j)) {
-                                var entity = new Entity_2.Entity({
-                                    src: 'res/' + entityTemp.src,
-                                    xPos: i,
-                                    yPos: j,
-                                    width: entityTemp.width,
-                                    height: entityTemp.height,
-                                    totalFrames: entityTemp.totalFrames,
-                                    framesPerRow: entityTemp.framesPerRow,
-                                    animateSpeed: entityTemp.animateSpeed
-                                });
-                                level.addEntity(entity, entityTemp.layer);
-                            }
+                    var entityQty = Math.round(level.blockHeight * level.blockWidth * entityTemp.threshold);
+                    for (var i = 0; i < entityQty; i++) {
+                        var pos = level.randomPos();
+                        while (levelMap[pos[0]][pos[1]]) {
+                            pos = level.randomPos();
                         }
+                        levelMap[pos[0]][pos[1]] = true;
+                        var entity = new Entity_2.Entity({
+                            src: 'res/' + entityTemp.src,
+                            xPos: pos[0],
+                            yPos: pos[1],
+                            width: entityTemp.width,
+                            height: entityTemp.height,
+                            totalFrames: entityTemp.totalFrames,
+                            framesPerRow: entityTemp.framesPerRow,
+                            animateSpeed: entityTemp.animateSpeed
+                        });
+                        level.addEntity(entity, entityTemp.layer);
                     }
                 }
             });
             this.resetTopCorner(game);
             this.setOffset(this.blockWidth * game.blockLength / 2, this.blockHeight * game.blockLength / 2);
         }
+        Level.prototype.randomPos = function () {
+            var posArray = [Math.floor(this.seedGen() * this.blockWidth), Math.floor(this.seedGen() * this.blockHeight)];
+            return posArray;
+        };
         Level.prototype.resetTopCorner = function (game) {
             this.topLeftCornerPosX = Math.floor(game.canvas.width / 2 - this.width / 2);
             this.topLeftCornerPosY = Math.floor(game.canvas.height / 2 - this.height / 2);
@@ -439,6 +452,9 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         canvasSizeReset();
         document.getElementById("choices").style.display = "block";
         document.getElementById("seed").style.display = "block";
+        if (localStorage.getItem("levelSeed")) {
+            document.getElementById("seedInput").setAttribute("value", localStorage.getItem("levelSeed"));
+        }
         loadGame();
         document.querySelectorAll("input[name=player]").forEach(function (choice) {
             choice.addEventListener("change", loadGame);
@@ -453,7 +469,9 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
     exports.gameInit = gameInit;
     function loadGame() {
         game = new Game_1.Game(canvas, seedFunction);
-        game.loadLevel(document.getElementById("seedInput").value);
+        var seedInputValue = document.getElementById("seedInput").value;
+        game.loadLevel(seedInputValue);
+        localStorage.setItem("levelSeed", seedInputValue);
     }
     function draw() {
         var _a;

@@ -6,7 +6,7 @@
         {
             "src":"grass.png",
             "position":"random",
-            "threshold":0.3,
+            "threshold":0.2,
             "totalFrames":6,
             "framesPerRow":6,
             "animateSpeed":0.04,
@@ -15,7 +15,7 @@
         {
             "src":"rock.png",
             "position":"random",
-            "threshold":0.2,
+            "threshold":0.1,
             "layer":"solid"
         }
     ],
