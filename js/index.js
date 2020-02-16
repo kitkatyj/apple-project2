@@ -219,7 +219,6 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                     });
                     break;
             }
-            this.setPlayer(applePlayer);
             var levelMap = [];
             for (var i = 0; i < level.blockHeight; i++) {
                 levelMap[i] = [];
@@ -227,6 +226,8 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                     levelMap[i][j] = false;
                 }
             }
+            this.setPlayer(applePlayer);
+            levelMap[playerPos[0]][playerPos[1]] = true;
             entities.forEach(function (entityTemp) {
                 if (Array.isArray(entityTemp.position)) {
                     entityTemp.position.forEach(function (position) {
@@ -250,6 +251,7 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                         while (levelMap[pos[0]][pos[1]]) {
                             pos = level.randomPos();
                         }
+                        console.log(levelMap);
                         levelMap[pos[0]][pos[1]] = true;
                         var entity = new Entity_2.Entity({
                             src: 'res/' + entityTemp.src,

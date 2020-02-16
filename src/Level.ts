@@ -103,8 +103,6 @@ export class Level {
                 break;
         }
 
-        this.setPlayer(applePlayer);
-
         let levelMap:boolean[][] = [];
 
         for(let i = 0; i < level.blockHeight; i++){
@@ -113,6 +111,9 @@ export class Level {
                 levelMap[i][j] = false;
             }
         }
+
+        this.setPlayer(applePlayer);
+        levelMap[playerPos[0]][playerPos[1]] = true;
 
         entities.forEach(function(entityTemp){
             // render based on set positions
@@ -145,7 +146,7 @@ export class Level {
                         pos = level.randomPos();
                     }
 
-                    // console.log(entityMap);
+                    console.log(levelMap);
 
                     levelMap[pos[0]][pos[1]] = true;
                     
