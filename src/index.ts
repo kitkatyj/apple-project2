@@ -4,7 +4,7 @@ let game:Game = null;
 let canvas,mainBody,resizeTimer,debug = null;
 let paintBgColor = "#200040";
 let frameCounter:boolean = false;
-let debugVisible:boolean = false;
+let debugVisible:boolean = true;
 let pixelFactor = 3;
 let seedFunction:Function;
 
@@ -84,10 +84,10 @@ function debugStatement(){
 
     debug += "xPos : "+game.level.getPlayer().properties.xPos + "<br>";
     debug += "yPos : "+game.level.getPlayer().properties.yPos + "<br>";
-    // debug += "topLeftCornerPosX + Math.round(xPos * blockLength) : "+ game.level.topLeftCornerPosX + "+" + Math.round(game.level.getPlayer().properties.xPos * game.blockLength) + "=" + (game.level.topLeftCornerPosX+ Math.round(game.level.getPlayer().properties.xPos * game.blockLength)) + "<br>";
-    // debug += "topLeftCornerPosY + Math.round(yPos * blockLength) : "+ game.level.topLeftCornerPosY + "+" + Math.round(game.level.getPlayer().properties.yPos * game.blockLength) + "=" + (game.level.topLeftCornerPosY+ Math.round(game.level.getPlayer().properties.yPos * game.blockLength)) + "<br>";
-    // debug += "canvas width/2 - blockLength/2 : "+(game.canvas.width/2 - game.blockLength/2) + "<br>";
-    // debug += "canvas height/2 - blockLength/2 : "+(game.canvas.height/2 - game.blockLength/2) + "<br>";
+    debug += "topLeftCornerPosX + Math.round(xPos * blockLength) : "+ game.level.topLeftCornerPosX + "+" + Math.round(game.level.getPlayer().properties.xPos * game.blockLength) + "=" + (game.level.topLeftCornerPosX+ Math.round(game.level.getPlayer().properties.xPos * game.blockLength)) + "<br>";
+    debug += "topLeftCornerPosY + Math.round(yPos * blockLength) : "+ game.level.topLeftCornerPosY + "+" + Math.round(game.level.getPlayer().properties.yPos * game.blockLength) + "=" + (game.level.topLeftCornerPosY+ Math.round(game.level.getPlayer().properties.yPos * game.blockLength)) + "<br>";
+    debug += "canvas width/2 - blockLength/2 : "+(game.canvas.width/2 - game.blockLength/2) + "<br>";
+    debug += "canvas height/2 - blockLength/2 : "+(game.canvas.height/2 - game.blockLength/2) + "<br>";
     debug += "xPosDraw : "+game.level.getPlayer().properties.xPosDraw + "<br>";
     debug += "yPosDraw : "+game.level.getPlayer().properties.yPosDraw + "<br>";
     debug += "frameIndex : "+game.level.getPlayer().frameIndex + "<br>";

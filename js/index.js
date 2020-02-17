@@ -276,8 +276,18 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
             this.topLeftCornerPosY = Math.floor(game.canvas.height / 2 - this.height / 2);
         };
         Level.prototype.focusOnPlayer = function (game) {
-            this.topLeftCornerPosX = Math.floor(game.canvas.width / 2 - this.player.properties.xPos * game.blockLength - game.blockLength / 2);
-            this.topLeftCornerPosY = Math.floor(game.canvas.height / 2 - this.player.properties.yPos * game.blockLength - game.blockLength / 2);
+            if ((game.canvas.width / 2 - game.blockLength / 2) % 1 === 0) {
+                this.topLeftCornerPosX = Math.round(game.canvas.width / 2 - this.player.properties.xPos * game.blockLength - game.blockLength / 2);
+            }
+            else {
+                this.topLeftCornerPosX = Math.floor(game.canvas.width / 2 - this.player.properties.xPos * game.blockLength - game.blockLength / 2);
+            }
+            if ((game.canvas.height / 2 - game.blockLength / 2) % 1 === 0) {
+                this.topLeftCornerPosY = Math.round(game.canvas.height / 2 - this.player.properties.yPos * game.blockLength - game.blockLength / 2);
+            }
+            else {
+                this.topLeftCornerPosY = Math.floor(game.canvas.height / 2 - this.player.properties.yPos * game.blockLength - game.blockLength / 2);
+            }
         };
         Level.prototype.addEntity = function (entity, layer) {
             switch (layer) {
@@ -441,7 +451,7 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
     var canvas, mainBody, resizeTimer, debug = null;
     var paintBgColor = "#200040";
     var frameCounter = false;
-    var debugVisible = false;
+    var debugVisible = true;
     var pixelFactor = 3;
     var seedFunction;
     function gameInit(seedFunctionTemp) {
@@ -498,6 +508,10 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         var debug = "";
         debug += "xPos : " + game.level.getPlayer().properties.xPos + "<br>";
         debug += "yPos : " + game.level.getPlayer().properties.yPos + "<br>";
+        debug += "topLeftCornerPosX + Math.round(xPos * blockLength) : " + game.level.topLeftCornerPosX + "+" + Math.round(game.level.getPlayer().properties.xPos * game.blockLength) + "=" + (game.level.topLeftCornerPosX + Math.round(game.level.getPlayer().properties.xPos * game.blockLength)) + "<br>";
+        debug += "topLeftCornerPosY + Math.round(yPos * blockLength) : " + game.level.topLeftCornerPosY + "+" + Math.round(game.level.getPlayer().properties.yPos * game.blockLength) + "=" + (game.level.topLeftCornerPosY + Math.round(game.level.getPlayer().properties.yPos * game.blockLength)) + "<br>";
+        debug += "canvas width/2 - blockLength/2 : " + (game.canvas.width / 2 - game.blockLength / 2) + "<br>";
+        debug += "canvas height/2 - blockLength/2 : " + (game.canvas.height / 2 - game.blockLength / 2) + "<br>";
         debug += "xPosDraw : " + game.level.getPlayer().properties.xPosDraw + "<br>";
         debug += "yPosDraw : " + game.level.getPlayer().properties.yPosDraw + "<br>";
         debug += "frameIndex : " + game.level.getPlayer().frameIndex + "<br>";

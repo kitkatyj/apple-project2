@@ -185,8 +185,19 @@ export class Level {
     }
 
     focusOnPlayer(game:Game){
-        this.topLeftCornerPosX = Math.floor(game.canvas.width/2 - this.player.properties.xPos * game.blockLength - game.blockLength/2);
-        this.topLeftCornerPosY = Math.floor(game.canvas.height/2 - this.player.properties.yPos * game.blockLength - game.blockLength/2);
+        if((game.canvas.width/2 - game.blockLength/2) % 1 === 0){
+            this.topLeftCornerPosX = Math.round(game.canvas.width/2 - this.player.properties.xPos * game.blockLength - game.blockLength/2);
+        }
+        else {
+            this.topLeftCornerPosX = Math.floor(game.canvas.width/2 - this.player.properties.xPos * game.blockLength - game.blockLength/2);
+        }
+
+        if((game.canvas.height/2 - game.blockLength/2) % 1 === 0){
+            this.topLeftCornerPosY = Math.round(game.canvas.height/2 - this.player.properties.yPos * game.blockLength - game.blockLength/2);
+        }
+        else {
+            this.topLeftCornerPosY = Math.floor(game.canvas.height/2 - this.player.properties.yPos * game.blockLength - game.blockLength/2);
+        }
     }
 
     addEntity(entity:Entity,layer:string){
