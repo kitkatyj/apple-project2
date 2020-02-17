@@ -75,13 +75,11 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
         };
         Player.prototype.draw = function (game) {
             this.action = 'normal';
+            var moveSpeed = this.moveSpeed;
+            var animateSpeed = this.properties.animateSpeed;
             if (game.keyState[16]) {
-                this.moveSpeed = 4;
-                this.properties.animateSpeed = 1 / 6;
-            }
-            else {
-                this.moveSpeed = 2;
-                this.properties.animateSpeed = 1 / 12;
+                moveSpeed = this.moveSpeed * 2;
+                animateSpeed = this.properties.animateSpeed * 2;
             }
             if (game.keyState[37] || game.keyState[65]) {
                 this.orientation = 'left';
@@ -107,7 +105,7 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
                     this.frameCount = 0;
                     break;
                 case 'walking':
-                    this.frameIndex = Math.floor(this.frameCount * this.properties.animateSpeed) % this.properties.totalFrames;
+                    this.frameIndex = Math.floor(this.frameCount * animateSpeed) % this.properties.totalFrames;
                     var totalFramesTemp = eval('this.orientationFrames.' + this.orientation + '[1] - this.orientationFrames.' + this.orientation + '[0] + 1');
                     var startingFrame = eval('this.orientationFrames.' + this.orientation + '[0]');
                     this.frameIndex = startingFrame + this.frameIndex % totalFramesTemp;
@@ -115,22 +113,22 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
                     switch (this.orientation) {
                         case 'left':
                             if (!this.isCollide(game)) {
-                                this.properties.xPos = Math.floor((this.properties.xPos * 100) - this.moveSpeed) / 100;
+                                this.properties.xPos = Math.floor((this.properties.xPos * 100) - moveSpeed) / 100;
                             }
                             break;
                         case 'right':
                             if (!this.isCollide(game)) {
-                                this.properties.xPos = Math.floor((this.properties.xPos * 100) + this.moveSpeed) / 100;
+                                this.properties.xPos = Math.floor((this.properties.xPos * 100) + moveSpeed) / 100;
                             }
                             break;
                         case 'back':
                             if (!this.isCollide(game)) {
-                                this.properties.yPos = Math.floor((this.properties.yPos * 100) - this.moveSpeed) / 100;
+                                this.properties.yPos = Math.floor((this.properties.yPos * 100) - moveSpeed) / 100;
                             }
                             break;
                         case 'front':
                             if (!this.isCollide(game)) {
-                                this.properties.yPos = Math.floor((this.properties.yPos * 100) + this.moveSpeed) / 100;
+                                this.properties.yPos = Math.floor((this.properties.yPos * 100) + moveSpeed) / 100;
                             }
                             break;
                     }
@@ -451,7 +449,7 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
     var canvas, mainBody, resizeTimer, debug = null;
     var paintBgColor = "#200040";
     var frameCounter = false;
-    var debugVisible = true;
+    var debugVisible = false;
     var pixelFactor = 3;
     var seedFunction;
     function gameInit(seedFunctionTemp) {

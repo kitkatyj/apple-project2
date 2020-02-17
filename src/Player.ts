@@ -104,13 +104,12 @@ export class Player extends Entity {
     draw(game:Game){
         this.action = 'normal';
 
+        let moveSpeed = this.moveSpeed;
+        let animateSpeed = this.properties.animateSpeed;
+
         if(game.keyState[16]){
-            this.moveSpeed = 4;
-            this.properties.animateSpeed = 1/6;
-        }
-        else {
-            this.moveSpeed = 2;
-            this.properties.animateSpeed = 1/12;
+            moveSpeed = this.moveSpeed * 2;
+            animateSpeed = this.properties.animateSpeed * 2;
         }
         
         if(game.keyState[37] || game.keyState[65]){
@@ -136,7 +135,7 @@ export class Player extends Entity {
                 this.frameCount = 0;
                 break;
             case 'walking':
-                this.frameIndex = Math.floor(this.frameCount * this.properties.animateSpeed) % this.properties.totalFrames;
+                this.frameIndex = Math.floor(this.frameCount * animateSpeed) % this.properties.totalFrames;
                 let totalFramesTemp = eval('this.orientationFrames.'+this.orientation+'[1] - this.orientationFrames.'+this.orientation+'[0] + 1');
                 let startingFrame = eval('this.orientationFrames.'+this.orientation+'[0]');
                 this.frameIndex = startingFrame + this.frameIndex % totalFramesTemp;
@@ -145,22 +144,22 @@ export class Player extends Entity {
                 switch(this.orientation){
                     case 'left':
                         if(!this.isCollide(game)){
-                            this.properties.xPos = Math.floor((this.properties.xPos*100) - this.moveSpeed)/100; 
+                            this.properties.xPos = Math.floor((this.properties.xPos*100) - moveSpeed)/100; 
                         }
                         break;
                     case 'right':
                         if(!this.isCollide(game)){
-                            this.properties.xPos = Math.floor((this.properties.xPos*100) + this.moveSpeed)/100; 
+                            this.properties.xPos = Math.floor((this.properties.xPos*100) + moveSpeed)/100; 
                         }
                         break;
                     case 'back': 
                         if(!this.isCollide(game)){
-                            this.properties.yPos = Math.floor((this.properties.yPos*100) - this.moveSpeed)/100; 
+                            this.properties.yPos = Math.floor((this.properties.yPos*100) - moveSpeed)/100; 
                         }
                         break;
                     case 'front':
                         if(!this.isCollide(game)){
-                            this.properties.yPos = Math.floor((this.properties.yPos*100) + this.moveSpeed)/100; 
+                            this.properties.yPos = Math.floor((this.properties.yPos*100) + moveSpeed)/100; 
                         }
                         break;
                 }
