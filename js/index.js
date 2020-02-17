@@ -99,6 +99,8 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
                 this.orientation = 'front';
                 this.action = 'walking';
             }
+            this.properties.xPosDraw = game.level.topLeftCornerPosX + Math.round(this.properties.xPos * game.blockLength);
+            this.properties.yPosDraw = game.level.topLeftCornerPosY + Math.round(this.properties.yPos * game.blockLength);
             switch (this.action) {
                 case 'normal':
                     this.frameIndex = eval('this.orientationFrames.' + this.orientation + 'Still');
@@ -136,8 +138,6 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
             }
             this.frameStartX = (this.frameIndex % this.properties.framesPerRow) * this.properties.width;
             this.frameStartY = (Math.floor(this.frameIndex / this.properties.framesPerRow) % this.rows) * this.properties.height;
-            this.properties.xPosDraw = Math.floor(game.level.topLeftCornerPosX + this.properties.xPos * game.blockLength);
-            this.properties.yPosDraw = Math.floor(game.level.topLeftCornerPosY + this.properties.yPos * game.blockLength);
             game.ctx.drawImage(this.img, this.frameStartX, this.frameStartY, this.properties.width, this.properties.height, this.properties.xPosDraw, this.properties.yPosDraw, this.properties.width, this.properties.height);
             if (game.hitboxVisible) {
                 game.ctx.fillStyle = "#ff0000";
@@ -159,8 +159,8 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
             this.blockHeight = 0;
             this.topLeftCornerPosX = 0;
             this.topLeftCornerPosY = 0;
-            this.xPosOffset = 0;
-            this.yPosOffset = 0;
+            this.xDrawOffset = 0;
+            this.yDrawOffset = 0;
             this.blockWidth = blockWidth;
             this.blockHeight = blockHeight;
             this.width = blockWidth * game.blockLength;
@@ -266,8 +266,6 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                     }
                 }
             });
-            this.resetTopCorner(game);
-            this.setOffset(this.blockWidth * game.blockLength / 2, this.blockHeight * game.blockLength / 2);
         }
         Level.prototype.randomPos = function () {
             var posArray = [Math.floor(this.seedGen() * this.blockWidth), Math.floor(this.seedGen() * this.blockHeight)];
@@ -276,6 +274,10 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
         Level.prototype.resetTopCorner = function (game) {
             this.topLeftCornerPosX = Math.floor(game.canvas.width / 2 - this.width / 2);
             this.topLeftCornerPosY = Math.floor(game.canvas.height / 2 - this.height / 2);
+        };
+        Level.prototype.focusOnPlayer = function (game) {
+            this.topLeftCornerPosX = Math.floor(game.canvas.width / 2 - this.player.properties.xPos * game.blockLength - game.blockLength / 2);
+            this.topLeftCornerPosY = Math.floor(game.canvas.height / 2 - this.player.properties.yPos * game.blockLength - game.blockLength / 2);
         };
         Level.prototype.addEntity = function (entity, layer) {
             switch (layer) {
@@ -304,24 +306,24 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
             return this.player;
         };
         Level.prototype.setOffset = function (xPosOffset, yPosOffset) {
-            this.xPosOffset = xPosOffset;
-            this.yPosOffset = yPosOffset;
+            this.xDrawOffset = xPosOffset;
+            this.yDrawOffset = yPosOffset;
         };
         Level.prototype.getOffset = function () {
-            return [this.xPosOffset, this.yPosOffset];
+            return [this.xDrawOffset, this.yDrawOffset];
         };
         Level.prototype.incrementXOffset = function (increment) {
-            this.xPosOffset + increment;
+            this.xDrawOffset + increment;
         };
         Level.prototype.incrementYOffset = function (increment) {
-            this.yPosOffset + increment;
+            this.yDrawOffset + increment;
         };
         Level.prototype.draw = function (game) {
             game.ctx.fillStyle = '#000';
             game.ctx.fillRect(this.topLeftCornerPosX, this.topLeftCornerPosY, this.width, this.height);
             for (var i = 0; i < this.blockWidth; i++) {
                 for (var j = 0; j < this.blockHeight; j++) {
-                    game.ctx.drawImage(this.floorImg, this.topLeftCornerPosX + i * game.blockLength, this.topLeftCornerPosY + j * game.blockLength, game.blockLength, game.blockLength);
+                    game.ctx.drawImage(this.floorImg, this.topLeftCornerPosX + i * game.blockLength - this.xDrawOffset, this.topLeftCornerPosY + j * game.blockLength - this.yDrawOffset, game.blockLength, game.blockLength);
                 }
             }
             this.entities.solid.forEach(function (entity) { entity.draw(game); });
@@ -337,6 +339,7 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
             for (var yIndex = 0; yIndex < this.height; yIndex++) {
                 _loop_1(yIndex);
             }
+            this.focusOnPlayer(game);
         };
         return Level;
     }());

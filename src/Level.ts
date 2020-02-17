@@ -20,8 +20,8 @@ export class Level {
 
     floorImg: HTMLImageElement;
 
-    private xPosOffset : number = 0;
-    private yPosOffset : number = 0;
+    xDrawOffset : number = 0;
+    yDrawOffset : number = 0;
 
     private entities : EntityMap;
     private player? : Player;
@@ -168,9 +168,9 @@ export class Level {
 
         // console.log(this.entities);
 
-        this.resetTopCorner(game);
+        // this.resetTopCorner(game);
 
-        this.setOffset(this.blockWidth * game.blockLength / 2,this.blockHeight * game.blockLength / 2);
+        // this.focusOnPlayer(game);
     }
 
     randomPos(){
@@ -182,6 +182,11 @@ export class Level {
     resetTopCorner(game:Game){
         this.topLeftCornerPosX = Math.floor(game.canvas.width/2 - this.width/2);
         this.topLeftCornerPosY = Math.floor(game.canvas.height/2 - this.height/2);
+    }
+
+    focusOnPlayer(game:Game){
+        this.topLeftCornerPosX = Math.floor(game.canvas.width/2 - this.player.properties.xPos * game.blockLength - game.blockLength/2);
+        this.topLeftCornerPosY = Math.floor(game.canvas.height/2 - this.player.properties.yPos * game.blockLength - game.blockLength/2);
     }
 
     addEntity(entity:Entity,layer:string){
@@ -207,20 +212,20 @@ export class Level {
     }
 
     setOffset(xPosOffset:number,yPosOffset:number){
-        this.xPosOffset = xPosOffset;
-        this.yPosOffset = yPosOffset;
+        this.xDrawOffset = xPosOffset;
+        this.yDrawOffset = yPosOffset;
     }
 
     getOffset(){
-        return [this.xPosOffset,this.yPosOffset];
+        return [this.xDrawOffset,this.yDrawOffset];
     }
 
     incrementXOffset(increment:number){
-        this.xPosOffset + increment;
+        this.xDrawOffset + increment;
     }
 
     incrementYOffset(increment:number){
-        this.yPosOffset + increment;
+        this.yDrawOffset + increment;
     }
 
     draw(game:Game){
@@ -235,8 +240,8 @@ export class Level {
             for(let j = 0; j < this.blockHeight; j++){
                 game.ctx.drawImage(
                     this.floorImg,
-                    this.topLeftCornerPosX + i * game.blockLength,
-                    this.topLeftCornerPosY + j * game.blockLength,
+                    this.topLeftCornerPosX + i * game.blockLength - this.xDrawOffset,
+                    this.topLeftCornerPosY + j * game.blockLength - this.yDrawOffset,
                     game.blockLength,game.blockLength
                 );
             }
@@ -253,6 +258,12 @@ export class Level {
                     entity.draw(game);
                 }
             });
-        }        
+        } 
+
+        // console.log([this.player.properties.xPosDraw,this.player.properties.yPosDraw])
+        
+        // this.setOffset(this.player.properties.xPosDraw,this.player.properties.yPosDraw);
+        
+        this.focusOnPlayer(game);
     }
 }

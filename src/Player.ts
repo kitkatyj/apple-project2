@@ -126,6 +126,9 @@ export class Player extends Entity {
             this.orientation = 'front'; this.action = 'walking';
         }
 
+        this.properties.xPosDraw = game.level.topLeftCornerPosX + Math.round(this.properties.xPos * game.blockLength);
+        this.properties.yPosDraw = game.level.topLeftCornerPosY + Math.round(this.properties.yPos * game.blockLength);
+
         switch(this.action){
             case 'normal':
                 this.frameIndex = eval('this.orientationFrames.'+this.orientation+'Still');
@@ -166,9 +169,6 @@ export class Player extends Entity {
         
         this.frameStartX = (this.frameIndex % this.properties.framesPerRow) * this.properties.width;
         this.frameStartY = (Math.floor(this.frameIndex / this.properties.framesPerRow) % this.rows) * this.properties.height;
-
-        this.properties.xPosDraw = Math.floor(game.level.topLeftCornerPosX + this.properties.xPos * game.blockLength);
-        this.properties.yPosDraw = Math.floor(game.level.topLeftCornerPosY + this.properties.yPos * game.blockLength);
 
         game.ctx.drawImage(this.img,this.frameStartX,this.frameStartY,this.properties.width,this.properties.height,this.properties.xPosDraw,this.properties.yPosDraw,this.properties.width,this.properties.height);
         if(game.hitboxVisible){
