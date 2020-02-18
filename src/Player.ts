@@ -24,7 +24,9 @@ export class Player extends Entity {
     action : string = 'normal';
     frameCount : number;
     orientationFrames : OrientationFrames;
-    moveSpeed : number = 1;
+    tempMoveSpeed : number = 1;
+    moveSpeed : number;
+    animateSpeed : number;
 
     hitbox : Hitbox;
 
@@ -37,6 +39,9 @@ export class Player extends Entity {
         this.orientationFrames = orientationFrames;
 
         this.hitbox = {xPos: 11, yPos: 28, width:9, height:3}
+
+        this.moveSpeed = this.tempMoveSpeed;
+        this.animateSpeed = this.properties.animateSpeed;
     }
 
     isCollide(game:Game){
@@ -98,12 +103,12 @@ export class Player extends Entity {
     draw(game:Game){
         this.action = 'normal';
 
-        let moveSpeed = this.moveSpeed;
-        let animateSpeed = this.properties.animateSpeed;
+        this.moveSpeed = this.tempMoveSpeed;
+        this.animateSpeed = this.properties.animateSpeed;
 
         if(game.keyState[16]){
-            moveSpeed = this.moveSpeed * 2;
-            animateSpeed = this.properties.animateSpeed * 2;
+            this.moveSpeed = this.tempMoveSpeed * 2;
+            this.animateSpeed = this.properties.animateSpeed * 2;
         }
         
         if(game.keyState[37] || game.keyState[65]){
@@ -129,7 +134,7 @@ export class Player extends Entity {
                 this.frameCount = 0;
                 break;
             case 'walking':
-                this.frameIndex = Math.floor(this.frameCount * animateSpeed) % this.properties.totalFrames;
+                this.frameIndex = Math.floor(this.frameCount * this.animateSpeed) % this.properties.totalFrames;
                 let totalFramesTemp = eval('this.orientationFrames.'+this.orientation+'[1] - this.orientationFrames.'+this.orientation+'[0] + 1');
                 let startingFrame = eval('this.orientationFrames.'+this.orientation+'[0]');
                 this.frameIndex = startingFrame + this.frameIndex % totalFramesTemp;
@@ -138,22 +143,22 @@ export class Player extends Entity {
                 switch(this.orientation){
                     case 'left':
                         if(!this.isCollide(game)){
-                            this.properties.xPos = Math.floor((this.properties.xPos*game.blockLength) - moveSpeed)/game.blockLength; 
+                            this.properties.xPos = Math.floor((this.properties.xPos*game.blockLength) - this.moveSpeed)/game.blockLength; 
                         }
                         break;
                     case 'right':
                         if(!this.isCollide(game)){
-                            this.properties.xPos = Math.floor((this.properties.xPos*game.blockLength) + moveSpeed)/game.blockLength; 
+                            this.properties.xPos = Math.floor((this.properties.xPos*game.blockLength) + this.moveSpeed)/game.blockLength; 
                         }
                         break;
                     case 'back': 
                         if(!this.isCollide(game)){
-                            this.properties.yPos = Math.floor((this.properties.yPos*game.blockLength) - moveSpeed)/game.blockLength; 
+                            this.properties.yPos = Math.floor((this.properties.yPos*game.blockLength) - this.moveSpeed)/game.blockLength; 
                         }
                         break;
                     case 'front':
                         if(!this.isCollide(game)){
-                            this.properties.yPos = Math.floor((this.properties.yPos*game.blockLength) + moveSpeed)/game.blockLength; 
+                            this.properties.yPos = Math.floor((this.properties.yPos*game.blockLength) + this.moveSpeed)/game.blockLength; 
                         }
                         break;
                 }

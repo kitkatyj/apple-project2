@@ -109,7 +109,7 @@ function canvasSizeReset(){
     canvas.style.width = "100vw";
     canvas.style.height = "100vh";
     if(game){
-        game.level.resetTopCorner(game);
+        game.level.focusOnPlayer(game);
     }
 }
 

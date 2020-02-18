@@ -20,12 +20,14 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
             var _this = _super.call(this, properties) || this;
             _this.orientation = 'front';
             _this.action = 'normal';
-            _this.moveSpeed = 1;
+            _this.tempMoveSpeed = 1;
             _this.orientation = orientation;
             _this.action = action;
             _this.frameCount = frameCount;
             _this.orientationFrames = orientationFrames;
             _this.hitbox = { xPos: 11, yPos: 28, width: 9, height: 3 };
+            _this.moveSpeed = _this.tempMoveSpeed;
+            _this.animateSpeed = _this.properties.animateSpeed;
             return _this;
         }
         Player.prototype.isCollide = function (game) {
@@ -75,25 +77,25 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
         };
         Player.prototype.draw = function (game) {
             this.action = 'normal';
-            var moveSpeed = this.moveSpeed;
-            var animateSpeed = this.properties.animateSpeed;
+            this.moveSpeed = this.tempMoveSpeed;
+            this.animateSpeed = this.properties.animateSpeed;
             if (game.keyState[16]) {
-                moveSpeed = this.moveSpeed * 2;
-                animateSpeed = this.properties.animateSpeed * 2;
+                this.moveSpeed = this.tempMoveSpeed * 2;
+                this.animateSpeed = this.properties.animateSpeed * 2;
             }
             if (game.keyState[37] || game.keyState[65]) {
                 this.orientation = 'left';
                 this.action = 'walking';
             }
-            if (game.keyState[38] || game.keyState[87]) {
+            else if (game.keyState[38] || game.keyState[87]) {
                 this.orientation = 'back';
                 this.action = 'walking';
             }
-            if (game.keyState[39] || game.keyState[68]) {
+            else if (game.keyState[39] || game.keyState[68]) {
                 this.orientation = 'right';
                 this.action = 'walking';
             }
-            if (game.keyState[40] || game.keyState[83]) {
+            else if (game.keyState[40] || game.keyState[83]) {
                 this.orientation = 'front';
                 this.action = 'walking';
             }
@@ -105,7 +107,7 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
                     this.frameCount = 0;
                     break;
                 case 'walking':
-                    this.frameIndex = Math.floor(this.frameCount * animateSpeed) % this.properties.totalFrames;
+                    this.frameIndex = Math.floor(this.frameCount * this.animateSpeed) % this.properties.totalFrames;
                     var totalFramesTemp = eval('this.orientationFrames.' + this.orientation + '[1] - this.orientationFrames.' + this.orientation + '[0] + 1');
                     var startingFrame = eval('this.orientationFrames.' + this.orientation + '[0]');
                     this.frameIndex = startingFrame + this.frameIndex % totalFramesTemp;
@@ -113,22 +115,22 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
                     switch (this.orientation) {
                         case 'left':
                             if (!this.isCollide(game)) {
-                                this.properties.xPos = Math.floor((this.properties.xPos * game.blockLength) - moveSpeed) / game.blockLength;
+                                this.properties.xPos = Math.floor((this.properties.xPos * game.blockLength) - this.moveSpeed) / game.blockLength;
                             }
                             break;
                         case 'right':
                             if (!this.isCollide(game)) {
-                                this.properties.xPos = Math.floor((this.properties.xPos * game.blockLength) + moveSpeed) / game.blockLength;
+                                this.properties.xPos = Math.floor((this.properties.xPos * game.blockLength) + this.moveSpeed) / game.blockLength;
                             }
                             break;
                         case 'back':
                             if (!this.isCollide(game)) {
-                                this.properties.yPos = Math.floor((this.properties.yPos * game.blockLength) - moveSpeed) / game.blockLength;
+                                this.properties.yPos = Math.floor((this.properties.yPos * game.blockLength) - this.moveSpeed) / game.blockLength;
                             }
                             break;
                         case 'front':
                             if (!this.isCollide(game)) {
-                                this.properties.yPos = Math.floor((this.properties.yPos * game.blockLength) + moveSpeed) / game.blockLength;
+                                this.properties.yPos = Math.floor((this.properties.yPos * game.blockLength) + this.moveSpeed) / game.blockLength;
                             }
                             break;
                     }
@@ -405,6 +407,12 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
                 }
             });
         };
+        Game.prototype.resetOrientKeyStates = function () {
+            this.keyState[37], this.keyState[65],
+                this.keyState[38], this.keyState[87],
+                this.keyState[39], this.keyState[68],
+                this.keyState[40], this.keyState[83] = false;
+        };
         return Game;
     }());
     exports.Game = Game;
@@ -537,7 +545,7 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         canvas.style.width = "100vw";
         canvas.style.height = "100vh";
         if (game) {
-            game.level.resetTopCorner(game);
+            game.level.focusOnPlayer(game);
         }
     }
     function paintBg(color) {

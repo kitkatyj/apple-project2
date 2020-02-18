@@ -67,4 +67,11 @@ export class Game {
             }
         });
     }
+
+    resetOrientKeyStates(){
+        this.keyState[37],this.keyState[65],
+        this.keyState[38],this.keyState[87],
+        this.keyState[39],this.keyState[68],
+        this.keyState[40],this.keyState[83] = false;
+    }
 }
