@@ -166,11 +166,7 @@ export class Level {
             }
         });
 
-        // console.log(this.entities);
-
-        // this.resetTopCorner(game);
-
-        // this.focusOnPlayer(game);
+        this.focusOnPlayer(game);
     }
 
     randomPos(){
@@ -269,12 +265,20 @@ export class Level {
                     entity.draw(game);
                 }
             });
-        } 
+        }
+        
+        if(this.topLeftCornerPosX + Math.round(this.player.properties.xPos * game.blockLength) + game.blockLength/2 >= game.canvas.width*2/3){
+            this.topLeftCornerPosX = this.topLeftCornerPosX-this.player.moveSpeed;
+        }
+        else if(this.topLeftCornerPosX + Math.round(this.player.properties.xPos * game.blockLength) + game.blockLength/2 <= game.canvas.width/3){
+            this.topLeftCornerPosX = this.topLeftCornerPosX+this.player.moveSpeed;
+        }
 
-        // console.log([this.player.properties.xPosDraw,this.player.properties.yPosDraw])
-        
-        // this.setOffset(this.player.properties.xPosDraw,this.player.properties.yPosDraw);
-        
-        this.focusOnPlayer(game);
+        if(this.topLeftCornerPosY + Math.round(this.player.properties.yPos * game.blockLength) + game.blockLength/2 >= game.canvas.height*2/3){
+            this.topLeftCornerPosY = this.topLeftCornerPosY-this.player.moveSpeed;
+        }
+        else if(this.topLeftCornerPosY + Math.round(this.player.properties.yPos * game.blockLength) + game.blockLength/2 < game.canvas.height/3){
+            this.topLeftCornerPosY = this.topLeftCornerPosY+this.player.moveSpeed;
+        }
     }
 }

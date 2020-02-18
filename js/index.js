@@ -20,7 +20,7 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
             var _this = _super.call(this, properties) || this;
             _this.orientation = 'front';
             _this.action = 'normal';
-            _this.moveSpeed = 2;
+            _this.moveSpeed = 1;
             _this.orientation = orientation;
             _this.action = action;
             _this.frameCount = frameCount;
@@ -38,34 +38,34 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
             };
             var playerOrient = this.orientation;
             var playerMoveSpeed = this.moveSpeed;
-            if (playerOrient === 'left' && playerHB.xPos - this.moveSpeed / 100 < 0) {
+            if (playerOrient === 'left' && playerHB.xPos - this.moveSpeed / game.blockLength < 0) {
                 isCollide = true;
             }
-            else if (playerOrient === 'right' && playerHB.xPos + playerHB.width + this.moveSpeed / 100 > game.level.blockWidth) {
+            else if (playerOrient === 'right' && playerHB.xPos + playerHB.width + this.moveSpeed / game.blockLength > game.level.blockWidth) {
                 isCollide = true;
             }
-            else if (playerOrient === 'front' && this.properties.yPos + 1 + this.moveSpeed / 100 > game.level.blockHeight) {
+            else if (playerOrient === 'front' && this.properties.yPos + 1 + this.moveSpeed / game.blockLength > game.level.blockHeight) {
                 isCollide = true;
             }
-            else if (playerOrient === 'back' && playerHB.yPos - this.moveSpeed / 100 < 0) {
+            else if (playerOrient === 'back' && playerHB.yPos - this.moveSpeed / game.blockLength < 0) {
                 isCollide = true;
             }
             else {
                 game.level.getEntities().solid.forEach(function (entity) {
                     var entityPos = { xPos: entity.properties.xPos, yPos: entity.properties.yPos };
-                    if (playerHB.yPos + playerHB.height >= entityPos.yPos && playerHB.yPos <= entityPos.yPos + 1) {
-                        if (playerOrient === 'left' && playerHB.xPos - playerMoveSpeed / 100 < entityPos.xPos + 1 && playerHB.xPos + playerHB.width > entityPos.xPos) {
+                    if (playerHB.yPos + playerHB.height > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1) {
+                        if (playerOrient === 'left' && playerHB.xPos - playerMoveSpeed / game.blockLength < entityPos.xPos + 1 && playerHB.xPos + playerHB.width > entityPos.xPos) {
                             isCollide = true;
                         }
-                        if (playerOrient === 'right' && playerHB.xPos + playerHB.width + playerMoveSpeed / 100 > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1) {
+                        if (playerOrient === 'right' && playerHB.xPos + playerHB.width + playerMoveSpeed / game.blockLength > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1) {
                             isCollide = true;
                         }
                     }
-                    if (playerHB.xPos + playerHB.width >= entityPos.xPos && playerHB.xPos <= entityPos.xPos + 1) {
-                        if (playerOrient === 'front' && playerHB.yPos + playerHB.height + playerMoveSpeed / 100 > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1) {
+                    if (playerHB.xPos + playerHB.width > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1) {
+                        if (playerOrient === 'front' && playerHB.yPos + playerHB.height + playerMoveSpeed / game.blockLength > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1) {
                             isCollide = true;
                         }
-                        if (playerOrient === 'back' && playerHB.yPos - playerMoveSpeed / 100 < entityPos.yPos + 1 && playerHB.yPos + playerHB.height > entityPos.yPos) {
+                        if (playerOrient === 'back' && playerHB.yPos - playerMoveSpeed / game.blockLength < entityPos.yPos + 1 && playerHB.yPos + playerHB.height > entityPos.yPos) {
                             isCollide = true;
                         }
                     }
@@ -113,22 +113,22 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
                     switch (this.orientation) {
                         case 'left':
                             if (!this.isCollide(game)) {
-                                this.properties.xPos = Math.floor((this.properties.xPos * 100) - moveSpeed) / 100;
+                                this.properties.xPos = Math.floor((this.properties.xPos * game.blockLength) - moveSpeed) / game.blockLength;
                             }
                             break;
                         case 'right':
                             if (!this.isCollide(game)) {
-                                this.properties.xPos = Math.floor((this.properties.xPos * 100) + moveSpeed) / 100;
+                                this.properties.xPos = Math.floor((this.properties.xPos * game.blockLength) + moveSpeed) / game.blockLength;
                             }
                             break;
                         case 'back':
                             if (!this.isCollide(game)) {
-                                this.properties.yPos = Math.floor((this.properties.yPos * 100) - moveSpeed) / 100;
+                                this.properties.yPos = Math.floor((this.properties.yPos * game.blockLength) - moveSpeed) / game.blockLength;
                             }
                             break;
                         case 'front':
                             if (!this.isCollide(game)) {
-                                this.properties.yPos = Math.floor((this.properties.yPos * 100) + moveSpeed) / 100;
+                                this.properties.yPos = Math.floor((this.properties.yPos * game.blockLength) + moveSpeed) / game.blockLength;
                             }
                             break;
                     }
@@ -264,6 +264,7 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                     }
                 }
             });
+            this.focusOnPlayer(game);
         }
         Level.prototype.randomPos = function () {
             var posArray = [Math.floor(this.seedGen() * this.blockWidth), Math.floor(this.seedGen() * this.blockHeight)];
@@ -347,7 +348,18 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
             for (var yIndex = 0; yIndex < this.height; yIndex++) {
                 _loop_1(yIndex);
             }
-            this.focusOnPlayer(game);
+            if (this.topLeftCornerPosX + Math.round(this.player.properties.xPos * game.blockLength) + game.blockLength / 2 >= game.canvas.width * 2 / 3) {
+                this.topLeftCornerPosX = this.topLeftCornerPosX - this.player.moveSpeed;
+            }
+            else if (this.topLeftCornerPosX + Math.round(this.player.properties.xPos * game.blockLength) + game.blockLength / 2 <= game.canvas.width / 3) {
+                this.topLeftCornerPosX = this.topLeftCornerPosX + this.player.moveSpeed;
+            }
+            if (this.topLeftCornerPosY + Math.round(this.player.properties.yPos * game.blockLength) + game.blockLength / 2 >= game.canvas.height * 2 / 3) {
+                this.topLeftCornerPosY = this.topLeftCornerPosY - this.player.moveSpeed;
+            }
+            else if (this.topLeftCornerPosY + Math.round(this.player.properties.yPos * game.blockLength) + game.blockLength / 2 < game.canvas.height / 3) {
+                this.topLeftCornerPosY = this.topLeftCornerPosY + this.player.moveSpeed;
+            }
         };
         return Level;
     }());
@@ -506,10 +518,6 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         var debug = "";
         debug += "xPos : " + game.level.getPlayer().properties.xPos + "<br>";
         debug += "yPos : " + game.level.getPlayer().properties.yPos + "<br>";
-        debug += "topLeftCornerPosX + Math.round(xPos * blockLength) : " + game.level.topLeftCornerPosX + "+" + Math.round(game.level.getPlayer().properties.xPos * game.blockLength) + "=" + (game.level.topLeftCornerPosX + Math.round(game.level.getPlayer().properties.xPos * game.blockLength)) + "<br>";
-        debug += "topLeftCornerPosY + Math.round(yPos * blockLength) : " + game.level.topLeftCornerPosY + "+" + Math.round(game.level.getPlayer().properties.yPos * game.blockLength) + "=" + (game.level.topLeftCornerPosY + Math.round(game.level.getPlayer().properties.yPos * game.blockLength)) + "<br>";
-        debug += "canvas width/2 - blockLength/2 : " + (game.canvas.width / 2 - game.blockLength / 2) + "<br>";
-        debug += "canvas height/2 - blockLength/2 : " + (game.canvas.height / 2 - game.blockLength / 2) + "<br>";
         debug += "xPosDraw : " + game.level.getPlayer().properties.xPosDraw + "<br>";
         debug += "yPosDraw : " + game.level.getPlayer().properties.yPosDraw + "<br>";
         debug += "frameIndex : " + game.level.getPlayer().frameIndex + "<br>";
