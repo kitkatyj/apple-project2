@@ -16,8 +16,8 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
     Object.defineProperty(exports, "__esModule", { value: true });
     var Player = (function (_super) {
         __extends(Player, _super);
-        function Player(properties, orientation, action, frameCount, orientationFrames) {
-            var _this = _super.call(this, properties) || this;
+        function Player(properties, orientation, action, frameCount, orientationFrames, imageMap) {
+            var _this = _super.call(this, properties, imageMap) || this;
             _this.orientation = 'front';
             _this.action = 'normal';
             _this.tempMoveSpeed = 1;
@@ -87,15 +87,15 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
                 this.orientation = 'left';
                 this.action = 'walking';
             }
-            else if (game.keyState[38] || game.keyState[87]) {
+            if (game.keyState[38] || game.keyState[87]) {
                 this.orientation = 'back';
                 this.action = 'walking';
             }
-            else if (game.keyState[39] || game.keyState[68]) {
+            if (game.keyState[39] || game.keyState[68]) {
                 this.orientation = 'right';
                 this.action = 'walking';
             }
-            else if (game.keyState[40] || game.keyState[83]) {
+            if (game.keyState[40] || game.keyState[83]) {
                 this.orientation = 'front';
                 this.action = 'walking';
             }
@@ -190,7 +190,7 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                     }, 'front', 'normal', 0, {
                         front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
                         frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
-                    });
+                    }, game.loadImageMap());
                     break;
                 case "player2":
                     applePlayer = new Player_1.Player({
@@ -203,7 +203,7 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                     }, 'front', 'normal', 0, {
                         front: [1, 4], left: [11, 14], right: [16, 19], back: [6, 9],
                         frontStill: 0, leftStill: 10, rightStill: 15, backStill: 5
-                    });
+                    }, game.loadImageMap());
                     break;
                 case "player3":
                     applePlayer = new Player_1.Player({
@@ -216,7 +216,7 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                     }, 'front', 'normal', 0, {
                         front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
                         frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
-                    });
+                    }, game.loadImageMap());
                     break;
             }
             var levelMap = [];
@@ -240,7 +240,7 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                             totalFrames: entityTemp.totalFrames,
                             framesPerRow: entityTemp.framesPerRow,
                             animateSpeed: entityTemp.animateSpeed
-                        });
+                        }, game.loadImageMap());
                         level.addEntity(entity, entityTemp.layer);
                     });
                 }
@@ -261,7 +261,7 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                             totalFrames: entityTemp.totalFrames,
                             framesPerRow: entityTemp.framesPerRow,
                             animateSpeed: entityTemp.animateSpeed
-                        });
+                        }, game.loadImageMap());
                         level.addEntity(entity, entityTemp.layer);
                     }
                 }
@@ -377,6 +377,7 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
             this.frameCount = 0;
             this.blockLength = 32;
             this.keyState = [];
+            this.images = [];
             this.canvas = canvas;
             this.ctx = canvas.getContext('2d');
             this.seedFunction = seedFunction;
@@ -407,11 +408,8 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
                 }
             });
         };
-        Game.prototype.resetOrientKeyStates = function () {
-            this.keyState[37], this.keyState[65],
-                this.keyState[38], this.keyState[87],
-                this.keyState[39], this.keyState[68],
-                this.keyState[40], this.keyState[83] = false;
+        Game.prototype.loadImageMap = function () {
+            return this.images;
         };
         return Game;
     }());
@@ -421,7 +419,7 @@ define("Entity", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Entity = (function () {
-        function Entity(properties) {
+        function Entity(properties, imageMap) {
             this.rows = 0;
             this.frameIndex = 0;
             this.frameStartX = 0;
@@ -446,8 +444,19 @@ define("Entity", ["require", "exports"], function (require, exports) {
             }
             this.rows = Math.floor(this.properties.totalFrames / this.properties.framesPerRow);
             if (this.properties.src) {
-                this.img = new Image();
-                this.img.src = this.properties.src;
+                var thisEntity_1 = this;
+                var imgMatch_1 = false;
+                imageMap.forEach(function (image) {
+                    if (thisEntity_1.properties.src === image.src) {
+                        thisEntity_1.img = image.img;
+                        imgMatch_1 = true;
+                    }
+                });
+                if (!imgMatch_1) {
+                    this.img = new Image();
+                    this.img.src = this.properties.src;
+                    imageMap.push({ src: this.properties.src, img: this.img });
+                }
             }
         }
         Entity.prototype.draw = function (game) {

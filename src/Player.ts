@@ -1,4 +1,4 @@
-import {Game} from './Game';
+import {Game, ImageMap} from './Game';
 import {Entity,SpriteProperties} from './Entity';
 
 interface OrientationFrames {
@@ -30,8 +30,8 @@ export class Player extends Entity {
 
     hitbox : Hitbox;
 
-    constructor(properties:SpriteProperties,orientation:string,action:string,frameCount:number,orientationFrames:OrientationFrames){
-        super(properties);
+    constructor(properties:SpriteProperties,orientation:string,action:string,frameCount:number,orientationFrames:OrientationFrames,imageMap:ImageMap[]){
+        super(properties,imageMap);
 
         this.orientation = orientation;
         this.action = action;

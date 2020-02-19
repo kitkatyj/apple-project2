@@ -1,4 +1,4 @@
-import {Game} from './Game';
+import {Game,ImageMap} from './Game';
 
 export interface SpriteProperties {
     xPos : number;
@@ -22,7 +22,7 @@ export class Entity {
     frameStartX : number = 0;
     frameStartY : number = 0;
 
-    constructor(properties:SpriteProperties){
+    constructor(properties:SpriteProperties,imageMap:ImageMap[]){
         this.properties = properties;
         this.properties.xPosDraw = 0;
         this.properties.yPosDraw = 0;
@@ -36,8 +36,22 @@ export class Entity {
         this.rows = Math.floor(this.properties.totalFrames / this.properties.framesPerRow);
 
         if(this.properties.src){
-            this.img = new Image();
-            this.img.src = this.properties.src;
+            let thisEntity = this;
+            let imgMatch = false;
+
+            imageMap.forEach(function(image){
+                if(thisEntity.properties.src === image.src){
+                    thisEntity.img = image.img;
+                    imgMatch = true;
+                }
+            });
+
+            if(!imgMatch){
+                this.img = new Image();
+                this.img.src = this.properties.src;
+
+                imageMap.push({src:this.properties.src,img:this.img});
+            }
         }
     }
 

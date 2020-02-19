@@ -68,7 +68,8 @@ export class Level {
                     {
                         front:[0,3],left:[4,7],right:[8,11],back:[12,15],
                         frontStill:0,leftStill:5,rightStill:9,backStill:12
-                    }
+                    },
+                    game.loadImageMap()
                 );
                 break;
             case "player2":
@@ -83,7 +84,8 @@ export class Level {
                     {
                         front:[1,4],left:[11,14],right:[16,19],back:[6,9],
                         frontStill:0,leftStill:10,rightStill:15,backStill:5
-                    }
+                    },
+                    game.loadImageMap()
                 );
                 break;
             case "player3":
@@ -98,7 +100,8 @@ export class Level {
                     {
                         front:[0,3],left:[4,7],right:[8,11],back:[12,15],
                         frontStill:0,leftStill:5,rightStill:9,backStill:12
-                    }
+                    },
+                    game.loadImageMap()
                 );
                 break;
         }
@@ -128,7 +131,8 @@ export class Level {
                         totalFrames: entityTemp.totalFrames,
                         framesPerRow: entityTemp.framesPerRow,
                         animateSpeed: entityTemp.animateSpeed
-                    });
+                    },
+                    game.loadImageMap());
     
                     level.addEntity(entity,entityTemp.layer);
                 })
@@ -159,7 +163,8 @@ export class Level {
                         totalFrames: entityTemp.totalFrames,
                         framesPerRow: entityTemp.framesPerRow,
                         animateSpeed: entityTemp.animateSpeed
-                    });
+                    },
+                    game.loadImageMap());
     
                     level.addEntity(entity,entityTemp.layer);
                 }
