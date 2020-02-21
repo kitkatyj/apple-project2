@@ -41,9 +41,6 @@
 
             #debug {
                 color:white;
-                /* position: absolute;
-                bottom:0;
-                left:0; */
                 max-width: 560px;
                 z-index: 99;
             }
@@ -70,11 +67,9 @@
         </section>
         <section id="ph">
             <h1>Apple Project</h1>
-            <!-- <p>Oops, you need to enable Javascript.</p> -->
         </section>
         <script>
             require(['index','lib/seedrandom'],function(index,seedrandom){
-                // console.log(seedrandom('hello.')());
                 index.gameInit(seedrandom);
             });
         </script>

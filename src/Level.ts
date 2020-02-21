@@ -20,9 +20,6 @@ export class Level {
 
     floorImg: HTMLImageElement;
 
-    xDrawOffset : number = 0;
-    yDrawOffset : number = 0;
-
     private entities : EntityMap;
     private player? : Player;
 
@@ -139,8 +136,6 @@ export class Level {
             }
             // render based on random seed and threshold
             else if (entityTemp.position === 'random') {
-                // console.log("seed: "+level.seed);
-
                 let entityQty = Math.round(level.blockHeight * level.blockWidth * entityTemp.threshold);
                 
                 for(let i = 0; i < entityQty; i++){
@@ -149,8 +144,6 @@ export class Level {
                     while(levelMap[pos[0]][pos[1]]){
                         pos = level.randomPos();
                     }
-
-                    // console.log(levelMap);
 
                     levelMap[pos[0]][pos[1]] = true;
                     
@@ -223,23 +216,6 @@ export class Level {
         return this.player;
     }
 
-    setOffset(xPosOffset:number,yPosOffset:number){
-        this.xDrawOffset = xPosOffset;
-        this.yDrawOffset = yPosOffset;
-    }
-
-    getOffset(){
-        return [this.xDrawOffset,this.yDrawOffset];
-    }
-
-    incrementXOffset(increment:number){
-        this.xDrawOffset + increment;
-    }
-
-    incrementYOffset(increment:number){
-        this.yDrawOffset + increment;
-    }
-
     draw(game:Game){
         game.ctx.fillStyle = '#000';
         game.ctx.fillRect(
@@ -252,8 +228,8 @@ export class Level {
             for(let j = 0; j < this.blockHeight; j++){
                 game.ctx.drawImage(
                     this.floorImg,
-                    this.topLeftCornerPosX + i * game.blockLength - this.xDrawOffset,
-                    this.topLeftCornerPosY + j * game.blockLength - this.yDrawOffset,
+                    this.topLeftCornerPosX + i * game.blockLength,
+                    this.topLeftCornerPosY + j * game.blockLength,
                     game.blockLength,game.blockLength
                 );
             }

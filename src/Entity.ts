@@ -63,7 +63,6 @@ export class Entity {
         this.properties.xPosDraw = game.level.topLeftCornerPosX + this.properties.xPos * game.blockLength;
         this.properties.yPosDraw = game.level.topLeftCornerPosY + this.properties.yPos * game.blockLength;
 
-        // console.log(game.frameCount);
         game.ctx.drawImage(this.img,this.frameStartX,this.frameStartY,this.properties.width,this.properties.height,this.properties.xPosDraw,this.properties.yPosDraw,this.properties.width,this.properties.height);
     }
 }

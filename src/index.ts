@@ -97,7 +97,6 @@ function debugStatement(){
     debug += "blockHeight : "+game.level.blockHeight + "<br>";
     debug += "topLeftCornerPosX : "+game.level.topLeftCornerPosX + "<br>";
     debug += "topLeftCornerPosY : "+game.level.topLeftCornerPosY + "<br>";
-    debug += "levelOffset : "+game.level.getOffset() + "<br>";
     // debug += "keyState : "+game.keyState + "<br>";
     debug += "orientation : "+game.level.getPlayer().orientation + "<br>";
  
