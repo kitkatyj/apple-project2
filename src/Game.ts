@@ -25,6 +25,11 @@ export class Game {
 
         this.seedFunction = seedFunction;
 
+        // let seedGen = seedFunction('hello.');
+
+        // console.log(seedGen());
+        // console.log(seedGen());
+
         let thisGame = this;
 
         setInterval(function(){

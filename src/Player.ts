@@ -78,7 +78,7 @@ export class Player extends Entity {
                 if(playerHB.yPos + playerHB.height > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1){
     
                     // console.log([playerOrient,[playerHB.xPos - 0.02,'<',entityPos.xPos + 1,playerHB.xPos - 0.02 < entityPos.xPos + 1]])
-                    if(playerOrient.indexOf('left') !== -1 && playerHB.xPos - playerMoveSpeed/game.blockLength < entityPos.xPos + 1 && playerHB.xPos + playerHB.width > entityPos.xPos){
+                    if(playerOrient.indexOf('left' ) !== -1 && playerHB.xPos - playerMoveSpeed/game.blockLength < entityPos.xPos + 1 && playerHB.xPos + playerHB.width > entityPos.xPos){
                         isCollide = true;
                     }
                     if(playerOrient.indexOf('right') !== -1  && playerHB.xPos + playerHB.width + playerMoveSpeed/game.blockLength > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1){
@@ -90,7 +90,7 @@ export class Player extends Entity {
                     if(playerOrient.indexOf('front') !== -1  && playerHB.yPos + playerHB.height + playerMoveSpeed/game.blockLength > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1){
                         isCollide = true;
                     }
-                    if(playerOrient.indexOf('back') !== -1 && playerHB.yPos - playerMoveSpeed/game.blockLength < entityPos.yPos + 1 && playerHB.yPos + playerHB.height > entityPos.yPos){
+                    if(playerOrient.indexOf('back' ) !== -1 && playerHB.yPos - playerMoveSpeed/game.blockLength < entityPos.yPos + 1 && playerHB.yPos + playerHB.height > entityPos.yPos){
                         isCollide = true;
                     }
                 }
