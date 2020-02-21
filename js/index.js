@@ -154,8 +154,6 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
             this.blockHeight = 0;
             this.topLeftCornerPosX = 0;
             this.topLeftCornerPosY = 0;
-            this.xDrawOffset = 0;
-            this.yDrawOffset = 0;
             this.blockWidth = blockWidth;
             this.blockHeight = blockHeight;
             this.width = blockWidth * game.blockLength;
@@ -311,25 +309,12 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
         Level.prototype.getPlayer = function () {
             return this.player;
         };
-        Level.prototype.setOffset = function (xPosOffset, yPosOffset) {
-            this.xDrawOffset = xPosOffset;
-            this.yDrawOffset = yPosOffset;
-        };
-        Level.prototype.getOffset = function () {
-            return [this.xDrawOffset, this.yDrawOffset];
-        };
-        Level.prototype.incrementXOffset = function (increment) {
-            this.xDrawOffset + increment;
-        };
-        Level.prototype.incrementYOffset = function (increment) {
-            this.yDrawOffset + increment;
-        };
         Level.prototype.draw = function (game) {
             game.ctx.fillStyle = '#000';
             game.ctx.fillRect(this.topLeftCornerPosX, this.topLeftCornerPosY, this.width, this.height);
             for (var i = 0; i < this.blockWidth; i++) {
                 for (var j = 0; j < this.blockHeight; j++) {
-                    game.ctx.drawImage(this.floorImg, this.topLeftCornerPosX + i * game.blockLength - this.xDrawOffset, this.topLeftCornerPosY + j * game.blockLength - this.yDrawOffset, game.blockLength, game.blockLength);
+                    game.ctx.drawImage(this.floorImg, this.topLeftCornerPosX + i * game.blockLength, this.topLeftCornerPosY + j * game.blockLength, game.blockLength, game.blockLength);
                 }
             }
             this.entities.solid.forEach(function (entity) { entity.draw(game); });
@@ -473,7 +458,7 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
     var canvas, mainBody, resizeTimer, debug = null;
     var paintBgColor = "#200040";
     var frameCounter = false;
-    var debugVisible = false;
+    var debugVisible = true;
     var pixelFactor = 3;
     var seedFunction;
     function gameInit(seedFunctionTemp) {
@@ -539,7 +524,6 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         debug += "blockHeight : " + game.level.blockHeight + "<br>";
         debug += "topLeftCornerPosX : " + game.level.topLeftCornerPosX + "<br>";
         debug += "topLeftCornerPosY : " + game.level.topLeftCornerPosY + "<br>";
-        debug += "levelOffset : " + game.level.getOffset() + "<br>";
         debug += "orientation : " + game.level.getPlayer().orientation + "<br>";
         return debug;
     }
