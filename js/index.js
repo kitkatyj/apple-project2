@@ -18,7 +18,7 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
         __extends(Player, _super);
         function Player(properties, orientation, action, frameCount, orientationFrames, imageMap) {
             var _this = _super.call(this, properties, imageMap) || this;
-            _this.orientation = 'front';
+            _this.orientation = ['front', null];
             _this.action = 'normal';
             _this.tempMoveSpeed = 1;
             _this.orientation = orientation;
@@ -40,34 +40,34 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
             };
             var playerOrient = this.orientation;
             var playerMoveSpeed = this.moveSpeed;
-            if (playerOrient === 'left' && playerHB.xPos - this.moveSpeed / game.blockLength < 0) {
+            if (playerOrient.indexOf('left') !== -1 && playerHB.xPos - this.moveSpeed / game.blockLength < 0) {
                 isCollide = true;
             }
-            else if (playerOrient === 'right' && playerHB.xPos + playerHB.width + this.moveSpeed / game.blockLength > game.level.blockWidth) {
+            else if (playerOrient.indexOf('right') !== -1 && playerHB.xPos + playerHB.width + this.moveSpeed / game.blockLength > game.level.blockWidth) {
                 isCollide = true;
             }
-            else if (playerOrient === 'front' && this.properties.yPos + 1 + this.moveSpeed / game.blockLength > game.level.blockHeight) {
+            else if (playerOrient.indexOf('front') !== -1 && this.properties.yPos + 1 + this.moveSpeed / game.blockLength > game.level.blockHeight) {
                 isCollide = true;
             }
-            else if (playerOrient === 'back' && playerHB.yPos - this.moveSpeed / game.blockLength < 0) {
+            else if (playerOrient.indexOf('back') !== -1 && playerHB.yPos - this.moveSpeed / game.blockLength < 0) {
                 isCollide = true;
             }
             else {
                 game.level.getEntities().solid.forEach(function (entity) {
                     var entityPos = { xPos: entity.properties.xPos, yPos: entity.properties.yPos };
                     if (playerHB.yPos + playerHB.height > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1) {
-                        if (playerOrient === 'left' && playerHB.xPos - playerMoveSpeed / game.blockLength < entityPos.xPos + 1 && playerHB.xPos + playerHB.width > entityPos.xPos) {
+                        if (playerOrient.indexOf('left') !== -1 && playerHB.xPos - playerMoveSpeed / game.blockLength < entityPos.xPos + 1 && playerHB.xPos + playerHB.width > entityPos.xPos) {
                             isCollide = true;
                         }
-                        if (playerOrient === 'right' && playerHB.xPos + playerHB.width + playerMoveSpeed / game.blockLength > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1) {
+                        if (playerOrient.indexOf('right') !== -1 && playerHB.xPos + playerHB.width + playerMoveSpeed / game.blockLength > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1) {
                             isCollide = true;
                         }
                     }
                     if (playerHB.xPos + playerHB.width > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1) {
-                        if (playerOrient === 'front' && playerHB.yPos + playerHB.height + playerMoveSpeed / game.blockLength > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1) {
+                        if (playerOrient.indexOf('front') !== -1 && playerHB.yPos + playerHB.height + playerMoveSpeed / game.blockLength > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1) {
                             isCollide = true;
                         }
-                        if (playerOrient === 'back' && playerHB.yPos - playerMoveSpeed / game.blockLength < entityPos.yPos + 1 && playerHB.yPos + playerHB.height > entityPos.yPos) {
+                        if (playerOrient.indexOf('back') !== -1 && playerHB.yPos - playerMoveSpeed / game.blockLength < entityPos.yPos + 1 && playerHB.yPos + playerHB.height > entityPos.yPos) {
                             isCollide = true;
                         }
                     }
@@ -79,60 +79,55 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
             this.action = 'normal';
             this.moveSpeed = this.tempMoveSpeed;
             this.animateSpeed = this.properties.animateSpeed;
+            if (game.keyState[37] || game.keyState[65] || game.keyState[39] || game.keyState[68] || game.keyState[38] || game.keyState[87] || game.keyState[40] || game.keyState[83]) {
+                this.action = 'walking';
+            }
             if (game.keyState[16]) {
                 this.moveSpeed = this.tempMoveSpeed * 2;
                 this.animateSpeed = this.properties.animateSpeed * 2;
             }
+            var orientationBuilder = [];
             if (game.keyState[37] || game.keyState[65]) {
-                this.orientation = 'left';
-                this.action = 'walking';
-            }
-            if (game.keyState[38] || game.keyState[87]) {
-                this.orientation = 'back';
-                this.action = 'walking';
+                orientationBuilder.push('left');
             }
             if (game.keyState[39] || game.keyState[68]) {
-                this.orientation = 'right';
-                this.action = 'walking';
+                orientationBuilder.push('right');
+            }
+            if (game.keyState[38] || game.keyState[87]) {
+                orientationBuilder.push('back');
             }
             if (game.keyState[40] || game.keyState[83]) {
-                this.orientation = 'front';
-                this.action = 'walking';
+                orientationBuilder.push('front');
+            }
+            if (orientationBuilder.length > 0) {
+                this.orientation = orientationBuilder;
             }
             this.properties.xPosDraw = game.level.topLeftCornerPosX + Math.round(this.properties.xPos * game.blockLength);
             this.properties.yPosDraw = game.level.topLeftCornerPosY + Math.round(this.properties.yPos * game.blockLength);
             switch (this.action) {
                 case 'normal':
-                    this.frameIndex = eval('this.orientationFrames.' + this.orientation + 'Still');
+                    this.frameIndex = eval('this.orientationFrames.' + this.orientation[0] + 'Still');
                     this.frameCount = 0;
                     break;
                 case 'walking':
                     this.frameIndex = Math.floor(this.frameCount * this.animateSpeed) % this.properties.totalFrames;
-                    var totalFramesTemp = eval('this.orientationFrames.' + this.orientation + '[1] - this.orientationFrames.' + this.orientation + '[0] + 1');
-                    var startingFrame = eval('this.orientationFrames.' + this.orientation + '[0]');
+                    var totalFramesTemp = eval('this.orientationFrames.' + this.orientation[0] + '[1] - this.orientationFrames.' + this.orientation[0] + '[0] + 1');
+                    var startingFrame = eval('this.orientationFrames.' + this.orientation[0] + '[0]');
                     this.frameIndex = startingFrame + this.frameIndex % totalFramesTemp;
                     this.frameCount++;
-                    switch (this.orientation) {
-                        case 'left':
-                            if (!this.isCollide(game)) {
-                                this.properties.xPos = Math.floor((this.properties.xPos * game.blockLength) - this.moveSpeed) / game.blockLength;
-                            }
-                            break;
-                        case 'right':
-                            if (!this.isCollide(game)) {
-                                this.properties.xPos = Math.floor((this.properties.xPos * game.blockLength) + this.moveSpeed) / game.blockLength;
-                            }
-                            break;
-                        case 'back':
-                            if (!this.isCollide(game)) {
-                                this.properties.yPos = Math.floor((this.properties.yPos * game.blockLength) - this.moveSpeed) / game.blockLength;
-                            }
-                            break;
-                        case 'front':
-                            if (!this.isCollide(game)) {
-                                this.properties.yPos = Math.floor((this.properties.yPos * game.blockLength) + this.moveSpeed) / game.blockLength;
-                            }
-                            break;
+                    if (!this.isCollide(game)) {
+                        if (this.orientation.indexOf('left') !== -1) {
+                            this.properties.xPos = Math.floor((this.properties.xPos * game.blockLength) - this.moveSpeed) / game.blockLength;
+                        }
+                        else if (this.orientation.indexOf('right') !== -1) {
+                            this.properties.xPos = Math.floor((this.properties.xPos * game.blockLength) + this.moveSpeed) / game.blockLength;
+                        }
+                        if (this.orientation.indexOf('back') !== -1) {
+                            this.properties.yPos = Math.floor((this.properties.yPos * game.blockLength) - this.moveSpeed) / game.blockLength;
+                        }
+                        else if (this.orientation.indexOf('front') !== -1) {
+                            this.properties.yPos = Math.floor((this.properties.yPos * game.blockLength) + this.moveSpeed) / game.blockLength;
+                        }
                     }
                     break;
             }
@@ -187,7 +182,7 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                         totalFrames: 16,
                         framesPerRow: 4,
                         animateSpeed: 1 / 12
-                    }, 'front', 'normal', 0, {
+                    }, ['front'], 'normal', 0, {
                         front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
                         frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
                     }, game.loadImageMap());
@@ -200,7 +195,7 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                         totalFrames: 20,
                         framesPerRow: 5,
                         animateSpeed: 1 / 12
-                    }, 'front', 'normal', 0, {
+                    }, ['front'], 'normal', 0, {
                         front: [1, 4], left: [11, 14], right: [16, 19], back: [6, 9],
                         frontStill: 0, leftStill: 10, rightStill: 15, backStill: 5
                     }, game.loadImageMap());
@@ -213,7 +208,7 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                         totalFrames: 16,
                         framesPerRow: 4,
                         animateSpeed: 1 / 12
-                    }, 'front', 'normal', 0, {
+                    }, ['front'], 'normal', 0, {
                         front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
                         frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
                     }, game.loadImageMap());
@@ -545,7 +540,7 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         debug += "topLeftCornerPosX : " + game.level.topLeftCornerPosX + "<br>";
         debug += "topLeftCornerPosY : " + game.level.topLeftCornerPosY + "<br>";
         debug += "levelOffset : " + game.level.getOffset() + "<br>";
-        debug += "keyState : " + game.keyState + "<br>";
+        debug += "orientation : " + game.level.getPlayer().orientation + "<br>";
         return debug;
     }
     function canvasSizeReset() {

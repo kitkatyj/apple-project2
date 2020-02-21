@@ -41,9 +41,9 @@
 
             #debug {
                 color:white;
-                position: absolute;
+                /* position: absolute;
                 bottom:0;
-                left:0;
+                left:0; */
                 max-width: 560px;
                 z-index: 99;
             }
@@ -61,6 +61,9 @@
             <label for="player3">YY's</label>
         </section>
         <section id="seed">
+            <section id="debug">
+    
+            </section>
             <span>seed:</span>
             <input type="text" name="seedInput" id="seedInput" value="hello!">
             <input type="button" name="seedBtn" id="seedBtn" value="update">
@@ -68,9 +71,6 @@
         <section id="ph">
             <h1>Apple Project</h1>
             <!-- <p>Oops, you need to enable Javascript.</p> -->
-        </section>
-        <section id="debug">
-
         </section>
         <script>
             require(['index','lib/seedrandom'],function(index,seedrandom){

@@ -20,7 +20,7 @@ interface Hitbox {
 }
 
 export class Player extends Entity {
-    orientation : string = 'front';
+    orientation : string[] = ['front',null];
     action : string = 'normal';
     frameCount : number;
     orientationFrames : OrientationFrames;
@@ -30,7 +30,7 @@ export class Player extends Entity {
 
     hitbox : Hitbox;
 
-    constructor(properties:SpriteProperties,orientation:string,action:string,frameCount:number,orientationFrames:OrientationFrames,imageMap:ImageMap[]){
+    constructor(properties:SpriteProperties,orientation:string[],action:string,frameCount:number,orientationFrames:OrientationFrames,imageMap:ImageMap[]){
         super(properties,imageMap);
 
         this.orientation = orientation;
@@ -58,16 +58,16 @@ export class Player extends Entity {
 
         let playerMoveSpeed = this.moveSpeed;
 
-        if(playerOrient === 'left' && playerHB.xPos - this.moveSpeed/game.blockLength < 0){
+        if(playerOrient.indexOf('left') !== -1 && playerHB.xPos - this.moveSpeed/game.blockLength < 0){
             isCollide = true;
         }
-        else if(playerOrient === 'right' && playerHB.xPos + playerHB.width + this.moveSpeed/game.blockLength > game.level.blockWidth){
+        else if(playerOrient.indexOf('right') !== -1  && playerHB.xPos + playerHB.width + this.moveSpeed/game.blockLength > game.level.blockWidth){
             isCollide = true;
         }
-        else if(playerOrient === 'front' && this.properties.yPos + 1 + this.moveSpeed/game.blockLength > game.level.blockHeight){
+        else if(playerOrient.indexOf('front') !== -1  && this.properties.yPos + 1 + this.moveSpeed/game.blockLength > game.level.blockHeight){
             isCollide = true;
         }
-        else if(playerOrient === 'back' && playerHB.yPos - this.moveSpeed/game.blockLength < 0){
+        else if(playerOrient.indexOf('back') !== -1 && playerHB.yPos - this.moveSpeed/game.blockLength < 0){
             isCollide = true;
         }
         else {
@@ -78,19 +78,19 @@ export class Player extends Entity {
                 if(playerHB.yPos + playerHB.height > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1){
     
                     // console.log([playerOrient,[playerHB.xPos - 0.02,'<',entityPos.xPos + 1,playerHB.xPos - 0.02 < entityPos.xPos + 1]])
-                    if(playerOrient === 'left' && playerHB.xPos - playerMoveSpeed/game.blockLength < entityPos.xPos + 1 && playerHB.xPos + playerHB.width > entityPos.xPos){
+                    if(playerOrient.indexOf('left' ) !== -1 && playerHB.xPos - playerMoveSpeed/game.blockLength < entityPos.xPos + 1 && playerHB.xPos + playerHB.width > entityPos.xPos){
                         isCollide = true;
                     }
-                    if(playerOrient === 'right' && playerHB.xPos + playerHB.width + playerMoveSpeed/game.blockLength > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1){
+                    if(playerOrient.indexOf('right') !== -1  && playerHB.xPos + playerHB.width + playerMoveSpeed/game.blockLength > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1){
                         isCollide = true;
                     }
                 }
                 // can it move up or down if solid entity in the way
                 if(playerHB.xPos + playerHB.width > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1){
-                    if(playerOrient === 'front' && playerHB.yPos + playerHB.height + playerMoveSpeed/game.blockLength > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1){
+                    if(playerOrient.indexOf('front') !== -1  && playerHB.yPos + playerHB.height + playerMoveSpeed/game.blockLength > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1){
                         isCollide = true;
                     }
-                    if(playerOrient === 'back' && playerHB.yPos - playerMoveSpeed/game.blockLength < entityPos.yPos + 1 && playerHB.yPos + playerHB.height > entityPos.yPos){
+                    if(playerOrient.indexOf('back' ) !== -1 && playerHB.yPos - playerMoveSpeed/game.blockLength < entityPos.yPos + 1 && playerHB.yPos + playerHB.height > entityPos.yPos){
                         isCollide = true;
                     }
                 }
@@ -106,61 +106,62 @@ export class Player extends Entity {
         this.moveSpeed = this.tempMoveSpeed;
         this.animateSpeed = this.properties.animateSpeed;
 
+        if(game.keyState[37] || game.keyState[65] || game.keyState[39] || game.keyState[68] || game.keyState[38] || game.keyState[87] || game.keyState[40] || game.keyState[83]){
+            this.action = 'walking';
+        }
+
         if(game.keyState[16]){
             this.moveSpeed = this.tempMoveSpeed * 2;
             this.animateSpeed = this.properties.animateSpeed * 2;
         }
-        
+
+        let orientationBuilder:string[] = [];
+
         if(game.keyState[37] || game.keyState[65]){
-            this.orientation = 'left'; this.action = 'walking';
-        }
-        if(game.keyState[38] || game.keyState[87]){
-            this.orientation = 'back'; this.action = 'walking';
+            orientationBuilder.push('left');
         }
         if(game.keyState[39] || game.keyState[68]){
-            this.orientation = 'right'; this.action = 'walking';
+            orientationBuilder.push('right');
+        }
+        if(game.keyState[38] || game.keyState[87]){
+            orientationBuilder.push('back');
         }
         if(game.keyState[40] || game.keyState[83]){
-            this.orientation = 'front'; this.action = 'walking';
+            orientationBuilder.push('front');
         }
 
+        if(orientationBuilder.length > 0){
+            this.orientation = orientationBuilder;
+        }
 
         this.properties.xPosDraw = game.level.topLeftCornerPosX + Math.round(this.properties.xPos * game.blockLength);
         this.properties.yPosDraw = game.level.topLeftCornerPosY + Math.round(this.properties.yPos * game.blockLength);
 
         switch(this.action){
             case 'normal':
-                this.frameIndex = eval('this.orientationFrames.'+this.orientation+'Still');
+                this.frameIndex = eval('this.orientationFrames.'+this.orientation[0]+'Still');
                 this.frameCount = 0;
                 break;
             case 'walking':
                 this.frameIndex = Math.floor(this.frameCount * this.animateSpeed) % this.properties.totalFrames;
-                let totalFramesTemp = eval('this.orientationFrames.'+this.orientation+'[1] - this.orientationFrames.'+this.orientation+'[0] + 1');
-                let startingFrame = eval('this.orientationFrames.'+this.orientation+'[0]');
+                let totalFramesTemp = eval('this.orientationFrames.'+this.orientation[0]+'[1] - this.orientationFrames.'+this.orientation[0]+'[0] + 1');
+                let startingFrame = eval('this.orientationFrames.'+this.orientation[0]+'[0]');
                 this.frameIndex = startingFrame + this.frameIndex % totalFramesTemp;
                 this.frameCount++;
 
-                switch(this.orientation){
-                    case 'left':
-                        if(!this.isCollide(game)){
-                            this.properties.xPos = Math.floor((this.properties.xPos*game.blockLength) - this.moveSpeed)/game.blockLength; 
-                        }
-                        break;
-                    case 'right':
-                        if(!this.isCollide(game)){
-                            this.properties.xPos = Math.floor((this.properties.xPos*game.blockLength) + this.moveSpeed)/game.blockLength; 
-                        }
-                        break;
-                    case 'back': 
-                        if(!this.isCollide(game)){
-                            this.properties.yPos = Math.floor((this.properties.yPos*game.blockLength) - this.moveSpeed)/game.blockLength; 
-                        }
-                        break;
-                    case 'front':
-                        if(!this.isCollide(game)){
-                            this.properties.yPos = Math.floor((this.properties.yPos*game.blockLength) + this.moveSpeed)/game.blockLength; 
-                        }
-                        break;
+                if(!this.isCollide(game)){
+                    if(this.orientation.indexOf('left') !== -1){
+                        this.properties.xPos = Math.floor((this.properties.xPos*game.blockLength) - this.moveSpeed)/game.blockLength; 
+                    }
+                    else if(this.orientation.indexOf('right') !== -1){
+                        this.properties.xPos = Math.floor((this.properties.xPos*game.blockLength) + this.moveSpeed)/game.blockLength; 
+                    }
+                    if(this.orientation.indexOf('back') !== -1){
+                        this.properties.yPos = Math.floor((this.properties.yPos*game.blockLength) - this.moveSpeed)/game.blockLength; 
+                    }
+                    else if(this.orientation.indexOf('front') !== -1){
+                        this.properties.yPos = Math.floor((this.properties.yPos*game.blockLength) + this.moveSpeed)/game.blockLength; 
+                    }
                 }
 
                 break;
