@@ -44,36 +44,34 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
             if (playerOrient.indexOf('left') !== -1 && playerHB.xPos - this.moveSpeed / game.blockLength < 0) {
                 playerOrient.splice(playerOrient.indexOf('left'), 1);
             }
-            else if (playerOrient.indexOf('right') !== -1 && playerHB.xPos + playerHB.width + this.moveSpeed / game.blockLength > game.level.blockWidth) {
+            if (playerOrient.indexOf('right') !== -1 && playerHB.xPos + playerHB.width + this.moveSpeed / game.blockLength > game.level.blockWidth) {
                 playerOrient.splice(playerOrient.indexOf('right'), 1);
             }
-            else if (playerOrient.indexOf('front') !== -1 && this.properties.yPos + 1 + this.moveSpeed / game.blockLength > game.level.blockHeight) {
+            if (playerOrient.indexOf('front') !== -1 && this.properties.yPos + 1 + this.moveSpeed / game.blockLength > game.level.blockHeight) {
                 playerOrient.splice(playerOrient.indexOf('front'), 1);
             }
-            else if (playerOrient.indexOf('back') !== -1 && playerHB.yPos - this.moveSpeed / game.blockLength < 0) {
+            if (playerOrient.indexOf('back') !== -1 && playerHB.yPos - this.moveSpeed / game.blockLength < 0) {
                 playerOrient.splice(playerOrient.indexOf('back'), 1);
             }
-            else {
-                game.level.getEntities().solid.forEach(function (entity) {
-                    var entityPos = { xPos: entity.properties.xPos, yPos: entity.properties.yPos };
-                    if (playerHB.yPos + playerHB.height > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1) {
-                        if (playerOrient.indexOf('left') !== -1 && playerHB.xPos - playerMoveSpeed / game.blockLength < entityPos.xPos + 1 && playerHB.xPos + playerHB.width > entityPos.xPos) {
-                            playerOrient.splice(playerOrient.indexOf('left'), 1);
-                        }
-                        if (playerOrient.indexOf('right') !== -1 && playerHB.xPos + playerHB.width + playerMoveSpeed / game.blockLength > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1) {
-                            playerOrient.splice(playerOrient.indexOf('right'), 1);
-                        }
+            game.level.getEntities().solid.forEach(function (entity) {
+                var entityPos = { xPos: entity.properties.xPos, yPos: entity.properties.yPos };
+                if (playerHB.yPos + playerHB.height > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1) {
+                    if (playerOrient.indexOf('left') !== -1 && playerHB.xPos - playerMoveSpeed / game.blockLength < entityPos.xPos + 1 && playerHB.xPos + playerHB.width > entityPos.xPos) {
+                        playerOrient.splice(playerOrient.indexOf('left'), 1);
                     }
-                    if (playerHB.xPos + playerHB.width > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1) {
-                        if (playerOrient.indexOf('front') !== -1 && playerHB.yPos + playerHB.height + playerMoveSpeed / game.blockLength > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1) {
-                            playerOrient.splice(playerOrient.indexOf('front'), 1);
-                        }
-                        if (playerOrient.indexOf('back') !== -1 && playerHB.yPos - playerMoveSpeed / game.blockLength < entityPos.yPos + 1 && playerHB.yPos + playerHB.height > entityPos.yPos) {
-                            playerOrient.splice(playerOrient.indexOf('back'), 1);
-                        }
+                    if (playerOrient.indexOf('right') !== -1 && playerHB.xPos + playerHB.width + playerMoveSpeed / game.blockLength > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1) {
+                        playerOrient.splice(playerOrient.indexOf('right'), 1);
                     }
-                });
-            }
+                }
+                if (playerHB.xPos + playerHB.width > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1) {
+                    if (playerOrient.indexOf('front') !== -1 && playerHB.yPos + playerHB.height + playerMoveSpeed / game.blockLength > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1) {
+                        playerOrient.splice(playerOrient.indexOf('front'), 1);
+                    }
+                    if (playerOrient.indexOf('back') !== -1 && playerHB.yPos - playerMoveSpeed / game.blockLength < entityPos.yPos + 1 && playerHB.yPos + playerHB.height > entityPos.yPos) {
+                        playerOrient.splice(playerOrient.indexOf('back'), 1);
+                    }
+                }
+            });
         };
         Player.prototype.draw = function (game) {
             this.action = 'normal';
@@ -309,19 +307,32 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
         Level.prototype.getPlayer = function () {
             return this.player;
         };
+        Level.prototype.withinWindowBounds = function (game, posX, posY) {
+            return -this.topLeftCornerPosX - game.blockLength < posX * game.blockLength && posX * game.blockLength < -this.topLeftCornerPosX + game.canvas.width &&
+                -this.topLeftCornerPosY - game.blockLength < posY * game.blockLength && posY * game.blockLength < -this.topLeftCornerPosY + game.canvas.height;
+        };
         Level.prototype.draw = function (game) {
             game.ctx.fillStyle = '#000';
             game.ctx.fillRect(this.topLeftCornerPosX, this.topLeftCornerPosY, this.width, this.height);
             for (var i = 0; i < this.blockWidth; i++) {
                 for (var j = 0; j < this.blockHeight; j++) {
-                    game.ctx.drawImage(this.floorImg, this.topLeftCornerPosX + i * game.blockLength, this.topLeftCornerPosY + j * game.blockLength, game.blockLength, game.blockLength);
+                    if (this.withinWindowBounds(game, i, j)) {
+                        game.ctx.drawImage(this.floorImg, this.topLeftCornerPosX + i * game.blockLength, this.topLeftCornerPosY + j * game.blockLength, game.blockLength, game.blockLength);
+                    }
                 }
             }
-            this.entities.solid.forEach(function (entity) { entity.draw(game); });
-            this.entities.bottom.forEach(function (entity) { entity.draw(game); });
+            var thisLevel = this;
+            this.entities.solid.forEach(function (entity) {
+                if (thisLevel.withinWindowBounds(game, entity.properties.xPos, entity.properties.yPos))
+                    entity.draw(game);
+            });
+            this.entities.bottom.forEach(function (entity) {
+                if (thisLevel.withinWindowBounds(game, entity.properties.xPos, entity.properties.yPos))
+                    entity.draw(game);
+            });
             var _loop_1 = function (yIndex) {
                 this_1.entities.ground.forEach(function (entity) {
-                    if (Math.ceil(entity.properties.yPos) == yIndex) {
+                    if (Math.ceil(entity.properties.yPos) == yIndex && thisLevel.withinWindowBounds(game, entity.properties.xPos, entity.properties.yPos)) {
                         entity.draw(game);
                     }
                 });

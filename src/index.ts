@@ -12,8 +12,6 @@ export function gameInit(seedFunctionTemp:Function){
 
     console.log("Ready!");
 
-    // console.log(seed('hello.')());
-
     document.getElementById("ph").remove();
 
     canvas = document.createElement("canvas");

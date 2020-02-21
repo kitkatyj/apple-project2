@@ -62,43 +62,40 @@ export class Player extends Entity {
         if(playerOrient.indexOf('left') !== -1 && playerHB.xPos - this.moveSpeed/game.blockLength < 0){
             playerOrient.splice(playerOrient.indexOf('left'),1);
         }
-        else if(playerOrient.indexOf('right') !== -1  && playerHB.xPos + playerHB.width + this.moveSpeed/game.blockLength > game.level.blockWidth){
+        if(playerOrient.indexOf('right') !== -1  && playerHB.xPos + playerHB.width + this.moveSpeed/game.blockLength > game.level.blockWidth){
             playerOrient.splice(playerOrient.indexOf('right'),1);
         }
-        else if(playerOrient.indexOf('front') !== -1  && this.properties.yPos + 1 + this.moveSpeed/game.blockLength > game.level.blockHeight){
+        if(playerOrient.indexOf('front') !== -1  && this.properties.yPos + 1 + this.moveSpeed/game.blockLength > game.level.blockHeight){
             playerOrient.splice(playerOrient.indexOf('front'),1);
         }
-        else if(playerOrient.indexOf('back') !== -1 && playerHB.yPos - this.moveSpeed/game.blockLength < 0){
+        if(playerOrient.indexOf('back') !== -1 && playerHB.yPos - this.moveSpeed/game.blockLength < 0){
             playerOrient.splice(playerOrient.indexOf('back'),1);
         }
-        else {
-            game.level.getEntities().solid.forEach(function(entity){
-                let entityPos = {xPos:entity.properties.xPos,yPos:entity.properties.yPos}
-                
-                // can it move left or right if solid entity in the way
-                if(playerHB.yPos + playerHB.height > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1){
-    
-                    // console.log([playerOrient,[playerHB.xPos - 0.02,'<',entityPos.xPos + 1,playerHB.xPos - 0.02 < entityPos.xPos + 1]])
-                    if(playerOrient.indexOf('left' ) !== -1 && playerHB.xPos - playerMoveSpeed/game.blockLength < entityPos.xPos + 1 && playerHB.xPos + playerHB.width > entityPos.xPos){
-                        playerOrient.splice(playerOrient.indexOf('left'),1);
-                    }
-                    if(playerOrient.indexOf('right') !== -1  && playerHB.xPos + playerHB.width + playerMoveSpeed/game.blockLength > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1){
-                        playerOrient.splice(playerOrient.indexOf('right'),1);
-                    }
-                }
-                // can it move up or down if solid entity in the way
-                if(playerHB.xPos + playerHB.width > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1){
-                    if(playerOrient.indexOf('front') !== -1  && playerHB.yPos + playerHB.height + playerMoveSpeed/game.blockLength > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1){
-                        playerOrient.splice(playerOrient.indexOf('front'),1);
-                    }
-                    if(playerOrient.indexOf('back' ) !== -1 && playerHB.yPos - playerMoveSpeed/game.blockLength < entityPos.yPos + 1 && playerHB.yPos + playerHB.height > entityPos.yPos){
-                        playerOrient.splice(playerOrient.indexOf('back'),1);
-                    }
-                }
-            });
-        }
 
-        // return isCollide;
+        game.level.getEntities().solid.forEach(function(entity){
+            let entityPos = {xPos:entity.properties.xPos,yPos:entity.properties.yPos}
+            
+            // can it move left or right if solid entity in the way
+            if(playerHB.yPos + playerHB.height > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1){
+
+                // console.log([playerOrient,[playerHB.xPos - 0.02,'<',entityPos.xPos + 1,playerHB.xPos - 0.02 < entityPos.xPos + 1]])
+                if(playerOrient.indexOf('left' ) !== -1 && playerHB.xPos - playerMoveSpeed/game.blockLength < entityPos.xPos + 1 && playerHB.xPos + playerHB.width > entityPos.xPos){
+                    playerOrient.splice(playerOrient.indexOf('left'),1);
+                }
+                if(playerOrient.indexOf('right') !== -1  && playerHB.xPos + playerHB.width + playerMoveSpeed/game.blockLength > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1){
+                    playerOrient.splice(playerOrient.indexOf('right'),1);
+                }
+            }
+            // can it move up or down if solid entity in the way
+            if(playerHB.xPos + playerHB.width > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1){
+                if(playerOrient.indexOf('front') !== -1  && playerHB.yPos + playerHB.height + playerMoveSpeed/game.blockLength > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1){
+                    playerOrient.splice(playerOrient.indexOf('front'),1);
+                }
+                if(playerOrient.indexOf('back' ) !== -1 && playerHB.yPos - playerMoveSpeed/game.blockLength < entityPos.yPos + 1 && playerHB.yPos + playerHB.height > entityPos.yPos){
+                    playerOrient.splice(playerOrient.indexOf('back'),1);
+                }
+            }
+        });
     }
 
     draw(game:Game){

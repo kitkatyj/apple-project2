@@ -216,6 +216,11 @@ export class Level {
         return this.player;
     }
 
+    withinWindowBounds(game:Game,posX:number,posY:number):boolean{
+        return -this.topLeftCornerPosX - game.blockLength < posX * game.blockLength && posX * game.blockLength < -this.topLeftCornerPosX + game.canvas.width &&
+        -this.topLeftCornerPosY - game.blockLength < posY * game.blockLength && posY * game.blockLength < -this.topLeftCornerPosY + game.canvas.height;
+    }
+
     draw(game:Game){
         game.ctx.fillStyle = '#000';
         game.ctx.fillRect(
@@ -226,23 +231,31 @@ export class Level {
         // draw floor
         for(let i = 0; i < this.blockWidth; i++){
             for(let j = 0; j < this.blockHeight; j++){
-                game.ctx.drawImage(
-                    this.floorImg,
-                    this.topLeftCornerPosX + i * game.blockLength,
-                    this.topLeftCornerPosY + j * game.blockLength,
-                    game.blockLength,game.blockLength
-                );
+                if(this.withinWindowBounds(game,i,j)){
+                    game.ctx.drawImage(
+                        this.floorImg,
+                        this.topLeftCornerPosX + i * game.blockLength,
+                        this.topLeftCornerPosY + j * game.blockLength,
+                        game.blockLength,game.blockLength
+                    );
+                }
             }
         }
 
+        let thisLevel = this;
+
         // draw bottom and solid entities
-        this.entities.solid.forEach(function(entity){entity.draw(game);});
-        this.entities.bottom.forEach(function(entity){entity.draw(game);});
+        this.entities.solid.forEach(function(entity){
+            if(thisLevel.withinWindowBounds(game,entity.properties.xPos,entity.properties.yPos)) entity.draw(game);
+        });
+        this.entities.bottom.forEach(function(entity){
+            if(thisLevel.withinWindowBounds(game,entity.properties.xPos,entity.properties.yPos)) entity.draw(game);
+        });
 
         // draw ground entities based on yIndex
         for(let yIndex = 0; yIndex < this.height; yIndex++){
             this.entities.ground.forEach(function(entity){
-                if(Math.ceil(entity.properties.yPos) == yIndex){
+                if(Math.ceil(entity.properties.yPos) == yIndex && thisLevel.withinWindowBounds(game,entity.properties.xPos,entity.properties.yPos)){
                     entity.draw(game);
                 }
             });
