@@ -1,6 +1,7 @@
 import {Entity} from './Entity';
-import {Player} from './Player';
+import {Character} from './Character';
 import { Game } from './Game';
+import { Player } from './Player';
 
 interface EntityMap {
     bottom : Entity[];
@@ -21,12 +22,12 @@ export class Level {
     floorImg: HTMLImageElement;
 
     private entities : EntityMap;
-    private player? : Player;
+    private player? : Character;
 
     seed : string;
     seedGen : Function;
 
-    constructor(game:Game,blockWidth:number,blockHeight:number,floor:string,playerPos:number[],entities:any[],seed:string){
+    constructor(game:Game,blockWidth:number,blockHeight:number,floor:string,playerPos:number[],characters:any[],entities:any[],seed:string){
         this.blockWidth = blockWidth;
         this.blockHeight = blockHeight;
         this.width = blockWidth * game.blockLength;
@@ -114,6 +115,26 @@ export class Level {
 
         this.setPlayer(applePlayer);
         levelMap[playerPos[0]][playerPos[1]] = true;
+
+        characters.forEach(function(char){
+            char.position.forEach(function(pos){
+                let character = new Character({
+                    src: 'res/'+char.src,
+                    xPos: pos[0],
+                    yPos: pos[1],
+                    width: char.width,
+                    height: char.height,
+                    totalFrames: char.totalFrames,
+                    framesPerRow: char.framesPerRow,
+                    animateSpeed: char.animateSpeed
+                },['front'],'normal',0,{
+                    front:[0,3],left:[4,7],right:[8,11],back:[12,15],
+                    frontStill:0,leftStill:5,rightStill:9,backStill:12
+                },game.loadImageMap());
+
+                level.setCharacter(character);
+            });
+        });      
 
         entities.forEach(function(entityTemp){
             // render based on set positions
@@ -205,6 +226,10 @@ export class Level {
 
     getEntities(){
         return this.entities;
+    }
+
+    setCharacter(charObj:Character){
+        this.addEntity(charObj,'ground');
     }
 
     setPlayer(playerObj:Player){

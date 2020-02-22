@@ -19,5 +19,14 @@
             "layer":"solid"
         }
     ],
-    "playerPos":[8,8]
+    "characters":[
+        {
+            "src":"clementine.png",
+            "position":[[6,4]],
+            "totalFrames":16,
+            "framesPerRow":4,
+            "animateSpeed":0.04
+        }
+    ],
+    "playerPos":[4,4]
 }

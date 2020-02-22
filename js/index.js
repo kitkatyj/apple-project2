@@ -11,68 +11,70 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-define("Player", ["require", "exports", "Entity"], function (require, exports, Entity_1) {
+define("Entity", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Entity = (function () {
+        function Entity(properties, imageMap) {
+            this.rows = 0;
+            this.frameIndex = 0;
+            this.frameStartX = 0;
+            this.frameStartY = 0;
+            this.properties = properties;
+            this.properties.xPosDraw = 0;
+            this.properties.yPosDraw = 0;
+            if (!this.properties.width) {
+                this.properties.width = 32;
+            }
+            if (!this.properties.height) {
+                this.properties.height = 32;
+            }
+            if (!this.properties.totalFrames) {
+                this.properties.totalFrames = 1;
+            }
+            if (!this.properties.framesPerRow) {
+                this.properties.framesPerRow = 1;
+            }
+            if (!this.properties.animateSpeed) {
+                this.properties.animateSpeed = 0;
+            }
+            this.rows = Math.floor(this.properties.totalFrames / this.properties.framesPerRow);
+            if (this.properties.src) {
+                var thisEntity_1 = this;
+                var imgMatch_1 = false;
+                imageMap.forEach(function (image) {
+                    if (thisEntity_1.properties.src === image.src) {
+                        thisEntity_1.img = image.img;
+                        imgMatch_1 = true;
+                    }
+                });
+                if (!imgMatch_1) {
+                    this.img = new Image();
+                    this.img.src = this.properties.src;
+                    imageMap.push({ src: this.properties.src, img: this.img });
+                }
+            }
+        }
+        Entity.prototype.draw = function (game) {
+            this.frameIndex = Math.floor(game.frameCount * this.properties.animateSpeed) % this.properties.totalFrames;
+            this.frameStartX = (this.frameIndex % this.properties.framesPerRow) * this.properties.width;
+            this.frameStartY = (Math.floor(this.frameIndex / this.properties.framesPerRow) % this.rows) * this.properties.height;
+            this.properties.xPosDraw = game.level.topLeftCornerPosX + this.properties.xPos * game.blockLength;
+            this.properties.yPosDraw = game.level.topLeftCornerPosY + this.properties.yPos * game.blockLength;
+            game.ctx.drawImage(this.img, this.frameStartX, this.frameStartY, this.properties.width, this.properties.height, this.properties.xPosDraw, this.properties.yPosDraw, this.properties.width, this.properties.height);
+        };
+        return Entity;
+    }());
+    exports.Entity = Entity;
+});
+define("Player", ["require", "exports", "Character"], function (require, exports, Character_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Player = (function (_super) {
         __extends(Player, _super);
-        function Player(properties, orientation, action, frameCount, orientationFrames, imageMap) {
-            var _this = _super.call(this, properties, imageMap) || this;
-            _this.direction = ['front', null];
-            _this.orientation = 'front';
-            _this.action = 'normal';
-            _this.tempMoveSpeed = 1;
-            _this.direction = orientation;
-            _this.action = action;
-            _this.frameCount = frameCount;
-            _this.orientationFrames = orientationFrames;
-            _this.hitbox = { xPos: 11, yPos: 28, width: 9, height: 3 };
-            _this.moveSpeed = _this.tempMoveSpeed;
-            _this.animateSpeed = _this.properties.animateSpeed;
-            return _this;
+        function Player(properties, direction, action, frameCount, orientationFrames, imageMap) {
+            return _super.call(this, properties, direction, action, frameCount, orientationFrames, imageMap) || this;
         }
-        Player.prototype.isCollide = function (game) {
-            var isCollide = false;
-            var playerHB = {
-                xPos: this.properties.xPos + (this.hitbox.xPos / game.blockLength),
-                yPos: this.properties.yPos + (this.hitbox.yPos / game.blockLength),
-                width: this.hitbox.width / game.blockLength,
-                height: this.hitbox.height / game.blockLength
-            };
-            var playerOrient = this.direction;
-            var playerMoveSpeed = this.moveSpeed;
-            if (playerOrient.indexOf('left') !== -1 && playerHB.xPos - this.moveSpeed / game.blockLength < 0) {
-                playerOrient.splice(playerOrient.indexOf('left'), 1);
-            }
-            if (playerOrient.indexOf('right') !== -1 && playerHB.xPos + playerHB.width + this.moveSpeed / game.blockLength > game.level.blockWidth) {
-                playerOrient.splice(playerOrient.indexOf('right'), 1);
-            }
-            if (playerOrient.indexOf('front') !== -1 && this.properties.yPos + 1 + this.moveSpeed / game.blockLength > game.level.blockHeight) {
-                playerOrient.splice(playerOrient.indexOf('front'), 1);
-            }
-            if (playerOrient.indexOf('back') !== -1 && playerHB.yPos - this.moveSpeed / game.blockLength < 0) {
-                playerOrient.splice(playerOrient.indexOf('back'), 1);
-            }
-            game.level.getEntities().solid.forEach(function (entity) {
-                var entityPos = { xPos: entity.properties.xPos, yPos: entity.properties.yPos };
-                if (playerHB.yPos + playerHB.height > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1) {
-                    if (playerOrient.indexOf('left') !== -1 && playerHB.xPos - playerMoveSpeed / game.blockLength < entityPos.xPos + 1 && playerHB.xPos + playerHB.width > entityPos.xPos) {
-                        playerOrient.splice(playerOrient.indexOf('left'), 1);
-                    }
-                    if (playerOrient.indexOf('right') !== -1 && playerHB.xPos + playerHB.width + playerMoveSpeed / game.blockLength > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1) {
-                        playerOrient.splice(playerOrient.indexOf('right'), 1);
-                    }
-                }
-                if (playerHB.xPos + playerHB.width > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1) {
-                    if (playerOrient.indexOf('front') !== -1 && playerHB.yPos + playerHB.height + playerMoveSpeed / game.blockLength > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1) {
-                        playerOrient.splice(playerOrient.indexOf('front'), 1);
-                    }
-                    if (playerOrient.indexOf('back') !== -1 && playerHB.yPos - playerMoveSpeed / game.blockLength < entityPos.yPos + 1 && playerHB.yPos + playerHB.height > entityPos.yPos) {
-                        playerOrient.splice(playerOrient.indexOf('back'), 1);
-                    }
-                }
-            });
-        };
         Player.prototype.draw = function (game) {
             this.action = 'normal';
             this.moveSpeed = this.tempMoveSpeed;
@@ -132,20 +134,18 @@ define("Player", ["require", "exports", "Entity"], function (require, exports, E
             this.frameStartX = (this.frameIndex % this.properties.framesPerRow) * this.properties.width;
             this.frameStartY = (Math.floor(this.frameIndex / this.properties.framesPerRow) % this.rows) * this.properties.height;
             game.ctx.drawImage(this.img, this.frameStartX, this.frameStartY, this.properties.width, this.properties.height, this.properties.xPosDraw, this.properties.yPosDraw, this.properties.width, this.properties.height);
-            if (game.hitboxVisible) {
-                game.ctx.fillStyle = "#ff0000";
-                game.ctx.fillRect(game.level.topLeftCornerPosX + this.properties.xPos * game.blockLength + this.hitbox.xPos, game.level.topLeftCornerPosY + this.properties.yPos * game.blockLength + this.hitbox.yPos, this.hitbox.width, this.hitbox.height);
-            }
+            if (game.hitboxVisible)
+                this.drawHitBox(game);
         };
         return Player;
-    }(Entity_1.Entity));
+    }(Character_1.Character));
     exports.Player = Player;
 });
-define("Level", ["require", "exports", "Entity", "Player"], function (require, exports, Entity_2, Player_1) {
+define("Level", ["require", "exports", "Entity", "Character", "Player"], function (require, exports, Entity_1, Character_2, Player_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Level = (function () {
-        function Level(game, blockWidth, blockHeight, floor, playerPos, entities, seed) {
+        function Level(game, blockWidth, blockHeight, floor, playerPos, characters, entities, seed) {
             this.width = 0;
             this.height = 0;
             this.blockWidth = 0;
@@ -219,10 +219,28 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
             }
             this.setPlayer(applePlayer);
             levelMap[playerPos[0]][playerPos[1]] = true;
+            characters.forEach(function (char) {
+                char.position.forEach(function (pos) {
+                    var character = new Character_2.Character({
+                        src: 'res/' + char.src,
+                        xPos: pos[0],
+                        yPos: pos[1],
+                        width: char.width,
+                        height: char.height,
+                        totalFrames: char.totalFrames,
+                        framesPerRow: char.framesPerRow,
+                        animateSpeed: char.animateSpeed
+                    }, ['front'], 'normal', 0, {
+                        front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
+                        frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
+                    }, game.loadImageMap());
+                    level.setCharacter(character);
+                });
+            });
             entities.forEach(function (entityTemp) {
                 if (Array.isArray(entityTemp.position)) {
                     entityTemp.position.forEach(function (position) {
-                        var entity = new Entity_2.Entity({
+                        var entity = new Entity_1.Entity({
                             src: 'res/' + entityTemp.src,
                             xPos: position[0],
                             yPos: position[1],
@@ -243,7 +261,7 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
                             pos = level.randomPos();
                         }
                         levelMap[pos[0]][pos[1]] = true;
-                        var entity = new Entity_2.Entity({
+                        var entity = new Entity_1.Entity({
                             src: 'res/' + entityTemp.src,
                             xPos: pos[0],
                             yPos: pos[1],
@@ -299,6 +317,9 @@ define("Level", ["require", "exports", "Entity", "Player"], function (require, e
         };
         Level.prototype.getEntities = function () {
             return this.entities;
+        };
+        Level.prototype.setCharacter = function (charObj) {
+            this.addEntity(charObj, 'ground');
         };
         Level.prototype.setPlayer = function (playerObj) {
             this.player = playerObj;
@@ -395,7 +416,7 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
             xhr.addEventListener("readystatechange", function (e) {
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     var levelTemp = JSON.parse(xhr.responseText);
-                    thisGame.level = new Level_1.Level(thisGame, levelTemp.width, levelTemp.height, levelTemp.floor, levelTemp.playerPos, levelTemp.entities, seed);
+                    thisGame.level = new Level_1.Level(thisGame, levelTemp.width, levelTemp.height, levelTemp.floor, levelTemp.playerPos, levelTemp.characters, levelTemp.entities, seed);
                 }
             });
         };
@@ -406,61 +427,123 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
     }());
     exports.Game = Game;
 });
-define("Entity", ["require", "exports"], function (require, exports) {
+define("Character", ["require", "exports", "Entity"], function (require, exports, Entity_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var Entity = (function () {
-        function Entity(properties, imageMap) {
-            this.rows = 0;
-            this.frameIndex = 0;
-            this.frameStartX = 0;
-            this.frameStartY = 0;
-            this.properties = properties;
-            this.properties.xPosDraw = 0;
-            this.properties.yPosDraw = 0;
-            if (!this.properties.width) {
-                this.properties.width = 32;
-            }
-            if (!this.properties.height) {
-                this.properties.height = 32;
-            }
-            if (!this.properties.totalFrames) {
-                this.properties.totalFrames = 1;
-            }
-            if (!this.properties.framesPerRow) {
-                this.properties.framesPerRow = 1;
-            }
-            if (!this.properties.animateSpeed) {
-                this.properties.animateSpeed = 0;
-            }
-            this.rows = Math.floor(this.properties.totalFrames / this.properties.framesPerRow);
-            if (this.properties.src) {
-                var thisEntity_1 = this;
-                var imgMatch_1 = false;
-                imageMap.forEach(function (image) {
-                    if (thisEntity_1.properties.src === image.src) {
-                        thisEntity_1.img = image.img;
-                        imgMatch_1 = true;
-                    }
-                });
-                if (!imgMatch_1) {
-                    this.img = new Image();
-                    this.img.src = this.properties.src;
-                    imageMap.push({ src: this.properties.src, img: this.img });
-                }
-            }
+    var Character = (function (_super) {
+        __extends(Character, _super);
+        function Character(properties, direction, action, frameCount, orientationFrames, imageMap) {
+            var _this = _super.call(this, properties, imageMap) || this;
+            _this.direction = ['front', null];
+            _this.orientation = 'front';
+            _this.action = 'normal';
+            _this.tempMoveSpeed = 1;
+            _this.direction = direction;
+            _this.action = action;
+            _this.frameCount = frameCount;
+            _this.orientationFrames = orientationFrames;
+            _this.hitbox = { xPos: 11, yPos: 28, width: 9, height: 3 };
+            _this.moveSpeed = _this.tempMoveSpeed;
+            _this.animateSpeed = _this.properties.animateSpeed;
+            return _this;
         }
-        Entity.prototype.draw = function (game) {
-            this.frameIndex = Math.floor(game.frameCount * this.properties.animateSpeed) % this.properties.totalFrames;
+        Character.prototype.isCollide = function (game) {
+            var playerHB = {
+                xPos: this.properties.xPos + (this.hitbox.xPos / game.blockLength),
+                yPos: this.properties.yPos + (this.hitbox.yPos / game.blockLength),
+                width: this.hitbox.width / game.blockLength,
+                height: this.hitbox.height / game.blockLength
+            };
+            var playerOrient = this.direction;
+            var playerMoveSpeed = this.moveSpeed;
+            if (playerOrient.indexOf('left') !== -1 && playerHB.xPos - this.moveSpeed / game.blockLength < 0) {
+                playerOrient.splice(playerOrient.indexOf('left'), 1);
+            }
+            if (playerOrient.indexOf('right') !== -1 && playerHB.xPos + playerHB.width + this.moveSpeed / game.blockLength > game.level.blockWidth) {
+                playerOrient.splice(playerOrient.indexOf('right'), 1);
+            }
+            if (playerOrient.indexOf('front') !== -1 && this.properties.yPos + 1 + this.moveSpeed / game.blockLength > game.level.blockHeight) {
+                playerOrient.splice(playerOrient.indexOf('front'), 1);
+            }
+            if (playerOrient.indexOf('back') !== -1 && playerHB.yPos - this.moveSpeed / game.blockLength < 0) {
+                playerOrient.splice(playerOrient.indexOf('back'), 1);
+            }
+            game.level.getEntities().solid.forEach(function (entity) {
+                var entityPos = { xPos: entity.properties.xPos, yPos: entity.properties.yPos };
+                if (playerHB.yPos + playerHB.height > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1) {
+                    if (playerOrient.indexOf('left') !== -1 && playerHB.xPos - playerMoveSpeed / game.blockLength < entityPos.xPos + 1 && playerHB.xPos + playerHB.width > entityPos.xPos) {
+                        playerOrient.splice(playerOrient.indexOf('left'), 1);
+                    }
+                    if (playerOrient.indexOf('right') !== -1 && playerHB.xPos + playerHB.width + playerMoveSpeed / game.blockLength > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1) {
+                        playerOrient.splice(playerOrient.indexOf('right'), 1);
+                    }
+                }
+                if (playerHB.xPos + playerHB.width > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1) {
+                    if (playerOrient.indexOf('front') !== -1 && playerHB.yPos + playerHB.height + playerMoveSpeed / game.blockLength > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1) {
+                        playerOrient.splice(playerOrient.indexOf('front'), 1);
+                    }
+                    if (playerOrient.indexOf('back') !== -1 && playerHB.yPos - playerMoveSpeed / game.blockLength < entityPos.yPos + 1 && playerHB.yPos + playerHB.height > entityPos.yPos) {
+                        playerOrient.splice(playerOrient.indexOf('back'), 1);
+                    }
+                }
+            });
+        };
+        Character.prototype.drawHitBox = function (game) {
+            game.ctx.fillStyle = "#ff0000";
+            game.ctx.fillRect(game.level.topLeftCornerPosX + this.properties.xPos * game.blockLength + this.hitbox.xPos, game.level.topLeftCornerPosY + this.properties.yPos * game.blockLength + this.hitbox.yPos, this.hitbox.width, this.hitbox.height);
+        };
+        Character.prototype.draw = function (game) {
+            this.properties.xPosDraw = game.level.topLeftCornerPosX + Math.round(this.properties.xPos * game.blockLength);
+            this.properties.yPosDraw = game.level.topLeftCornerPosY + Math.round(this.properties.yPos * game.blockLength);
+            if (this.direction[0])
+                this.orientation = this.direction[0];
+            switch (this.action) {
+                case 'normal':
+                    this.frameIndex = eval('this.orientationFrames.' + this.orientation + 'Still');
+                    this.frameCount = 0;
+                    break;
+                case 'walking':
+                    this.frameIndex = Math.floor(this.frameCount * this.animateSpeed) % this.properties.totalFrames;
+                    var totalFramesTemp = eval('this.orientationFrames.' + this.orientation + '[1] - this.orientationFrames.' + this.orientation + '[0] + 1');
+                    var startingFrame = eval('this.orientationFrames.' + this.orientation + '[0]');
+                    this.frameIndex = startingFrame + this.frameIndex % totalFramesTemp;
+                    this.frameCount++;
+                    this.isCollide(game);
+                    if (this.direction.indexOf('left') !== -1) {
+                        this.properties.xPos = Math.floor((this.properties.xPos * game.blockLength) - this.moveSpeed) / game.blockLength;
+                    }
+                    else if (this.direction.indexOf('right') !== -1) {
+                        this.properties.xPos = Math.floor((this.properties.xPos * game.blockLength) + this.moveSpeed) / game.blockLength;
+                    }
+                    if (this.direction.indexOf('back') !== -1) {
+                        this.properties.yPos = Math.floor((this.properties.yPos * game.blockLength) - this.moveSpeed) / game.blockLength;
+                    }
+                    else if (this.direction.indexOf('front') !== -1) {
+                        this.properties.yPos = Math.floor((this.properties.yPos * game.blockLength) + this.moveSpeed) / game.blockLength;
+                    }
+                    break;
+            }
             this.frameStartX = (this.frameIndex % this.properties.framesPerRow) * this.properties.width;
             this.frameStartY = (Math.floor(this.frameIndex / this.properties.framesPerRow) % this.rows) * this.properties.height;
-            this.properties.xPosDraw = game.level.topLeftCornerPosX + this.properties.xPos * game.blockLength;
-            this.properties.yPosDraw = game.level.topLeftCornerPosY + this.properties.yPos * game.blockLength;
             game.ctx.drawImage(this.img, this.frameStartX, this.frameStartY, this.properties.width, this.properties.height, this.properties.xPosDraw, this.properties.yPosDraw, this.properties.width, this.properties.height);
+            if (game.hitboxVisible)
+                this.drawHitBox(game);
         };
-        return Entity;
-    }());
-    exports.Entity = Entity;
+        return Character;
+    }(Entity_2.Entity));
+    exports.Character = Character;
+});
+define("NonPlayer", ["require", "exports", "Character"], function (require, exports, Character_3) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var NonPlayer = (function (_super) {
+        __extends(NonPlayer, _super);
+        function NonPlayer(properties, direction, action, frameCount, orientationFrames, imageMap) {
+            return _super.call(this, properties, direction, action, frameCount, orientationFrames, imageMap) || this;
+        }
+        return NonPlayer;
+    }(Character_3.Character));
+    exports.NonPlayer = NonPlayer;
 });
 define("index", ["require", "exports", "Game"], function (require, exports, Game_1) {
     "use strict";

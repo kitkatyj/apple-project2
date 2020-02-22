@@ -62,6 +62,7 @@ export class Game {
                     levelTemp.height,
                     levelTemp.floor,
                     levelTemp.playerPos,
+                    levelTemp.characters,
                     levelTemp.entities,
                     seed
                 );
