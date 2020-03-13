@@ -77,6 +77,8 @@ export class Player extends Character {
         this.frameStartX = (this.frameIndex % this.properties.framesPerRow) * this.properties.width;
         this.frameStartY = (Math.floor(this.frameIndex / this.properties.framesPerRow) % this.rows) * this.properties.height;
 
+        this.drawShadow(game);
+        
         game.ctx.drawImage(this.img,this.frameStartX,this.frameStartY,this.properties.width,this.properties.height,this.properties.xPosDraw,this.properties.yPosDraw,this.properties.width,this.properties.height);
         
         if(game.hitboxVisible) this.drawHitBox(game);

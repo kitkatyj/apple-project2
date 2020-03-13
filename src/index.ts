@@ -88,6 +88,7 @@ function debugStatement(){
     // debug += "canvas height/2 - blockLength/2 : "+(game.canvas.height/2 - game.blockLength/2) + "<br>";
     debug += "xPosDraw : "+game.level.getPlayer().properties.xPosDraw + "<br>";
     debug += "yPosDraw : "+game.level.getPlayer().properties.yPosDraw + "<br>";
+    debug += "player width : "+game.level.getPlayer().properties.width + "<br>";
     debug += "frameIndex : "+game.level.getPlayer().frameIndex + "<br>";
     debug += "width : "+game.level.width + "<br>";
     debug += "height : "+game.level.height + "<br>";

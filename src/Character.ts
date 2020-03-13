@@ -101,8 +101,21 @@ export class Character extends Entity {
         game.ctx.fillRect(
             game.level.topLeftCornerPosX+this.properties.xPos*game.blockLength+this.hitbox.xPos,
             game.level.topLeftCornerPosY+this.properties.yPos*game.blockLength+this.hitbox.yPos,
-            this.hitbox.width,this.hitbox.height
+            this.hitbox.width/2,this.hitbox.height
         );
+    }
+
+    drawShadow(game:Game){
+        game.ctx.fillStyle = "#000000";
+        game.ctx.globalAlpha = 0.3;
+        game.ctx.beginPath();
+        game.ctx.ellipse(
+            game.level.topLeftCornerPosX+this.properties.xPos*game.blockLength + this.properties.width/2,
+            game.level.topLeftCornerPosY+this.properties.yPos*game.blockLength + this.properties.height-1,
+            this.properties.width/3,3,0,0,2*Math.PI
+        );
+        game.ctx.fill();
+        game.ctx.globalAlpha = 1;
     }
 
     draw(game:Game){
@@ -143,6 +156,8 @@ export class Character extends Entity {
         
         this.frameStartX = (this.frameIndex % this.properties.framesPerRow) * this.properties.width;
         this.frameStartY = (Math.floor(this.frameIndex / this.properties.framesPerRow) % this.rows) * this.properties.height;
+
+        this.drawShadow(game);
 
         game.ctx.drawImage(this.img,this.frameStartX,this.frameStartY,this.properties.width,this.properties.height,this.properties.xPosDraw,this.properties.yPosDraw,this.properties.width,this.properties.height);
         

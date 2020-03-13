@@ -133,6 +133,7 @@ define("Player", ["require", "exports", "Character"], function (require, exports
             }
             this.frameStartX = (this.frameIndex % this.properties.framesPerRow) * this.properties.width;
             this.frameStartY = (Math.floor(this.frameIndex / this.properties.framesPerRow) % this.rows) * this.properties.height;
+            this.drawShadow(game);
             game.ctx.drawImage(this.img, this.frameStartX, this.frameStartY, this.properties.width, this.properties.height, this.properties.xPosDraw, this.properties.yPosDraw, this.properties.width, this.properties.height);
             if (game.hitboxVisible)
                 this.drawHitBox(game);
@@ -490,7 +491,15 @@ define("Character", ["require", "exports", "Entity"], function (require, exports
         };
         Character.prototype.drawHitBox = function (game) {
             game.ctx.fillStyle = "#ff0000";
-            game.ctx.fillRect(game.level.topLeftCornerPosX + this.properties.xPos * game.blockLength + this.hitbox.xPos, game.level.topLeftCornerPosY + this.properties.yPos * game.blockLength + this.hitbox.yPos, this.hitbox.width, this.hitbox.height);
+            game.ctx.fillRect(game.level.topLeftCornerPosX + this.properties.xPos * game.blockLength + this.hitbox.xPos, game.level.topLeftCornerPosY + this.properties.yPos * game.blockLength + this.hitbox.yPos, this.hitbox.width / 2, this.hitbox.height);
+        };
+        Character.prototype.drawShadow = function (game) {
+            game.ctx.fillStyle = "#000000";
+            game.ctx.globalAlpha = 0.3;
+            game.ctx.beginPath();
+            game.ctx.ellipse(game.level.topLeftCornerPosX + this.properties.xPos * game.blockLength + this.properties.width / 2, game.level.topLeftCornerPosY + this.properties.yPos * game.blockLength + this.properties.height - 1, this.properties.width / 3, 3, 0, 0, 2 * Math.PI);
+            game.ctx.fill();
+            game.ctx.globalAlpha = 1;
         };
         Character.prototype.draw = function (game) {
             this.properties.xPosDraw = game.level.topLeftCornerPosX + Math.round(this.properties.xPos * game.blockLength);
@@ -525,6 +534,7 @@ define("Character", ["require", "exports", "Entity"], function (require, exports
             }
             this.frameStartX = (this.frameIndex % this.properties.framesPerRow) * this.properties.width;
             this.frameStartY = (Math.floor(this.frameIndex / this.properties.framesPerRow) % this.rows) * this.properties.height;
+            this.drawShadow(game);
             game.ctx.drawImage(this.img, this.frameStartX, this.frameStartY, this.properties.width, this.properties.height, this.properties.xPosDraw, this.properties.yPosDraw, this.properties.width, this.properties.height);
             if (game.hitboxVisible)
                 this.drawHitBox(game);
@@ -611,6 +621,7 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         debug += "yPos : " + game.level.getPlayer().properties.yPos + "<br>";
         debug += "xPosDraw : " + game.level.getPlayer().properties.xPosDraw + "<br>";
         debug += "yPosDraw : " + game.level.getPlayer().properties.yPosDraw + "<br>";
+        debug += "player width : " + game.level.getPlayer().properties.width + "<br>";
         debug += "frameIndex : " + game.level.getPlayer().frameIndex + "<br>";
         debug += "width : " + game.level.width + "<br>";
         debug += "height : " + game.level.height + "<br>";
