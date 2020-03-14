@@ -50,22 +50,24 @@ export class Level {
         let playerPosTemp = playerPos;
 
         let applePlayer:Player;
+
+        // Apple Player different art variants
         switch(document.querySelector("input[name=player]:checked").getAttribute("value")){
             case "player1":
                 applePlayer = new Player({
                         xPos:playerPosTemp[0],
                         yPos:playerPosTemp[1],
-                        width:48,
-                        height:48,
-                        src:'res/apple4.png',
-                        totalFrames:16,
-                        framesPerRow:4,
+                        width:32,
+                        height:32,
+                        src:'res/yx/apple.png',
+                        totalFrames:20,
+                        framesPerRow:5,
                         animateSpeed:1/12
                     }
                     ,['front'],'normal',0,
                     {
-                        front:[0,3],left:[4,7],right:[8,11],back:[12,15],
-                        frontStill:0,leftStill:5,rightStill:9,backStill:12
+                        front:[1,4],left:[11,14],right:[16,19],back:[6,9],
+                        frontStill:0,leftStill:10,rightStill:15,backStill:5
                     },
                     game.loadImageMap()
                 );
@@ -74,7 +76,7 @@ export class Level {
                     applePlayer = new Player({
                         xPos:playerPosTemp[0],
                         yPos:playerPosTemp[1],
-                        src:'res/apple5.png',
+                        src:'res/yj/apple.png',
                         totalFrames:20,
                         framesPerRow:5,
                         animateSpeed:1/12
@@ -90,7 +92,7 @@ export class Level {
                 applePlayer = new Player({
                     xPos:playerPosTemp[0],
                     yPos:playerPosTemp[1],
-                    src:'res/apple6.png',
+                    src:'res/yy/apple.png',
                     totalFrames:16,
                     framesPerRow:4,
                     animateSpeed:1/12
@@ -118,21 +120,78 @@ export class Level {
 
         characters.forEach(function(char){
             char.position.forEach(function(pos){
-                let character = new Character({
-                    src: 'res/'+char.src,
-                    xPos: pos[0],
-                    yPos: pos[1],
-                    width: char.width,
-                    height: char.height,
-                    totalFrames: char.totalFrames,
-                    framesPerRow: char.framesPerRow,
-                    animateSpeed: char.animateSpeed
-                },['front'],'normal',0,{
-                    front:[0,3],left:[4,7],right:[8,11],back:[12,15],
-                    frontStill:0,leftStill:5,rightStill:9,backStill:12
-                },game.loadImageMap());
+                
+                let charTemp:Character;
 
-                level.setCharacter(character);
+                if(char.name === "clementine"){
+                    switch(document.querySelector("input[name=player]:checked").getAttribute("value")){
+                        case "player1":
+                            charTemp = new Character({
+                                src: 'res/yx/clem.png',
+                                xPos: pos[0],
+                                yPos: pos[1],
+                                width: char.width,
+                                height: char.height,
+                                totalFrames:20,
+                                framesPerRow:5,
+                                animateSpeed:1/12
+                            },['front'],'normal',0,
+                            {
+                                front:[1,4],left:[11,14],right:[16,19],back:[6,9],
+                                frontStill:0,leftStill:10,rightStill:15,backStill:5
+                            },game.loadImageMap());
+                            break;
+                        case "player2":
+                            charTemp = new Character({
+                                src: 'res/yj/clem.png',
+                                xPos: pos[0],
+                                yPos: pos[1],
+                                width: char.width,
+                                height: char.height,
+                                totalFrames:20,
+                                framesPerRow:5,
+                                animateSpeed:1/12
+                            },['front'],'normal',0,
+                            {
+                                front:[1,4],left:[11,14],right:[16,19],back:[6,9],
+                                frontStill:0,leftStill:10,rightStill:15,backStill:5
+                            },game.loadImageMap());
+                            break;
+                        case "player3":
+                            charTemp = new Character({
+                                src: 'res/yy/clem.png',
+                                xPos: pos[0],
+                                yPos: pos[1],
+                                width: char.width,
+                                height: char.height,
+                                totalFrames:16,
+                                framesPerRow:4,
+                                animateSpeed:1/12
+                            },['front'],'normal',0,
+                            {
+                                front:[0,3],left:[4,7],right:[8,11],back:[12,15],
+                                frontStill:0,leftStill:5,rightStill:9,backStill:12
+                            },game.loadImageMap());
+                            break;
+                    }
+                }
+                else {
+                    charTemp = new Character({
+                        src: 'res/'+char.src,
+                        xPos: pos[0],
+                        yPos: pos[1],
+                        width: char.width,
+                        height: char.height,
+                        totalFrames: char.totalFrames,
+                        framesPerRow: char.framesPerRow,
+                        animateSpeed: char.animateSpeed
+                    },['front'],'normal',0,{
+                        front:[0,3],left:[4,7],right:[8,11],back:[12,15],
+                        frontStill:0,leftStill:5,rightStill:9,backStill:12
+                    },game.loadImageMap());
+                }
+
+                level.setCharacter(charTemp);
             });
         });      
 
