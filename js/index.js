@@ -160,11 +160,47 @@ define("NonPlayer", ["require", "exports", "Character"], function (require, expo
             });
             return _this;
         }
+        NonPlayer.prototype.checkDialogueOk = function (game) {
+            var talkingDistance = 1;
+            var talkingWidth = 1;
+            var isDialogueOk = false;
+            var playerXPos = game.level.getPlayer().properties.xPos;
+            var playerYPos = game.level.getPlayer().properties.yPos;
+            if (this.direction.indexOf('left') !== -1) {
+                if (this.properties.xPos - talkingDistance < playerXPos && playerXPos < this.properties.xPos &&
+                    this.properties.yPos - talkingWidth < playerYPos && playerYPos < this.properties.yPos + talkingWidth) {
+                    isDialogueOk = true;
+                }
+            }
+            if (this.direction.indexOf('right') !== -1) {
+                if (this.properties.xPos < playerXPos && playerXPos < this.properties.xPos + talkingDistance &&
+                    this.properties.yPos - talkingWidth < playerYPos && playerYPos < this.properties.yPos + talkingWidth) {
+                    isDialogueOk = true;
+                }
+            }
+            if (this.direction.indexOf('front') !== -1) {
+                if (this.properties.xPos - talkingWidth < playerXPos && playerXPos < this.properties.xPos + talkingWidth &&
+                    this.properties.yPos < playerYPos && playerYPos < this.properties.yPos + talkingDistance) {
+                    isDialogueOk = true;
+                }
+            }
+            if (this.direction.indexOf('back') !== -1) {
+                if (this.properties.xPos - talkingWidth < playerXPos && playerXPos < this.properties.xPos + talkingWidth &&
+                    this.properties.yPos - talkingDistance < playerYPos && playerYPos < this.properties.yPos) {
+                    isDialogueOk = true;
+                }
+            }
+            return isDialogueOk;
+        };
         NonPlayer.prototype.drawDialogueBubble = function (game) {
             var frameIndex = Math.floor(this.bubbleFrameCount * 1 / 12) % 4;
             var frameStartX = frameIndex * game.blockLength;
             this.bubbleFrameCount++;
+            if (!this.checkDialogueOk(game))
+                game.ctx.globalAlpha = 0.5;
             game.ctx.drawImage(this.bubbleImg, frameStartX, 0, game.blockLength, game.blockLength, this.properties.xPosDraw, this.properties.yPosDraw - this.properties.height, game.blockLength, game.blockLength);
+            if (!this.checkDialogueOk(game))
+                game.ctx.globalAlpha = 1;
         };
         NonPlayer.prototype.draw = function (game) {
             this.properties.xPosDraw = game.level.topLeftCornerPosX + Math.round(this.properties.xPos * game.blockLength);
@@ -303,7 +339,7 @@ define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlay
                                     totalFrames: 20,
                                     framesPerRow: 5,
                                     animateSpeed: 1 / 12
-                                }, ['front'], 'normal', 0, {
+                                }, [char.direction], 'normal', 0, {
                                     front: [1, 4], left: [11, 14], right: [16, 19], back: [6, 9],
                                     frontStill: 0, leftStill: 10, rightStill: 15, backStill: 5
                                 }, game.loadImageMap(), char.dialogue);
@@ -318,7 +354,7 @@ define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlay
                                     totalFrames: 20,
                                     framesPerRow: 5,
                                     animateSpeed: 1 / 12
-                                }, ['front'], 'normal', 0, {
+                                }, [char.direction], 'normal', 0, {
                                     front: [1, 4], left: [11, 14], right: [16, 19], back: [6, 9],
                                     frontStill: 0, leftStill: 10, rightStill: 15, backStill: 5
                                 }, game.loadImageMap(), char.dialogue);
@@ -333,7 +369,7 @@ define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlay
                                     totalFrames: 16,
                                     framesPerRow: 4,
                                     animateSpeed: 1 / 12
-                                }, ['front'], 'normal', 0, {
+                                }, [char.direction], 'normal', 0, {
                                     front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
                                     frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
                                 }, game.loadImageMap(), char.dialogue);

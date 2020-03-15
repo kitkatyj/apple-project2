@@ -135,7 +135,7 @@ export class Level {
                                 totalFrames:20,
                                 framesPerRow:5,
                                 animateSpeed:1/12
-                            },['front'],'normal',0,
+                            },[char.direction],'normal',0,
                             {
                                 front:[1,4],left:[11,14],right:[16,19],back:[6,9],
                                 frontStill:0,leftStill:10,rightStill:15,backStill:5
@@ -151,7 +151,7 @@ export class Level {
                                 totalFrames:20,
                                 framesPerRow:5,
                                 animateSpeed:1/12
-                            },['front'],'normal',0,
+                            },[char.direction],'normal',0,
                             {
                                 front:[1,4],left:[11,14],right:[16,19],back:[6,9],
                                 frontStill:0,leftStill:10,rightStill:15,backStill:5
@@ -167,7 +167,7 @@ export class Level {
                                 totalFrames:16,
                                 framesPerRow:4,
                                 animateSpeed:1/12
-                            },['front'],'normal',0,
+                            },[char.direction],'normal',0,
                             {
                                 front:[0,3],left:[4,7],right:[8,11],back:[12,15],
                                 frontStill:0,leftStill:5,rightStill:9,backStill:12

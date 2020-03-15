@@ -24,13 +24,59 @@ export class NonPlayer extends Character {
         });
     }
 
+    checkDialogueOk(game:Game):boolean{
+        let talkingDistance = 1;
+        let talkingWidth = 1;
+
+        let isDialogueOk = false;
+        let playerXPos = game.level.getPlayer().properties.xPos;
+        let playerYPos = game.level.getPlayer().properties.yPos;
+
+        if(this.direction.indexOf('left') !== -1 ){
+            if(
+                this.properties.xPos-talkingDistance < playerXPos && playerXPos < this.properties.xPos &&
+                this.properties.yPos-talkingWidth < playerYPos && playerYPos < this.properties.yPos+talkingWidth
+            ){
+                isDialogueOk = true;
+            }
+        }
+        if(this.direction.indexOf('right') !== -1 ){
+            if(
+                this.properties.xPos < playerXPos && playerXPos < this.properties.xPos+talkingDistance &&
+                this.properties.yPos-talkingWidth < playerYPos && playerYPos < this.properties.yPos+talkingWidth
+            ){
+                isDialogueOk = true;
+            }
+        }
+        if(this.direction.indexOf('front') !== -1 ){
+            if(
+                this.properties.xPos-talkingWidth < playerXPos && playerXPos < this.properties.xPos+talkingWidth &&
+                this.properties.yPos < playerYPos && playerYPos < this.properties.yPos+talkingDistance
+            ){
+                isDialogueOk = true;
+            }
+        }
+        if(this.direction.indexOf('back') !== -1 ){
+            if(
+                this.properties.xPos-talkingWidth < playerXPos && playerXPos < this.properties.xPos+talkingWidth &&
+                this.properties.yPos-talkingDistance < playerYPos && playerYPos < this.properties.yPos
+            ){
+                isDialogueOk = true;
+            }
+        }
+
+        return isDialogueOk;
+    }
+
     drawDialogueBubble(game:Game){
         let frameIndex = Math.floor(this.bubbleFrameCount * 1/12) % 4;
         let frameStartX = frameIndex * game.blockLength;
 
         this.bubbleFrameCount++;
 
+        if(!this.checkDialogueOk(game)) game.ctx.globalAlpha = 0.5;
         game.ctx.drawImage(this.bubbleImg,frameStartX,0,game.blockLength,game.blockLength,this.properties.xPosDraw,this.properties.yPosDraw-this.properties.height,game.blockLength,game.blockLength);
+        if(!this.checkDialogueOk(game)) game.ctx.globalAlpha = 1;
     }
 
     draw(game:Game){
