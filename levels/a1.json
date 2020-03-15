@@ -23,7 +23,7 @@
         {
             "name":"clementine",
             "position":[[6,4]],
-            "direction":"back",
+            "direction":"left",
             "dialogue":["Hello!","I'm Clementine."]
         }
     ],

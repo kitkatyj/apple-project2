@@ -167,13 +167,13 @@ define("NonPlayer", ["require", "exports", "Character"], function (require, expo
             var playerXPos = game.level.getPlayer().properties.xPos;
             var playerYPos = game.level.getPlayer().properties.yPos;
             if (this.direction.indexOf('left') !== -1) {
-                if (this.properties.xPos - talkingDistance < playerXPos && playerXPos < this.properties.xPos &&
+                if (this.properties.xPos - 1 - talkingDistance < playerXPos && playerXPos < this.properties.xPos &&
                     this.properties.yPos - talkingWidth < playerYPos && playerYPos < this.properties.yPos + talkingWidth) {
                     isDialogueOk = true;
                 }
             }
             if (this.direction.indexOf('right') !== -1) {
-                if (this.properties.xPos < playerXPos && playerXPos < this.properties.xPos + talkingDistance &&
+                if (this.properties.xPos < playerXPos && playerXPos < this.properties.xPos + talkingDistance + 1 &&
                     this.properties.yPos - talkingWidth < playerYPos && playerYPos < this.properties.yPos + talkingWidth) {
                     isDialogueOk = true;
                 }
