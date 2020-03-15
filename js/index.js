@@ -142,66 +142,77 @@ define("Player", ["require", "exports", "Character"], function (require, exports
     }(Character_1.Character));
     exports.Player = Player;
 });
-define("NonPlayer", ["require", "exports", "Character"], function (require, exports, Character_2) {
+define("Dialogue", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Dialogue = (function () {
+        function Dialogue(dialogues, imageMap) {
+            this.dialogues = [];
+            this.bubbleFrameCount = 0;
+            this.dialogues = dialogues;
+            var thisDialogue = this;
+            imageMap.forEach(function (img) {
+                if (img.src === 'speech.png') {
+                    thisDialogue.bubbleImg = img.img;
+                }
+            });
+        }
+        Dialogue.prototype.checkDialogueOk = function (game, nonPlayer) {
+            var talkingDistance = 1;
+            var talkingWidth = 1;
+            var isDialogueOk = false;
+            var playerXPos = game.level.getPlayer().properties.xPos;
+            var playerYPos = game.level.getPlayer().properties.yPos;
+            if (nonPlayer.direction.indexOf('left') !== -1) {
+                if (nonPlayer.properties.xPos - 1 - talkingDistance < playerXPos && playerXPos < nonPlayer.properties.xPos &&
+                    nonPlayer.properties.yPos - talkingWidth < playerYPos && playerYPos < nonPlayer.properties.yPos + talkingWidth) {
+                    isDialogueOk = true;
+                }
+            }
+            if (nonPlayer.direction.indexOf('right') !== -1) {
+                if (nonPlayer.properties.xPos < playerXPos && playerXPos < nonPlayer.properties.xPos + talkingDistance + 1 &&
+                    nonPlayer.properties.yPos - talkingWidth < playerYPos && playerYPos < nonPlayer.properties.yPos + talkingWidth) {
+                    isDialogueOk = true;
+                }
+            }
+            if (nonPlayer.direction.indexOf('front') !== -1) {
+                if (nonPlayer.properties.xPos - talkingWidth < playerXPos && playerXPos < nonPlayer.properties.xPos + talkingWidth &&
+                    nonPlayer.properties.yPos < playerYPos && playerYPos < nonPlayer.properties.yPos + talkingDistance) {
+                    isDialogueOk = true;
+                }
+            }
+            if (nonPlayer.direction.indexOf('back') !== -1) {
+                if (nonPlayer.properties.xPos - talkingWidth < playerXPos && playerXPos < nonPlayer.properties.xPos + talkingWidth &&
+                    nonPlayer.properties.yPos - talkingDistance < playerYPos && playerYPos < nonPlayer.properties.yPos) {
+                    isDialogueOk = true;
+                }
+            }
+            return isDialogueOk;
+        };
+        Dialogue.prototype.drawDialogueBubble = function (game, nonPlayer) {
+            var frameIndex = Math.floor(this.bubbleFrameCount * 1 / 12) % 4;
+            var frameStartX = frameIndex * game.blockLength;
+            this.bubbleFrameCount++;
+            if (!this.checkDialogueOk(game, nonPlayer))
+                game.ctx.globalAlpha = 0.5;
+            game.ctx.drawImage(this.bubbleImg, frameStartX, 0, game.blockLength, game.blockLength, nonPlayer.properties.xPosDraw, nonPlayer.properties.yPosDraw - nonPlayer.properties.height, game.blockLength, game.blockLength);
+            if (!this.checkDialogueOk(game, nonPlayer))
+                game.ctx.globalAlpha = 1;
+        };
+        return Dialogue;
+    }());
+    exports.Dialogue = Dialogue;
+});
+define("NonPlayer", ["require", "exports", "Character", "Dialogue"], function (require, exports, Character_2, Dialogue_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var NonPlayer = (function (_super) {
         __extends(NonPlayer, _super);
         function NonPlayer(properties, direction, action, frameCount, orientationFrames, imageMap, dialogues) {
             var _this = _super.call(this, properties, direction, action, frameCount, orientationFrames, imageMap) || this;
-            _this.dialogues = [];
-            _this.bubbleFrameCount = 0;
-            _this.dialogues = dialogues;
-            var thisNp = _this;
-            imageMap.forEach(function (img) {
-                if (img.src === 'speech.png') {
-                    thisNp.bubbleImg = img.img;
-                }
-            });
+            _this.dialogue = new Dialogue_1.Dialogue(dialogues, imageMap);
             return _this;
         }
-        NonPlayer.prototype.checkDialogueOk = function (game) {
-            var talkingDistance = 1;
-            var talkingWidth = 1;
-            var isDialogueOk = false;
-            var playerXPos = game.level.getPlayer().properties.xPos;
-            var playerYPos = game.level.getPlayer().properties.yPos;
-            if (this.direction.indexOf('left') !== -1) {
-                if (this.properties.xPos - 1 - talkingDistance < playerXPos && playerXPos < this.properties.xPos &&
-                    this.properties.yPos - talkingWidth < playerYPos && playerYPos < this.properties.yPos + talkingWidth) {
-                    isDialogueOk = true;
-                }
-            }
-            if (this.direction.indexOf('right') !== -1) {
-                if (this.properties.xPos < playerXPos && playerXPos < this.properties.xPos + talkingDistance + 1 &&
-                    this.properties.yPos - talkingWidth < playerYPos && playerYPos < this.properties.yPos + talkingWidth) {
-                    isDialogueOk = true;
-                }
-            }
-            if (this.direction.indexOf('front') !== -1) {
-                if (this.properties.xPos - talkingWidth < playerXPos && playerXPos < this.properties.xPos + talkingWidth &&
-                    this.properties.yPos < playerYPos && playerYPos < this.properties.yPos + talkingDistance) {
-                    isDialogueOk = true;
-                }
-            }
-            if (this.direction.indexOf('back') !== -1) {
-                if (this.properties.xPos - talkingWidth < playerXPos && playerXPos < this.properties.xPos + talkingWidth &&
-                    this.properties.yPos - talkingDistance < playerYPos && playerYPos < this.properties.yPos) {
-                    isDialogueOk = true;
-                }
-            }
-            return isDialogueOk;
-        };
-        NonPlayer.prototype.drawDialogueBubble = function (game) {
-            var frameIndex = Math.floor(this.bubbleFrameCount * 1 / 12) % 4;
-            var frameStartX = frameIndex * game.blockLength;
-            this.bubbleFrameCount++;
-            if (!this.checkDialogueOk(game))
-                game.ctx.globalAlpha = 0.5;
-            game.ctx.drawImage(this.bubbleImg, frameStartX, 0, game.blockLength, game.blockLength, this.properties.xPosDraw, this.properties.yPosDraw - this.properties.height, game.blockLength, game.blockLength);
-            if (!this.checkDialogueOk(game))
-                game.ctx.globalAlpha = 1;
-        };
         NonPlayer.prototype.draw = function (game) {
             this.properties.xPosDraw = game.level.topLeftCornerPosX + Math.round(this.properties.xPos * game.blockLength);
             this.properties.yPosDraw = game.level.topLeftCornerPosY + Math.round(this.properties.yPos * game.blockLength);
@@ -237,8 +248,8 @@ define("NonPlayer", ["require", "exports", "Character"], function (require, expo
             this.frameStartY = (Math.floor(this.frameIndex / this.properties.framesPerRow) % this.rows) * this.properties.height;
             this.drawShadow(game);
             game.ctx.drawImage(this.img, this.frameStartX, this.frameStartY, this.properties.width, this.properties.height, this.properties.xPosDraw, this.properties.yPosDraw, this.properties.width, this.properties.height);
-            if (this.dialogues.length > 0)
-                this.drawDialogueBubble(game);
+            if (this.dialogue.dialogues.length > 0)
+                this.dialogue.drawDialogueBubble(game, this);
             if (game.hitboxVisible)
                 this.drawHitBox(game);
         };

@@ -1,82 +1,16 @@
 import { Character, OrientationFrames } from "./Character";
 import { SpriteProperties, Entity } from "./Entity";
 import { ImageMap, Game } from "./Game";
+import { Dialogue } from "./Dialogue";
 
 export class NonPlayer extends Character {
 
-    dialogues : string[] = [];
-
-    bubbleImg : HTMLImageElement;
-
-    bubbleFrameCount : number = 0;
+    dialogue : Dialogue;
 
     constructor(properties:SpriteProperties,direction:string[],action:string,frameCount:number,orientationFrames:OrientationFrames,imageMap:ImageMap[],dialogues:string[]){
         super(properties,direction,action,frameCount,orientationFrames,imageMap);
 
-        this.dialogues = dialogues;
-
-        let thisNp = this;
-
-        imageMap.forEach(function(img){
-            if(img.src === 'speech.png'){
-                thisNp.bubbleImg = img.img;
-            }
-        });
-    }
-
-    checkDialogueOk(game:Game):boolean{
-        let talkingDistance = 1;
-        let talkingWidth = 1;
-
-        let isDialogueOk = false;
-        let playerXPos = game.level.getPlayer().properties.xPos;
-        let playerYPos = game.level.getPlayer().properties.yPos;
-
-        if(this.direction.indexOf('left') !== -1 ){
-            if(
-                this.properties.xPos-1-talkingDistance < playerXPos && playerXPos < this.properties.xPos &&
-                this.properties.yPos-talkingWidth < playerYPos && playerYPos < this.properties.yPos+talkingWidth
-            ){
-                isDialogueOk = true;
-            }
-        }
-        if(this.direction.indexOf('right') !== -1 ){
-            if(
-                this.properties.xPos < playerXPos && playerXPos < this.properties.xPos+talkingDistance+1 &&
-                this.properties.yPos-talkingWidth < playerYPos && playerYPos < this.properties.yPos+talkingWidth
-            ){
-                isDialogueOk = true;
-            }
-        }
-        if(this.direction.indexOf('front') !== -1 ){
-            if(
-                this.properties.xPos-talkingWidth < playerXPos && playerXPos < this.properties.xPos+talkingWidth &&
-                this.properties.yPos < playerYPos && playerYPos < this.properties.yPos+talkingDistance
-            ){
-                isDialogueOk = true;
-            }
-        }
-        if(this.direction.indexOf('back') !== -1 ){
-            if(
-                this.properties.xPos-talkingWidth < playerXPos && playerXPos < this.properties.xPos+talkingWidth &&
-                this.properties.yPos-talkingDistance < playerYPos && playerYPos < this.properties.yPos
-            ){
-                isDialogueOk = true;
-            }
-        }
-
-        return isDialogueOk;
-    }
-
-    drawDialogueBubble(game:Game){
-        let frameIndex = Math.floor(this.bubbleFrameCount * 1/12) % 4;
-        let frameStartX = frameIndex * game.blockLength;
-
-        this.bubbleFrameCount++;
-
-        if(!this.checkDialogueOk(game)) game.ctx.globalAlpha = 0.5;
-        game.ctx.drawImage(this.bubbleImg,frameStartX,0,game.blockLength,game.blockLength,this.properties.xPosDraw,this.properties.yPosDraw-this.properties.height,game.blockLength,game.blockLength);
-        if(!this.checkDialogueOk(game)) game.ctx.globalAlpha = 1;
+        this.dialogue = new Dialogue(dialogues,imageMap);
     }
 
     draw(game:Game){
@@ -122,7 +56,7 @@ export class NonPlayer extends Character {
 
         game.ctx.drawImage(this.img,this.frameStartX,this.frameStartY,this.properties.width,this.properties.height,this.properties.xPosDraw,this.properties.yPosDraw,this.properties.width,this.properties.height);
         
-        if(this.dialogues.length > 0) this.drawDialogueBubble(game);
+        if(this.dialogue.dialogues.length > 0) this.dialogue.drawDialogueBubble(game,this);
         if(game.hitboxVisible) this.drawHitBox(game);
     }
 }
