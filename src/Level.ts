@@ -2,6 +2,7 @@ import {Entity} from './Entity';
 import {Character} from './Character';
 import { Game } from './Game';
 import { Player } from './Player';
+import { NonPlayer } from './NonPlayer';
 
 interface EntityMap {
     bottom : Entity[];
@@ -120,13 +121,12 @@ export class Level {
 
         characters.forEach(function(char){
             char.position.forEach(function(pos){
-                
-                let charTemp:Character;
-
                 if(char.name === "clementine"){
+                    let npClementine:NonPlayer;
+
                     switch(document.querySelector("input[name=player]:checked").getAttribute("value")){
                         case "player1":
-                            charTemp = new Character({
+                            npClementine = new NonPlayer({
                                 src: 'res/yx/clem.png',
                                 xPos: pos[0],
                                 yPos: pos[1],
@@ -139,10 +139,10 @@ export class Level {
                             {
                                 front:[1,4],left:[11,14],right:[16,19],back:[6,9],
                                 frontStill:0,leftStill:10,rightStill:15,backStill:5
-                            },game.loadImageMap());
+                            },game.loadImageMap(),char.dialogue);
                             break;
                         case "player2":
-                            charTemp = new Character({
+                            npClementine = new NonPlayer({
                                 src: 'res/yj/clem.png',
                                 xPos: pos[0],
                                 yPos: pos[1],
@@ -155,10 +155,10 @@ export class Level {
                             {
                                 front:[1,4],left:[11,14],right:[16,19],back:[6,9],
                                 frontStill:0,leftStill:10,rightStill:15,backStill:5
-                            },game.loadImageMap());
+                            },game.loadImageMap(),char.dialogue);
                             break;
                         case "player3":
-                            charTemp = new Character({
+                            npClementine = new NonPlayer({
                                 src: 'res/yy/clem.png',
                                 xPos: pos[0],
                                 yPos: pos[1],
@@ -171,12 +171,14 @@ export class Level {
                             {
                                 front:[0,3],left:[4,7],right:[8,11],back:[12,15],
                                 frontStill:0,leftStill:5,rightStill:9,backStill:12
-                            },game.loadImageMap());
+                            },game.loadImageMap(),char.dialogue);
                             break;
                     }
+
+                    level.setCharacter(npClementine);
                 }
                 else {
-                    charTemp = new Character({
+                    let charTemp = new Character({
                         src: 'res/'+char.src,
                         xPos: pos[0],
                         yPos: pos[1],
@@ -189,9 +191,9 @@ export class Level {
                         front:[0,3],left:[4,7],right:[8,11],back:[12,15],
                         frontStill:0,leftStill:5,rightStill:9,backStill:12
                     },game.loadImageMap());
-                }
 
-                level.setCharacter(charTemp);
+                    level.setCharacter(charTemp);
+                }
             });
         });      
 
@@ -245,6 +247,8 @@ export class Level {
         });
 
         this.focusOnPlayer(game);
+
+        // console.log(game);
     }
 
     randomPos(){

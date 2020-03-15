@@ -22,7 +22,8 @@
     "characters":[
         {
             "name":"clementine",
-            "position":[[6,4]]
+            "position":[[6,4]],
+            "dialogue":["Hello!","I'm Clementine."]
         }
     ],
     "playerPos":[4,4]

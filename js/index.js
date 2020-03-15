@@ -142,7 +142,75 @@ define("Player", ["require", "exports", "Character"], function (require, exports
     }(Character_1.Character));
     exports.Player = Player;
 });
-define("Level", ["require", "exports", "Entity", "Character", "Player"], function (require, exports, Entity_1, Character_2, Player_1) {
+define("NonPlayer", ["require", "exports", "Character"], function (require, exports, Character_2) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var NonPlayer = (function (_super) {
+        __extends(NonPlayer, _super);
+        function NonPlayer(properties, direction, action, frameCount, orientationFrames, imageMap, dialogues) {
+            var _this = _super.call(this, properties, direction, action, frameCount, orientationFrames, imageMap) || this;
+            _this.dialogues = [];
+            _this.bubbleFrameCount = 0;
+            _this.dialogues = dialogues;
+            var thisNp = _this;
+            imageMap.forEach(function (img) {
+                if (img.src === 'speech.png') {
+                    thisNp.bubbleImg = img.img;
+                }
+            });
+            return _this;
+        }
+        NonPlayer.prototype.drawDialogueBubble = function (game) {
+            var frameIndex = Math.floor(this.bubbleFrameCount * 1 / 12) % 4;
+            var frameStartX = frameIndex * game.blockLength;
+            this.bubbleFrameCount++;
+            game.ctx.drawImage(this.bubbleImg, frameStartX, 0, game.blockLength, game.blockLength, this.properties.xPosDraw, this.properties.yPosDraw - this.properties.height, game.blockLength, game.blockLength);
+        };
+        NonPlayer.prototype.draw = function (game) {
+            this.properties.xPosDraw = game.level.topLeftCornerPosX + Math.round(this.properties.xPos * game.blockLength);
+            this.properties.yPosDraw = game.level.topLeftCornerPosY + Math.round(this.properties.yPos * game.blockLength);
+            if (this.direction[0])
+                this.orientation = this.direction[0];
+            switch (this.action) {
+                case 'normal':
+                    this.frameIndex = eval('this.orientationFrames.' + this.orientation + 'Still');
+                    this.frameCount = 0;
+                    break;
+                case 'walking':
+                    this.frameIndex = Math.floor(this.frameCount * this.animateSpeed) % this.properties.totalFrames;
+                    var totalFramesTemp = eval('this.orientationFrames.' + this.orientation + '[1] - this.orientationFrames.' + this.orientation + '[0] + 1');
+                    var startingFrame = eval('this.orientationFrames.' + this.orientation + '[0]');
+                    this.frameIndex = startingFrame + this.frameIndex % totalFramesTemp;
+                    this.frameCount++;
+                    this.isCollide(game);
+                    if (this.direction.indexOf('left') !== -1) {
+                        this.properties.xPos = Math.floor((this.properties.xPos * game.blockLength) - this.moveSpeed) / game.blockLength;
+                    }
+                    else if (this.direction.indexOf('right') !== -1) {
+                        this.properties.xPos = Math.floor((this.properties.xPos * game.blockLength) + this.moveSpeed) / game.blockLength;
+                    }
+                    if (this.direction.indexOf('back') !== -1) {
+                        this.properties.yPos = Math.floor((this.properties.yPos * game.blockLength) - this.moveSpeed) / game.blockLength;
+                    }
+                    else if (this.direction.indexOf('front') !== -1) {
+                        this.properties.yPos = Math.floor((this.properties.yPos * game.blockLength) + this.moveSpeed) / game.blockLength;
+                    }
+                    break;
+            }
+            this.frameStartX = (this.frameIndex % this.properties.framesPerRow) * this.properties.width;
+            this.frameStartY = (Math.floor(this.frameIndex / this.properties.framesPerRow) % this.rows) * this.properties.height;
+            this.drawShadow(game);
+            game.ctx.drawImage(this.img, this.frameStartX, this.frameStartY, this.properties.width, this.properties.height, this.properties.xPosDraw, this.properties.yPosDraw, this.properties.width, this.properties.height);
+            if (this.dialogues.length > 0)
+                this.drawDialogueBubble(game);
+            if (game.hitboxVisible)
+                this.drawHitBox(game);
+        };
+        return NonPlayer;
+    }(Character_2.Character));
+    exports.NonPlayer = NonPlayer;
+});
+define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlayer"], function (require, exports, Entity_1, Character_3, Player_1, NonPlayer_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Level = (function () {
@@ -222,11 +290,11 @@ define("Level", ["require", "exports", "Entity", "Character", "Player"], functio
             levelMap[playerPos[0]][playerPos[1]] = true;
             characters.forEach(function (char) {
                 char.position.forEach(function (pos) {
-                    var charTemp;
                     if (char.name === "clementine") {
+                        var npClementine = void 0;
                         switch (document.querySelector("input[name=player]:checked").getAttribute("value")) {
                             case "player1":
-                                charTemp = new Character_2.Character({
+                                npClementine = new NonPlayer_1.NonPlayer({
                                     src: 'res/yx/clem.png',
                                     xPos: pos[0],
                                     yPos: pos[1],
@@ -238,10 +306,10 @@ define("Level", ["require", "exports", "Entity", "Character", "Player"], functio
                                 }, ['front'], 'normal', 0, {
                                     front: [1, 4], left: [11, 14], right: [16, 19], back: [6, 9],
                                     frontStill: 0, leftStill: 10, rightStill: 15, backStill: 5
-                                }, game.loadImageMap());
+                                }, game.loadImageMap(), char.dialogue);
                                 break;
                             case "player2":
-                                charTemp = new Character_2.Character({
+                                npClementine = new NonPlayer_1.NonPlayer({
                                     src: 'res/yj/clem.png',
                                     xPos: pos[0],
                                     yPos: pos[1],
@@ -253,10 +321,10 @@ define("Level", ["require", "exports", "Entity", "Character", "Player"], functio
                                 }, ['front'], 'normal', 0, {
                                     front: [1, 4], left: [11, 14], right: [16, 19], back: [6, 9],
                                     frontStill: 0, leftStill: 10, rightStill: 15, backStill: 5
-                                }, game.loadImageMap());
+                                }, game.loadImageMap(), char.dialogue);
                                 break;
                             case "player3":
-                                charTemp = new Character_2.Character({
+                                npClementine = new NonPlayer_1.NonPlayer({
                                     src: 'res/yy/clem.png',
                                     xPos: pos[0],
                                     yPos: pos[1],
@@ -268,12 +336,13 @@ define("Level", ["require", "exports", "Entity", "Character", "Player"], functio
                                 }, ['front'], 'normal', 0, {
                                     front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
                                     frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
-                                }, game.loadImageMap());
+                                }, game.loadImageMap(), char.dialogue);
                                 break;
                         }
+                        level.setCharacter(npClementine);
                     }
                     else {
-                        charTemp = new Character_2.Character({
+                        var charTemp = new Character_3.Character({
                             src: 'res/' + char.src,
                             xPos: pos[0],
                             yPos: pos[1],
@@ -286,8 +355,8 @@ define("Level", ["require", "exports", "Entity", "Character", "Player"], functio
                             front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
                             frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
                         }, game.loadImageMap());
+                        level.setCharacter(charTemp);
                     }
-                    level.setCharacter(charTemp);
                 });
             });
             entities.forEach(function (entityTemp) {
@@ -460,6 +529,7 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
             document.addEventListener("keyup", function (e) {
                 thisGame.keyState[e.keyCode || e.which] = false;
             });
+            this.loadCommonImages();
         }
         Game.prototype.loadLevel = function (seed) {
             var xhr = new XMLHttpRequest();
@@ -472,6 +542,11 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
                     thisGame.level = new Level_1.Level(thisGame, levelTemp.width, levelTemp.height, levelTemp.floor, levelTemp.playerPos, levelTemp.characters, levelTemp.entities, seed);
                 }
             });
+        };
+        Game.prototype.loadCommonImages = function () {
+            var bubbleImg = new Image();
+            bubbleImg.src = 'res/speech.png';
+            this.images.push({ src: 'speech.png', img: bubbleImg });
         };
         Game.prototype.loadImageMap = function () {
             return this.images;
@@ -594,18 +669,6 @@ define("Character", ["require", "exports", "Entity"], function (require, exports
         return Character;
     }(Entity_2.Entity));
     exports.Character = Character;
-});
-define("NonPlayer", ["require", "exports", "Character"], function (require, exports, Character_3) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var NonPlayer = (function (_super) {
-        __extends(NonPlayer, _super);
-        function NonPlayer(properties, direction, action, frameCount, orientationFrames, imageMap) {
-            return _super.call(this, properties, direction, action, frameCount, orientationFrames, imageMap) || this;
-        }
-        return NonPlayer;
-    }(Character_3.Character));
-    exports.NonPlayer = NonPlayer;
 });
 define("index", ["require", "exports", "Game"], function (require, exports, Game_1) {
     "use strict";

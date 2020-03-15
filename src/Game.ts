@@ -43,6 +43,8 @@ export class Game {
         document.addEventListener("keyup",function(e){
             thisGame.keyState[e.keyCode || e.which] = false;
         });
+        
+        this.loadCommonImages();
     }
 
     loadLevel(seed:string){
@@ -68,6 +70,13 @@ export class Game {
                 );
             }
         });
+    }
+
+    loadCommonImages(){
+        let bubbleImg = new Image();
+        bubbleImg.src = 'res/speech.png';
+
+        this.images.push({src:'speech.png',img:bubbleImg});
     }
 
     loadImageMap(){
