@@ -309,6 +309,10 @@ export class Level {
         -this.topLeftCornerPosY - game.blockLength < posY * game.blockLength && posY * game.blockLength < -this.topLeftCornerPosY + game.canvas.height;
     }
 
+    imageValid(img:HTMLImageElement):boolean{
+        return img.height != 0;
+    }
+
     draw(game:Game){
         game.ctx.fillStyle = '#000';
         game.ctx.fillRect(
@@ -334,16 +338,16 @@ export class Level {
 
         // draw bottom and solid entities
         this.entities.solid.forEach(function(entity){
-            if(thisLevel.withinWindowBounds(game,entity.properties.xPos,entity.properties.yPos)) entity.draw(game);
+            if(thisLevel.withinWindowBounds(game,entity.properties.xPos,entity.properties.yPos) && thisLevel.imageValid(entity.img)) entity.draw(game);
         });
         this.entities.bottom.forEach(function(entity){
-            if(thisLevel.withinWindowBounds(game,entity.properties.xPos,entity.properties.yPos)) entity.draw(game);
+            if(thisLevel.withinWindowBounds(game,entity.properties.xPos,entity.properties.yPos) && thisLevel.imageValid(entity.img)) entity.draw(game);
         });
 
         // draw ground entities based on yIndex
         for(let yIndex = 0; yIndex < this.height; yIndex++){
             this.entities.ground.forEach(function(entity){
-                if(Math.ceil(entity.properties.yPos) == yIndex && thisLevel.withinWindowBounds(game,entity.properties.xPos,entity.properties.yPos)){
+                if(Math.ceil(entity.properties.yPos) == yIndex && thisLevel.withinWindowBounds(game,entity.properties.xPos,entity.properties.yPos) && thisLevel.imageValid(entity.img)){
                     entity.draw(game);
                 }
             });

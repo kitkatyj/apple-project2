@@ -501,6 +501,9 @@ define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlay
             return -this.topLeftCornerPosX - game.blockLength < posX * game.blockLength && posX * game.blockLength < -this.topLeftCornerPosX + game.canvas.width &&
                 -this.topLeftCornerPosY - game.blockLength < posY * game.blockLength && posY * game.blockLength < -this.topLeftCornerPosY + game.canvas.height;
         };
+        Level.prototype.imageValid = function (img) {
+            return img.height != 0;
+        };
         Level.prototype.draw = function (game) {
             game.ctx.fillStyle = '#000';
             game.ctx.fillRect(this.topLeftCornerPosX, this.topLeftCornerPosY, this.width, this.height);
@@ -513,16 +516,16 @@ define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlay
             }
             var thisLevel = this;
             this.entities.solid.forEach(function (entity) {
-                if (thisLevel.withinWindowBounds(game, entity.properties.xPos, entity.properties.yPos))
+                if (thisLevel.withinWindowBounds(game, entity.properties.xPos, entity.properties.yPos) && thisLevel.imageValid(entity.img))
                     entity.draw(game);
             });
             this.entities.bottom.forEach(function (entity) {
-                if (thisLevel.withinWindowBounds(game, entity.properties.xPos, entity.properties.yPos))
+                if (thisLevel.withinWindowBounds(game, entity.properties.xPos, entity.properties.yPos) && thisLevel.imageValid(entity.img))
                     entity.draw(game);
             });
             var _loop_1 = function (yIndex) {
                 this_1.entities.ground.forEach(function (entity) {
-                    if (Math.ceil(entity.properties.yPos) == yIndex && thisLevel.withinWindowBounds(game, entity.properties.xPos, entity.properties.yPos)) {
+                    if (Math.ceil(entity.properties.yPos) == yIndex && thisLevel.withinWindowBounds(game, entity.properties.xPos, entity.properties.yPos) && thisLevel.imageValid(entity.img)) {
                         entity.draw(game);
                     }
                 });
@@ -568,7 +571,7 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
                 thisGame.frameCount = 0;
             }, 1000);
             document.addEventListener("keydown", function (e) {
-                if (e.ctrlKey || e.altKey || e.metaKey) {
+                if (e.ctrlKey || e.altKey || e.metaKey || document.activeElement === document.getElementById("seedInput")) {
                     return false;
                 }
                 thisGame.keyState[e.keyCode || e.which] = true;
@@ -757,6 +760,9 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
     function loadGame() {
         game = new Game_1.Game(canvas, seedFunction);
         var seedInputValue = document.getElementById("seedInput").value;
+        document.querySelectorAll("input[name=player]").forEach(function (choice) {
+            choice.blur();
+        });
         game.loadLevel(seedInputValue);
         localStorage.setItem("levelSeed", seedInputValue);
     }

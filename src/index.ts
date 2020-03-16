@@ -52,6 +52,10 @@ function loadGame(){
 
     let seedInputValue = (<HTMLInputElement>document.getElementById("seedInput")).value;
 
+    document.querySelectorAll("input[name=player]").forEach(function(choice){
+        (<HTMLInputElement>choice).blur();
+    });
+
     game.loadLevel(seedInputValue);
     localStorage.setItem("levelSeed",seedInputValue);
 }
