@@ -149,6 +149,7 @@ define("Dialogue", ["require", "exports"], function (require, exports) {
         function Dialogue(dialogues, imageMap) {
             this.dialogues = [];
             this.bubbleFrameCount = 0;
+            this.dialogueIndex = -1;
             this.dialogues = dialogues;
             var thisDialogue = this;
             imageMap.forEach(function (img) {
@@ -198,6 +199,24 @@ define("Dialogue", ["require", "exports"], function (require, exports) {
             game.ctx.drawImage(this.bubbleImg, frameStartX, 0, game.blockLength, game.blockLength, nonPlayer.properties.xPosDraw, nonPlayer.properties.yPosDraw - nonPlayer.properties.height, game.blockLength, game.blockLength);
             if (!this.checkDialogueOk(game, nonPlayer))
                 game.ctx.globalAlpha = 1;
+        };
+        Dialogue.prototype.getLines = function (ctx, text, maxWidth) {
+            var words = text.split(" ");
+            var lines = [];
+            var currentLine = words[0];
+            for (var i = 1; i < words.length; i++) {
+                var word = words[i];
+                var width = ctx.measureText(currentLine + " " + word).width;
+                if (width < maxWidth) {
+                    currentLine += " " + word;
+                }
+                else {
+                    lines.push(currentLine);
+                    currentLine = word;
+                }
+            }
+            lines.push(currentLine);
+            return lines;
         };
         return Dialogue;
     }());
@@ -656,7 +675,7 @@ define("Character", ["require", "exports", "Entity"], function (require, exports
                         playerOrient.splice(playerOrient.indexOf('right'), 1);
                     }
                 }
-                if (playerHB.xPos + playerHB.width > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1) {
+                else if (playerHB.xPos + playerHB.width > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1) {
                     if (playerOrient.indexOf('front') !== -1 && playerHB.yPos + playerHB.height + playerMoveSpeed / game.blockLength > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1) {
                         playerOrient.splice(playerOrient.indexOf('front'), 1);
                     }

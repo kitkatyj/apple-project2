@@ -85,7 +85,7 @@ export class Character extends Entity {
                 }
             }
             // can it move up or down if solid entity in the way
-            if(playerHB.xPos + playerHB.width > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1){
+            else if(playerHB.xPos + playerHB.width > entityPos.xPos && playerHB.xPos < entityPos.xPos + 1){
                 if(playerOrient.indexOf('front') !== -1  && playerHB.yPos + playerHB.height + playerMoveSpeed/game.blockLength > entityPos.yPos && playerHB.yPos < entityPos.yPos + 1){
                     playerOrient.splice(playerOrient.indexOf('front'),1);
                 }

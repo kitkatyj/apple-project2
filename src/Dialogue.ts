@@ -6,6 +6,8 @@ export class Dialogue {
     bubbleImg : HTMLImageElement;
     bubbleFrameCount : number = 0;
 
+    dialogueIndex : number = -1;
+
     constructor(dialogues:string[],imageMap:ImageMap[]){
         this.dialogues = dialogues;
 
@@ -71,5 +73,24 @@ export class Dialogue {
         if(!this.checkDialogueOk(game,nonPlayer)) game.ctx.globalAlpha = 0.5;
         game.ctx.drawImage(this.bubbleImg,frameStartX,0,game.blockLength,game.blockLength,nonPlayer.properties.xPosDraw,nonPlayer.properties.yPosDraw-nonPlayer.properties.height,game.blockLength,game.blockLength);
         if(!this.checkDialogueOk(game,nonPlayer)) game.ctx.globalAlpha = 1;
+    }
+
+    getLines(ctx:CanvasRenderingContext2D, text:string, maxWidth:number):string[] {
+        var words = text.split(" ");
+        var lines = [];
+        var currentLine = words[0];
+    
+        for (var i = 1; i < words.length; i++) {
+            var word = words[i];
+            var width = ctx.measureText(currentLine + " " + word).width;
+            if (width < maxWidth) {
+                currentLine += " " + word;
+            } else {
+                lines.push(currentLine);
+                currentLine = word;
+            }
+        }
+        lines.push(currentLine);
+        return lines;
     }
 }
