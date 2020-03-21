@@ -20,7 +20,7 @@ export class DialogueBox {
             this.width = 128;
         }
 
-        this.height = game.canvas.height/4;
+        this.height = Math.floor(game.canvas.height/4);
         
         this.xPosDraw = Math.round(game.canvas.width/2 - this.width/2);
         this.yPosDraw = Math.round(game.canvas.height - this.height - this.padding*2);
@@ -76,10 +76,10 @@ export class DialogueBox {
         let thisBox = this;
 
         game.ctx.fillStyle = "#000000";
-        game.ctx.font = "12px Determination";
+        game.ctx.font = "16px Determination";
         game.ctx.textAlign = "left";
         this.text.forEach(function(line,index){
-            game.ctx.fillText(line,Math.floor(thisBox.xPosDraw + thisBox.padding),Math.floor(thisBox.yPosDraw + 12 * (index+1) + thisBox.padding));
+            game.ctx.fillText(line,Math.floor(thisBox.xPosDraw + thisBox.padding),Math.floor(thisBox.yPosDraw - 4 + 16 * (index+1) + thisBox.padding));
         });
     }
 }
