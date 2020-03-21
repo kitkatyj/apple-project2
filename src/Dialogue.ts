@@ -80,10 +80,20 @@ export class Dialogue {
                 }
                 else {
                     this.dialogueIndex++;
-                    
+
                     game.level.dialogueBox.setText(game,this.dialogues[this.dialogueIndex]);
                 }
+
+                let targetOrientation = '';
                 
+                switch(nonPlayer.orientation){
+                    case 'left': targetOrientation = 'right'; break;
+                    case 'right': targetOrientation = 'left'; break;
+                    case 'back': targetOrientation = 'front'; break;
+                    case 'front': targetOrientation = 'back'; break;
+                }
+
+                game.level.getPlayer().direction = [targetOrientation];
             }
         }
         game.ctx.drawImage(this.bubbleImg,frameStartX,0,game.blockLength,game.blockLength,nonPlayer.properties.xPosDraw,nonPlayer.properties.yPosDraw-nonPlayer.properties.height,game.blockLength,game.blockLength);
