@@ -71,26 +71,22 @@ export class Dialogue {
         this.bubbleFrameCount++;
 
         if(!this.checkDialogueOk(game,nonPlayer)) game.ctx.globalAlpha = 0.5;
-        game.ctx.drawImage(this.bubbleImg,frameStartX,0,game.blockLength,game.blockLength,nonPlayer.properties.xPosDraw,nonPlayer.properties.yPosDraw-nonPlayer.properties.height,game.blockLength,game.blockLength);
-        if(!this.checkDialogueOk(game,nonPlayer)) game.ctx.globalAlpha = 1;
-    }
+        else {
+            if(game.keyUpState[69]){ // e key
+                if(this.dialogueIndex + 1 >= this.dialogues.length){
+                    this.dialogueIndex = -1;
 
-    getLines(ctx:CanvasRenderingContext2D, text:string, maxWidth:number):string[] {
-        var words = text.split(" ");
-        var lines = [];
-        var currentLine = words[0];
-    
-        for (var i = 1; i < words.length; i++) {
-            var word = words[i];
-            var width = ctx.measureText(currentLine + " " + word).width;
-            if (width < maxWidth) {
-                currentLine += " " + word;
-            } else {
-                lines.push(currentLine);
-                currentLine = word;
+                    game.level.dialogueBox.resetText();
+                }
+                else {
+                    this.dialogueIndex++;
+                    
+                    game.level.dialogueBox.setText(game,this.dialogues[this.dialogueIndex]);
+                }
+                
             }
         }
-        lines.push(currentLine);
-        return lines;
+        game.ctx.drawImage(this.bubbleImg,frameStartX,0,game.blockLength,game.blockLength,nonPlayer.properties.xPosDraw,nonPlayer.properties.yPosDraw-nonPlayer.properties.height,game.blockLength,game.blockLength);
+        if(!this.checkDialogueOk(game,nonPlayer)) game.ctx.globalAlpha = 1;
     }
 }

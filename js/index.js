@@ -79,28 +79,30 @@ define("Player", ["require", "exports", "Character"], function (require, exports
             this.action = 'normal';
             this.moveSpeed = this.tempMoveSpeed;
             this.animateSpeed = this.properties.animateSpeed;
-            if (game.keyState[37] || game.keyState[65] || game.keyState[39] || game.keyState[68] || game.keyState[38] || game.keyState[87] || game.keyState[40] || game.keyState[83]) {
-                this.action = 'walking';
+            if (game.level.dialogueBox.text.length === 0) {
+                if (game.keyState[37] || game.keyState[65] || game.keyState[39] || game.keyState[68] || game.keyState[38] || game.keyState[87] || game.keyState[40] || game.keyState[83]) {
+                    this.action = 'walking';
+                }
+                if (game.keyState[16]) {
+                    this.moveSpeed = this.tempMoveSpeed * 2;
+                    this.animateSpeed = this.properties.animateSpeed * 2;
+                }
+                var orientationBuilder = [];
+                if (game.keyState[37] || game.keyState[65]) {
+                    orientationBuilder.push('left');
+                }
+                if (game.keyState[39] || game.keyState[68]) {
+                    orientationBuilder.push('right');
+                }
+                if (game.keyState[38] || game.keyState[87]) {
+                    orientationBuilder.push('back');
+                }
+                if (game.keyState[40] || game.keyState[83]) {
+                    orientationBuilder.push('front');
+                }
+                if (orientationBuilder.length > 0)
+                    this.direction = orientationBuilder;
             }
-            if (game.keyState[16]) {
-                this.moveSpeed = this.tempMoveSpeed * 2;
-                this.animateSpeed = this.properties.animateSpeed * 2;
-            }
-            var orientationBuilder = [];
-            if (game.keyState[37] || game.keyState[65]) {
-                orientationBuilder.push('left');
-            }
-            if (game.keyState[39] || game.keyState[68]) {
-                orientationBuilder.push('right');
-            }
-            if (game.keyState[38] || game.keyState[87]) {
-                orientationBuilder.push('back');
-            }
-            if (game.keyState[40] || game.keyState[83]) {
-                orientationBuilder.push('front');
-            }
-            if (orientationBuilder.length > 0)
-                this.direction = orientationBuilder;
             this.properties.xPosDraw = game.level.topLeftCornerPosX + Math.round(this.properties.xPos * game.blockLength);
             this.properties.yPosDraw = game.level.topLeftCornerPosY + Math.round(this.properties.yPos * game.blockLength);
             if (this.direction[0])
@@ -196,27 +198,21 @@ define("Dialogue", ["require", "exports"], function (require, exports) {
             this.bubbleFrameCount++;
             if (!this.checkDialogueOk(game, nonPlayer))
                 game.ctx.globalAlpha = 0.5;
+            else {
+                if (game.keyUpState[69]) {
+                    if (this.dialogueIndex + 1 >= this.dialogues.length) {
+                        this.dialogueIndex = -1;
+                        game.level.dialogueBox.resetText();
+                    }
+                    else {
+                        this.dialogueIndex++;
+                        game.level.dialogueBox.setText(game, this.dialogues[this.dialogueIndex]);
+                    }
+                }
+            }
             game.ctx.drawImage(this.bubbleImg, frameStartX, 0, game.blockLength, game.blockLength, nonPlayer.properties.xPosDraw, nonPlayer.properties.yPosDraw - nonPlayer.properties.height, game.blockLength, game.blockLength);
             if (!this.checkDialogueOk(game, nonPlayer))
                 game.ctx.globalAlpha = 1;
-        };
-        Dialogue.prototype.getLines = function (ctx, text, maxWidth) {
-            var words = text.split(" ");
-            var lines = [];
-            var currentLine = words[0];
-            for (var i = 1; i < words.length; i++) {
-                var word = words[i];
-                var width = ctx.measureText(currentLine + " " + word).width;
-                if (width < maxWidth) {
-                    currentLine += " " + word;
-                }
-                else {
-                    lines.push(currentLine);
-                    currentLine = word;
-                }
-            }
-            lines.push(currentLine);
-            return lines;
         };
         return Dialogue;
     }());
@@ -276,7 +272,59 @@ define("NonPlayer", ["require", "exports", "Character", "Dialogue"], function (r
     }(Character_2.Character));
     exports.NonPlayer = NonPlayer;
 });
-define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlayer"], function (require, exports, Entity_1, Character_3, Player_1, NonPlayer_1) {
+define("DialogueBox", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var DialogueBox = (function () {
+        function DialogueBox() {
+            this.text = [];
+            this.padding = 10;
+        }
+        DialogueBox.prototype.reset = function (game) {
+            this.width = 200;
+            this.height = game.canvas.height / 4;
+            this.xPosDraw = game.canvas.width / 2 - this.width / 2;
+            this.yPosDraw = game.canvas.height - this.height - this.padding * 2;
+        };
+        DialogueBox.prototype.setText = function (game, text) {
+            this.text = this.getLines(game.ctx, text);
+        };
+        DialogueBox.prototype.resetText = function () {
+            this.text = [];
+        };
+        DialogueBox.prototype.getLines = function (ctx, text) {
+            var words = text.split(" ");
+            var lines = [];
+            var currentLine = words[0];
+            for (var i = 1; i < words.length; i++) {
+                var word = words[i];
+                var width = ctx.measureText(currentLine + " " + word).width;
+                if (width < this.width - this.padding) {
+                    currentLine += " " + word;
+                }
+                else {
+                    lines.push(currentLine);
+                    currentLine = word;
+                }
+            }
+            lines.push(currentLine);
+            return lines;
+        };
+        DialogueBox.prototype.draw = function (game) {
+            game.ctx.fillStyle = "#ffffff";
+            game.ctx.fillRect(this.xPosDraw, this.yPosDraw, this.width, this.height);
+            var thisBox = this;
+            game.ctx.fillStyle = "#000000";
+            game.ctx.font = "12px Arial, Helvetica, sans-serif";
+            this.text.forEach(function (line, index) {
+                game.ctx.fillText(line, thisBox.xPosDraw + thisBox.padding, thisBox.yPosDraw + 12 * (index + 1) + thisBox.padding);
+            });
+        };
+        return DialogueBox;
+    }());
+    exports.DialogueBox = DialogueBox;
+});
+define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlayer", "DialogueBox"], function (require, exports, Entity_1, Character_3, Player_1, NonPlayer_1, DialogueBox_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Level = (function () {
@@ -299,6 +347,7 @@ define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlay
             this.entities = { bottom: [], solid: [], ground: [], top: [] };
             this.seed = seed;
             this.seedGen = game.seedFunction(this.seed);
+            this.dialogueBox = new DialogueBox_1.DialogueBox();
             var level = this;
             var playerPosTemp = playerPos;
             var applePlayer;
@@ -464,14 +513,11 @@ define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlay
                 }
             });
             this.focusOnPlayer(game);
+            this.dialogueBox.reset(game);
         }
         Level.prototype.randomPos = function () {
             var posArray = [Math.floor(this.seedGen() * this.blockWidth), Math.floor(this.seedGen() * this.blockHeight)];
             return posArray;
-        };
-        Level.prototype.resetTopCorner = function (game) {
-            this.topLeftCornerPosX = Math.floor(game.canvas.width / 2 - this.width / 2);
-            this.topLeftCornerPosY = Math.floor(game.canvas.height / 2 - this.height / 2);
         };
         Level.prototype.focusOnPlayer = function (game) {
             if ((game.canvas.width / 2 - game.blockLength / 2) % 1 === 0) {
@@ -523,6 +569,19 @@ define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlay
         Level.prototype.imageValid = function (img) {
             return img.height != 0;
         };
+        Level.prototype.drawRoundRect = function (ctx, x, y, width, height, radius) {
+            if (width < 2 * radius)
+                radius = width / 2;
+            if (height < 2 * radius)
+                radius = height / 2;
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.arcTo(x + width, y, x + width, y + height, radius);
+            ctx.arcTo(x + width, y + height, x, y + height, radius);
+            ctx.arcTo(x, y + height, x, y, radius);
+            ctx.arcTo(x, y, x + width, y, radius);
+            ctx.closePath();
+        };
         Level.prototype.draw = function (game) {
             game.ctx.fillStyle = '#000';
             game.ctx.fillRect(this.topLeftCornerPosX, this.topLeftCornerPosY, this.width, this.height);
@@ -553,6 +612,9 @@ define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlay
             for (var yIndex = 0; yIndex < this.height; yIndex++) {
                 _loop_1(yIndex);
             }
+            if (this.dialogueBox.text.length > 0) {
+                this.dialogueBox.draw(game);
+            }
             if (this.topLeftCornerPosX + Math.round(this.player.properties.xPos * game.blockLength) + game.blockLength / 2 >= game.canvas.width * 2 / 3) {
                 this.topLeftCornerPosX = this.topLeftCornerPosX - this.player.moveSpeed;
             }
@@ -565,6 +627,7 @@ define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlay
             else if (this.topLeftCornerPosY + Math.round(this.player.properties.yPos * game.blockLength) + game.blockLength / 2 < game.canvas.height / 3) {
                 this.topLeftCornerPosY = this.topLeftCornerPosY + this.player.moveSpeed;
             }
+            game.keyUpState = [];
         };
         return Level;
     }());
@@ -580,6 +643,7 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
             this.frameCount = 0;
             this.blockLength = 32;
             this.keyState = [];
+            this.keyUpState = [];
             this.images = [];
             this.canvas = canvas;
             this.ctx = canvas.getContext('2d');
@@ -596,6 +660,7 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
                 thisGame.keyState[e.keyCode || e.which] = true;
             });
             document.addEventListener("keyup", function (e) {
+                thisGame.keyUpState[e.keyCode || e.which] = true;
                 thisGame.keyState[e.keyCode || e.which] = false;
             });
             this.loadCommonImages();
@@ -826,6 +891,7 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         canvas.style.height = "100vh";
         if (game) {
             game.level.focusOnPlayer(game);
+            game.level.dialogueBox.reset(game);
         }
     }
     function paintBg(color) {

@@ -12,7 +12,9 @@ export class Game {
     hitboxVisible:boolean = false;
     frameCount : number = 0;
     blockLength : number = 32;
+    
     keyState : boolean[] = [];
+    keyUpState : boolean[] = [];
 
     seedFunction : Function;
 
@@ -41,6 +43,7 @@ export class Game {
         });
 
         document.addEventListener("keyup",function(e){
+            thisGame.keyUpState[e.keyCode || e.which] = true;
             thisGame.keyState[e.keyCode || e.which] = false;
         });
         

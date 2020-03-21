@@ -3,6 +3,7 @@ import {Character} from './Character';
 import { Game } from './Game';
 import { Player } from './Player';
 import { NonPlayer } from './NonPlayer';
+import { DialogueBox } from './DialogueBox';
 
 interface EntityMap {
     bottom : Entity[];
@@ -18,8 +19,8 @@ export class Level {
     blockHeight: number = 0;
     topLeftCornerPosX : number = 0;
     topLeftCornerPosY : number = 0;
-    floorSrc: string;
 
+    floorSrc: string;
     floorImg: HTMLImageElement;
 
     private entities : EntityMap;
@@ -27,6 +28,8 @@ export class Level {
 
     seed : string;
     seedGen : Function;
+
+    dialogueBox : DialogueBox;
 
     constructor(game:Game,blockWidth:number,blockHeight:number,floor:string,playerPos:number[],characters:any[],entities:any[],seed:string){
         this.blockWidth = blockWidth;
@@ -45,6 +48,8 @@ export class Level {
 
         this.seed = seed;
         this.seedGen = game.seedFunction(this.seed);
+
+        this.dialogueBox = new DialogueBox();
 
         let level = this;
 
@@ -124,6 +129,7 @@ export class Level {
                 if(char.name === "clementine"){
                     let npClementine:NonPlayer;
 
+                    // Clementine different art variants
                     switch(document.querySelector("input[name=player]:checked").getAttribute("value")){
                         case "player1":
                             npClementine = new NonPlayer({
@@ -247,6 +253,7 @@ export class Level {
         });
 
         this.focusOnPlayer(game);
+        this.dialogueBox.reset(game);
 
         // console.log(game);
     }
@@ -255,11 +262,6 @@ export class Level {
         let posArray = [Math.floor(this.seedGen()*this.blockWidth), Math.floor(this.seedGen()*this.blockHeight)];
 
         return posArray;
-    }
-
-    resetTopCorner(game:Game){
-        this.topLeftCornerPosX = Math.floor(game.canvas.width/2 - this.width/2);
-        this.topLeftCornerPosY = Math.floor(game.canvas.height/2 - this.height/2);
     }
 
     focusOnPlayer(game:Game){
@@ -313,6 +315,18 @@ export class Level {
         return img.height != 0;
     }
 
+    drawRoundRect(ctx:CanvasRenderingContext2D, x:number, y:number, width:number, height:number, radius:number) {
+        if (width < 2 * radius) radius = width / 2;
+        if (height < 2 * radius) radius = height / 2;
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.arcTo(x + width, y, x + width, y + height, radius);
+        ctx.arcTo(x + width, y + height, x, y + height, radius);
+        ctx.arcTo(x, y + height, x, y, radius);
+        ctx.arcTo(x, y, x + width, y, radius);
+        ctx.closePath();
+    }
+
     draw(game:Game){
         game.ctx.fillStyle = '#000';
         game.ctx.fillRect(
@@ -352,7 +366,14 @@ export class Level {
                 }
             });
         }
+
+        // draw dialogue box if text inside
+        if(this.dialogueBox.text.length > 0){
+            // console.log(this.dialogueBox);
+            this.dialogueBox.draw(game);
+        }
         
+        // restrict within center 3x3 grid
         if(this.topLeftCornerPosX + Math.round(this.player.properties.xPos * game.blockLength) + game.blockLength/2 >= game.canvas.width*2/3){
             this.topLeftCornerPosX = this.topLeftCornerPosX-this.player.moveSpeed;
         }
@@ -366,5 +387,9 @@ export class Level {
         else if(this.topLeftCornerPosY + Math.round(this.player.properties.yPos * game.blockLength) + game.blockLength/2 < game.canvas.height/3){
             this.topLeftCornerPosY = this.topLeftCornerPosY+this.player.moveSpeed;
         }
+
+        // console.log(game.keyUpState);
+
+        game.keyUpState = [];
     }
 }

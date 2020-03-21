@@ -113,6 +113,7 @@ function canvasSizeReset(){
     canvas.style.height = "100vh";
     if(game){
         game.level.focusOnPlayer(game);
+        game.level.dialogueBox.reset(game);
     }
 }
 
