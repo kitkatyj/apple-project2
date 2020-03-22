@@ -2,12 +2,14 @@ import { Game } from "./Game";
 
 export class DialogueBox {
 
-    text : string[] = [];
+    text : string = "";
     width : number;
     height : number;
     xPosDraw : number;
     yPosDraw : number;
     padding : number = 10;
+
+    renderIndex : number = 0;
 
     reset(game:Game){
         if(game.canvas.width > 300){
@@ -27,11 +29,12 @@ export class DialogueBox {
     }
 
     setText(game:Game,text:string){
-        this.text = this.getLines(game.ctx,text);
+        this.renderIndex = 0;
+        this.text = text;
     }
 
     resetText(){
-        this.text = [];
+        this.text = "";
     }
 
     getLines(ctx:CanvasRenderingContext2D, text:string):string[] {
@@ -75,11 +78,16 @@ export class DialogueBox {
 
         let thisBox = this;
 
+        let textToRender = this.text.substr(0,Math.floor(this.renderIndex));
+        let renderedLines:string[] = this.getLines(game.ctx,textToRender);
+
         game.ctx.fillStyle = "#000000";
         game.ctx.font = "16px Determination";
         game.ctx.textAlign = "left";
-        this.text.forEach(function(line,index){
+        renderedLines.forEach(function(line,index){
             game.ctx.fillText(line,Math.floor(thisBox.xPosDraw + thisBox.padding),Math.floor(thisBox.yPosDraw - 4 + 16 * (index+1) + thisBox.padding));
         });
+
+        this.renderIndex += 1/2;
     }
 }

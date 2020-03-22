@@ -23,7 +23,7 @@
         {
             "name":"clementine",
             "position":[[6,4]],
-            "direction":"left",
+            "direction":"front",
             "dialogue":["Hello! I'm Clementine.","Welcome to The Void. A world between worlds."]
         }
     ],

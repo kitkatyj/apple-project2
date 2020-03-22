@@ -293,8 +293,9 @@ define("DialogueBox", ["require", "exports"], function (require, exports) {
     Object.defineProperty(exports, "__esModule", { value: true });
     var DialogueBox = (function () {
         function DialogueBox() {
-            this.text = [];
+            this.text = "";
             this.padding = 10;
+            this.renderIndex = 0;
         }
         DialogueBox.prototype.reset = function (game) {
             if (game.canvas.width > 300) {
@@ -311,10 +312,11 @@ define("DialogueBox", ["require", "exports"], function (require, exports) {
             this.yPosDraw = Math.round(game.canvas.height - this.height - this.padding * 2);
         };
         DialogueBox.prototype.setText = function (game, text) {
-            this.text = this.getLines(game.ctx, text);
+            this.renderIndex = 0;
+            this.text = text;
         };
         DialogueBox.prototype.resetText = function () {
-            this.text = [];
+            this.text = "";
         };
         DialogueBox.prototype.getLines = function (ctx, text) {
             var words = text.split(" ");
@@ -349,12 +351,15 @@ define("DialogueBox", ["require", "exports"], function (require, exports) {
             game.ctx.strokeStyle = "#336666";
             game.ctx.stroke();
             var thisBox = this;
+            var textToRender = this.text.substr(0, Math.floor(this.renderIndex));
+            var renderedLines = this.getLines(game.ctx, textToRender);
             game.ctx.fillStyle = "#000000";
             game.ctx.font = "16px Determination";
             game.ctx.textAlign = "left";
-            this.text.forEach(function (line, index) {
+            renderedLines.forEach(function (line, index) {
                 game.ctx.fillText(line, Math.floor(thisBox.xPosDraw + thisBox.padding), Math.floor(thisBox.yPosDraw - 4 + 16 * (index + 1) + thisBox.padding));
             });
+            this.renderIndex += 1 / 2;
         };
         return DialogueBox;
     }());
