@@ -2,7 +2,8 @@ import { Game } from "./Game";
 
 export class DialogueBox {
 
-    text : string = "";
+    text : string[] = [];
+    textLength : number;
     width : number;
     height : number;
     xPosDraw : number;
@@ -30,11 +31,12 @@ export class DialogueBox {
 
     setText(game:Game,text:string){
         this.renderIndex = 0;
-        this.text = text;
+        this.textLength = text.length;
+        this.text = this.getLines(game.ctx,text);
     }
 
     resetText(){
-        this.text = "";
+        this.text = [];
     }
 
     getLines(ctx:CanvasRenderingContext2D, text:string):string[] {
@@ -78,8 +80,27 @@ export class DialogueBox {
 
         let thisBox = this;
 
-        let textToRender = this.text.substr(0,Math.floor(this.renderIndex));
-        let renderedLines:string[] = this.getLines(game.ctx,textToRender);
+        let renderedLines:string[] = [];
+        let renderIndexTemp = this.renderIndex;
+
+        if(this.renderIndex < this.textLength){
+            this.text.forEach(function(line){
+                if(renderIndexTemp > 0){
+                    if(renderIndexTemp < line.length){
+                        renderedLines.push(line.substr(0,renderIndexTemp));
+                        renderIndexTemp = 0;
+                    }
+                    else {
+                        renderedLines.push(line);
+                        renderIndexTemp = renderIndexTemp - line.length;
+                    }
+                }
+            });
+        }
+        else {
+            renderedLines = this.text;
+        }
+        
 
         game.ctx.fillStyle = "#000000";
         game.ctx.font = "16px Determination";
@@ -88,6 +109,6 @@ export class DialogueBox {
             game.ctx.fillText(line,Math.floor(thisBox.xPosDraw + thisBox.padding),Math.floor(thisBox.yPosDraw - 4 + 16 * (index+1) + thisBox.padding));
         });
 
-        this.renderIndex += 1/2;
+        if(this.renderIndex < this.textLength) this.renderIndex += 1/2;
     }
 }
