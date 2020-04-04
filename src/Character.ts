@@ -118,10 +118,7 @@ export class Character extends Entity {
         game.ctx.globalAlpha = 1;
     }
 
-    draw(game:Game){
-        this.properties.xPosDraw = game.level.topLeftCornerPosX + Math.round(this.properties.xPos * game.blockLength);
-        this.properties.yPosDraw = game.level.topLeftCornerPosY + Math.round(this.properties.yPos * game.blockLength);
-
+    setDirection(game:Game){
         if(this.direction[0]) this.orientation = this.direction[0];
         
         switch(this.action){
@@ -153,10 +150,14 @@ export class Character extends Entity {
 
                 break;
         }
-        
-        this.frameStartX = (this.frameIndex % this.properties.framesPerRow) * this.properties.width;
-        this.frameStartY = (Math.floor(this.frameIndex / this.properties.framesPerRow) % this.rows) * this.properties.height;
+    }
 
+    draw(game:Game){
+        this.setPosDraw(game);
+
+        this.setDirection(game);
+        
+        this.setFrameStart();
         this.drawShadow(game);
 
         game.ctx.drawImage(this.img,this.frameStartX,this.frameStartY,this.properties.width,this.properties.height,this.properties.xPosDraw,this.properties.yPosDraw,this.properties.width,this.properties.height);

@@ -55,12 +55,18 @@ define("Entity", ["require", "exports"], function (require, exports) {
                 }
             }
         }
-        Entity.prototype.draw = function (game) {
-            this.frameIndex = Math.floor(game.frameCount * this.properties.animateSpeed) % this.properties.totalFrames;
+        Entity.prototype.setFrameStart = function () {
             this.frameStartX = (this.frameIndex % this.properties.framesPerRow) * this.properties.width;
             this.frameStartY = (Math.floor(this.frameIndex / this.properties.framesPerRow) % this.rows) * this.properties.height;
-            this.properties.xPosDraw = game.level.topLeftCornerPosX + this.properties.xPos * game.blockLength;
-            this.properties.yPosDraw = game.level.topLeftCornerPosY + this.properties.yPos * game.blockLength;
+        };
+        Entity.prototype.setPosDraw = function (game) {
+            this.properties.xPosDraw = game.level.topLeftCornerPosX + Math.round(this.properties.xPos * game.blockLength);
+            this.properties.yPosDraw = game.level.topLeftCornerPosY + Math.round(this.properties.yPos * game.blockLength);
+        };
+        Entity.prototype.draw = function (game) {
+            this.frameIndex = Math.floor(game.frameCount * this.properties.animateSpeed) % this.properties.totalFrames;
+            this.setFrameStart();
+            this.setPosDraw(game);
             game.ctx.drawImage(this.img, this.frameStartX, this.frameStartY, this.properties.width, this.properties.height, this.properties.xPosDraw, this.properties.yPosDraw, this.properties.width, this.properties.height);
         };
         return Entity;
@@ -103,38 +109,9 @@ define("Player", ["require", "exports", "Character"], function (require, exports
                 if (orientationBuilder.length > 0)
                     this.direction = orientationBuilder;
             }
-            this.properties.xPosDraw = game.level.topLeftCornerPosX + Math.round(this.properties.xPos * game.blockLength);
-            this.properties.yPosDraw = game.level.topLeftCornerPosY + Math.round(this.properties.yPos * game.blockLength);
-            if (this.direction[0])
-                this.orientation = this.direction[0];
-            switch (this.action) {
-                case 'normal':
-                    this.frameIndex = eval('this.orientationFrames.' + this.orientation + 'Still');
-                    this.frameCount = 0;
-                    break;
-                case 'walking':
-                    this.frameIndex = Math.floor(this.frameCount * this.animateSpeed) % this.properties.totalFrames;
-                    var totalFramesTemp = eval('this.orientationFrames.' + this.orientation + '[1] - this.orientationFrames.' + this.orientation + '[0] + 1');
-                    var startingFrame = eval('this.orientationFrames.' + this.orientation + '[0]');
-                    this.frameIndex = startingFrame + this.frameIndex % totalFramesTemp;
-                    this.frameCount++;
-                    this.isCollide(game);
-                    if (this.direction.indexOf('left') !== -1) {
-                        this.properties.xPos = Math.floor((this.properties.xPos * game.blockLength) - this.moveSpeed) / game.blockLength;
-                    }
-                    else if (this.direction.indexOf('right') !== -1) {
-                        this.properties.xPos = Math.floor((this.properties.xPos * game.blockLength) + this.moveSpeed) / game.blockLength;
-                    }
-                    if (this.direction.indexOf('back') !== -1) {
-                        this.properties.yPos = Math.floor((this.properties.yPos * game.blockLength) - this.moveSpeed) / game.blockLength;
-                    }
-                    else if (this.direction.indexOf('front') !== -1) {
-                        this.properties.yPos = Math.floor((this.properties.yPos * game.blockLength) + this.moveSpeed) / game.blockLength;
-                    }
-                    break;
-            }
-            this.frameStartX = (this.frameIndex % this.properties.framesPerRow) * this.properties.width;
-            this.frameStartY = (Math.floor(this.frameIndex / this.properties.framesPerRow) % this.rows) * this.properties.height;
+            this.setPosDraw(game);
+            this.setDirection(game);
+            this.setFrameStart();
             this.drawShadow(game);
             game.ctx.drawImage(this.img, this.frameStartX, this.frameStartY, this.properties.width, this.properties.height, this.properties.xPosDraw, this.properties.yPosDraw, this.properties.width, this.properties.height);
             if (game.hitboxVisible)
@@ -245,38 +222,9 @@ define("NonPlayer", ["require", "exports", "Character", "Dialogue"], function (r
             return _this;
         }
         NonPlayer.prototype.draw = function (game) {
-            this.properties.xPosDraw = game.level.topLeftCornerPosX + Math.round(this.properties.xPos * game.blockLength);
-            this.properties.yPosDraw = game.level.topLeftCornerPosY + Math.round(this.properties.yPos * game.blockLength);
-            if (this.direction[0])
-                this.orientation = this.direction[0];
-            switch (this.action) {
-                case 'normal':
-                    this.frameIndex = eval('this.orientationFrames.' + this.orientation + 'Still');
-                    this.frameCount = 0;
-                    break;
-                case 'walking':
-                    this.frameIndex = Math.floor(this.frameCount * this.animateSpeed) % this.properties.totalFrames;
-                    var totalFramesTemp = eval('this.orientationFrames.' + this.orientation + '[1] - this.orientationFrames.' + this.orientation + '[0] + 1');
-                    var startingFrame = eval('this.orientationFrames.' + this.orientation + '[0]');
-                    this.frameIndex = startingFrame + this.frameIndex % totalFramesTemp;
-                    this.frameCount++;
-                    this.isCollide(game);
-                    if (this.direction.indexOf('left') !== -1) {
-                        this.properties.xPos = Math.floor((this.properties.xPos * game.blockLength) - this.moveSpeed) / game.blockLength;
-                    }
-                    else if (this.direction.indexOf('right') !== -1) {
-                        this.properties.xPos = Math.floor((this.properties.xPos * game.blockLength) + this.moveSpeed) / game.blockLength;
-                    }
-                    if (this.direction.indexOf('back') !== -1) {
-                        this.properties.yPos = Math.floor((this.properties.yPos * game.blockLength) - this.moveSpeed) / game.blockLength;
-                    }
-                    else if (this.direction.indexOf('front') !== -1) {
-                        this.properties.yPos = Math.floor((this.properties.yPos * game.blockLength) + this.moveSpeed) / game.blockLength;
-                    }
-                    break;
-            }
-            this.frameStartX = (this.frameIndex % this.properties.framesPerRow) * this.properties.width;
-            this.frameStartY = (Math.floor(this.frameIndex / this.properties.framesPerRow) % this.rows) * this.properties.height;
+            this.setPosDraw(game);
+            this.setDirection(game);
+            this.setFrameStart();
             this.drawShadow(game);
             game.ctx.drawImage(this.img, this.frameStartX, this.frameStartY, this.properties.width, this.properties.height, this.properties.xPosDraw, this.properties.yPosDraw, this.properties.width, this.properties.height);
             if (this.dialogue.dialogues.length > 0)
@@ -822,9 +770,7 @@ define("Character", ["require", "exports", "Entity"], function (require, exports
             game.ctx.fill();
             game.ctx.globalAlpha = 1;
         };
-        Character.prototype.draw = function (game) {
-            this.properties.xPosDraw = game.level.topLeftCornerPosX + Math.round(this.properties.xPos * game.blockLength);
-            this.properties.yPosDraw = game.level.topLeftCornerPosY + Math.round(this.properties.yPos * game.blockLength);
+        Character.prototype.setDirection = function (game) {
             if (this.direction[0])
                 this.orientation = this.direction[0];
             switch (this.action) {
@@ -853,8 +799,11 @@ define("Character", ["require", "exports", "Entity"], function (require, exports
                     }
                     break;
             }
-            this.frameStartX = (this.frameIndex % this.properties.framesPerRow) * this.properties.width;
-            this.frameStartY = (Math.floor(this.frameIndex / this.properties.framesPerRow) % this.rows) * this.properties.height;
+        };
+        Character.prototype.draw = function (game) {
+            this.setPosDraw(game);
+            this.setDirection(game);
+            this.setFrameStart();
             this.drawShadow(game);
             game.ctx.drawImage(this.img, this.frameStartX, this.frameStartY, this.properties.width, this.properties.height, this.properties.xPosDraw, this.properties.yPosDraw, this.properties.width, this.properties.height);
             if (game.hitboxVisible)

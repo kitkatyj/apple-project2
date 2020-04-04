@@ -55,14 +55,21 @@ export class Entity {
         }
     }
 
-    draw(game:Game){
-        this.frameIndex = Math.floor(game.frameCount * this.properties.animateSpeed) % this.properties.totalFrames;
+    setFrameStart(){
         this.frameStartX = (this.frameIndex % this.properties.framesPerRow) * this.properties.width;
         this.frameStartY = (Math.floor(this.frameIndex / this.properties.framesPerRow) % this.rows) * this.properties.height;
+    }
 
-        this.properties.xPosDraw = game.level.topLeftCornerPosX + this.properties.xPos * game.blockLength;
-        this.properties.yPosDraw = game.level.topLeftCornerPosY + this.properties.yPos * game.blockLength;
+    setPosDraw(game:Game){
+        this.properties.xPosDraw = game.level.topLeftCornerPosX + Math.round(this.properties.xPos * game.blockLength);
+        this.properties.yPosDraw = game.level.topLeftCornerPosY + Math.round(this.properties.yPos * game.blockLength);
+    }
 
+    draw(game:Game){
+        this.frameIndex = Math.floor(game.frameCount * this.properties.animateSpeed) % this.properties.totalFrames;
+        this.setFrameStart();
+        this.setPosDraw(game);
+        
         game.ctx.drawImage(this.img,this.frameStartX,this.frameStartY,this.properties.width,this.properties.height,this.properties.xPosDraw,this.properties.yPosDraw,this.properties.width,this.properties.height);
     }
 }
