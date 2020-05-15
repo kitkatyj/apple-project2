@@ -4,7 +4,7 @@ let game:Game = null;
 let canvas,mainBody,resizeTimer,debug = null;
 let paintBgColor = "#200040";
 let frameCounter:boolean = false;
-let debugVisible:boolean = false;
+let debugVisible:boolean = true;
 let pixelFactor = 3;
 let seedFunction:Function;
 
@@ -102,6 +102,7 @@ function debugStatement(){
     debug += "topLeftCornerPosY : "+game.level.topLeftCornerPosY + "<br>";
     // debug += "keyState : "+game.keyState + "<br>";
     debug += "orientation : "+game.level.getPlayer().direction + "<br>";
+    debug += "action : "+game.level.getPlayer().action + "<br>";
  
     return debug;
 }

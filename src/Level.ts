@@ -72,8 +72,8 @@ export class Level {
                     }
                     ,['front'],'normal',0,
                     {
-                        front:[1,4],left:[11,14],right:[16,19],back:[6,9],
-                        frontStill:0,leftStill:10,rightStill:15,backStill:5
+                        frontWalk:[1,4],leftWalk:[11,14],rightWalk:[16,19],backWalk:[6,9],
+                        front:0,left:10,right:15,back:5
                     },
                     game.loadImageMap()
                 );
@@ -88,8 +88,8 @@ export class Level {
                         animateSpeed:1/12
                     },['front'],'normal',0,
                     {
-                        front:[1,4],left:[11,14],right:[16,19],back:[6,9],
-                        frontStill:0,leftStill:10,rightStill:15,backStill:5
+                        frontWalk:[1,4],leftWalk:[11,14],rightWalk:[16,19],backWalk:[6,9],
+                        front:0,left:10,right:15,back:5
                     },
                     game.loadImageMap()
                 );
@@ -104,8 +104,8 @@ export class Level {
                     animateSpeed:1/12
                 },['front'],'normal',0,
                     {
-                        front:[0,3],left:[4,7],right:[8,11],back:[12,15],
-                        frontStill:0,leftStill:5,rightStill:9,backStill:12
+                        frontWalk:[0,3],leftWalk:[4,7],rightWalk:[8,11],backWalk:[12,15],
+                        front:0,left:5,right:9,back:12
                     },
                     game.loadImageMap()
                 );
@@ -143,8 +143,8 @@ export class Level {
                                 animateSpeed:1/12
                             },[char.direction],'normal',0,
                             {
-                                front:[1,4],left:[11,14],right:[16,19],back:[6,9],
-                                frontStill:0,leftStill:10,rightStill:15,backStill:5
+                                frontWalk:[1,4],leftWalk:[11,14],rightWalk:[16,19],backWalk:[6,9],
+                                front:0,left:10,right:15,back:5
                             },game.loadImageMap(),char.dialogue);
                             break;
                         case "player2":
@@ -159,8 +159,8 @@ export class Level {
                                 animateSpeed:1/12
                             },[char.direction],'normal',0,
                             {
-                                front:[1,4],left:[11,14],right:[16,19],back:[6,9],
-                                frontStill:0,leftStill:10,rightStill:15,backStill:5
+                                frontWalk:[1,4],leftWalk:[11,14],rightWalk:[16,19],backWalk:[6,9],
+                                front:0,left:10,right:15,back:5
                             },game.loadImageMap(),char.dialogue);
                             break;
                         case "player3":
@@ -175,8 +175,8 @@ export class Level {
                                 animateSpeed:1/12
                             },[char.direction],'normal',0,
                             {
-                                front:[0,3],left:[4,7],right:[8,11],back:[12,15],
-                                frontStill:0,leftStill:5,rightStill:9,backStill:12
+                                frontWalk:[0,3],leftWalk:[4,7],rightWalk:[8,11],backWalk:[12,15],
+                                front:0,left:5,right:9,back:12
                             },game.loadImageMap(),char.dialogue);
                             break;
                     }
@@ -194,8 +194,8 @@ export class Level {
                         framesPerRow: char.framesPerRow,
                         animateSpeed: char.animateSpeed
                     },['front'],'normal',0,{
-                        front:[0,3],left:[4,7],right:[8,11],back:[12,15],
-                        frontStill:0,leftStill:5,rightStill:9,backStill:12
+                        frontWalk:[0,3],leftWalk:[4,7],rightWalk:[8,11],backWalk:[12,15],
+                        front:0,left:5,right:9,back:12
                     },game.loadImageMap());
 
                     level.setCharacter(charTemp);

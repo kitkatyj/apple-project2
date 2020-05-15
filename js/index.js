@@ -92,6 +92,7 @@ define("Player", ["require", "exports", "Character"], function (require, exports
                 if (game.keyState[16]) {
                     this.moveSpeed = this.tempMoveSpeed * 2;
                     this.animateSpeed = this.properties.animateSpeed * 2;
+                    this.action = 'running';
                 }
                 var orientationBuilder = [];
                 if (game.keyState[37] || game.keyState[65]) {
@@ -183,7 +184,7 @@ define("Dialogue", ["require", "exports"], function (require, exports) {
                     }
                     else {
                         this.dialogueIndex++;
-                        game.level.dialogueBox.setText(game, this.dialogues[this.dialogueIndex]);
+                        game.level.dialogueBox.setText(game.ctx, this.dialogues[this.dialogueIndex]);
                     }
                     var targetOrientation = '';
                     switch (nonPlayer.orientation) {
@@ -259,10 +260,10 @@ define("DialogueBox", ["require", "exports"], function (require, exports) {
             this.xPosDraw = Math.round(game.canvas.width / 2 - this.width / 2);
             this.yPosDraw = Math.round(game.canvas.height - this.height - this.padding * 2);
         };
-        DialogueBox.prototype.setText = function (game, text) {
+        DialogueBox.prototype.setText = function (ctx, text) {
             this.renderIndex = 0;
             this.textLength = text.length;
-            this.text = this.getLines(game.ctx, text);
+            this.text = this.getLines(ctx, text);
         };
         DialogueBox.prototype.resetText = function () {
             this.text = [];
@@ -293,12 +294,13 @@ define("DialogueBox", ["require", "exports"], function (require, exports) {
             return gradient;
         };
         DialogueBox.prototype.draw = function (game) {
-            game.ctx.fillStyle = this.dialogueGradient(game.ctx, "#ccffff");
-            game.level.drawRoundRect(game.ctx, this.xPosDraw, this.yPosDraw, this.width, this.height, 8);
-            game.ctx.fill();
-            game.ctx.lineWidth = 2;
-            game.ctx.strokeStyle = "#336666";
-            game.ctx.stroke();
+            var c = game.ctx;
+            c.fillStyle = this.dialogueGradient(c, "#ccffff");
+            game.level.drawRoundRect(c, this.xPosDraw, this.yPosDraw, this.width, this.height, 8);
+            c.fill();
+            c.lineWidth = 2;
+            c.strokeStyle = "#336666";
+            c.stroke();
             var thisBox = this;
             var renderedLines = [];
             var renderIndexTemp = this.renderIndex;
@@ -319,11 +321,11 @@ define("DialogueBox", ["require", "exports"], function (require, exports) {
             else {
                 renderedLines = this.text;
             }
-            game.ctx.fillStyle = "#000000";
-            game.ctx.font = "16px Determination";
-            game.ctx.textAlign = "left";
+            c.fillStyle = "#000000";
+            c.font = "16px Determination";
+            c.textAlign = "left";
             renderedLines.forEach(function (line, index) {
-                game.ctx.fillText(line, Math.floor(thisBox.xPosDraw + thisBox.padding), Math.floor(thisBox.yPosDraw - 4 + 16 * (index + 1) + thisBox.padding));
+                c.fillText(line, Math.floor(thisBox.xPosDraw + thisBox.padding), Math.floor(thisBox.yPosDraw - 4 + 16 * (index + 1) + thisBox.padding));
             });
             if (this.renderIndex < this.textLength)
                 this.renderIndex += 1 / 2;
@@ -371,8 +373,8 @@ define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlay
                         framesPerRow: 5,
                         animateSpeed: 1 / 12
                     }, ['front'], 'normal', 0, {
-                        front: [1, 4], left: [11, 14], right: [16, 19], back: [6, 9],
-                        frontStill: 0, leftStill: 10, rightStill: 15, backStill: 5
+                        frontWalk: [1, 4], leftWalk: [11, 14], rightWalk: [16, 19], backWalk: [6, 9],
+                        front: 0, left: 10, right: 15, back: 5
                     }, game.loadImageMap());
                     break;
                 case "player2":
@@ -384,8 +386,8 @@ define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlay
                         framesPerRow: 5,
                         animateSpeed: 1 / 12
                     }, ['front'], 'normal', 0, {
-                        front: [1, 4], left: [11, 14], right: [16, 19], back: [6, 9],
-                        frontStill: 0, leftStill: 10, rightStill: 15, backStill: 5
+                        frontWalk: [1, 4], leftWalk: [11, 14], rightWalk: [16, 19], backWalk: [6, 9],
+                        front: 0, left: 10, right: 15, back: 5
                     }, game.loadImageMap());
                     break;
                 case "player3":
@@ -397,8 +399,8 @@ define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlay
                         framesPerRow: 4,
                         animateSpeed: 1 / 12
                     }, ['front'], 'normal', 0, {
-                        front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
-                        frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
+                        frontWalk: [0, 3], leftWalk: [4, 7], rightWalk: [8, 11], backWalk: [12, 15],
+                        front: 0, left: 5, right: 9, back: 12
                     }, game.loadImageMap());
                     break;
             }
@@ -427,8 +429,8 @@ define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlay
                                     framesPerRow: 5,
                                     animateSpeed: 1 / 12
                                 }, [char.direction], 'normal', 0, {
-                                    front: [1, 4], left: [11, 14], right: [16, 19], back: [6, 9],
-                                    frontStill: 0, leftStill: 10, rightStill: 15, backStill: 5
+                                    frontWalk: [1, 4], leftWalk: [11, 14], rightWalk: [16, 19], backWalk: [6, 9],
+                                    front: 0, left: 10, right: 15, back: 5
                                 }, game.loadImageMap(), char.dialogue);
                                 break;
                             case "player2":
@@ -442,8 +444,8 @@ define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlay
                                     framesPerRow: 5,
                                     animateSpeed: 1 / 12
                                 }, [char.direction], 'normal', 0, {
-                                    front: [1, 4], left: [11, 14], right: [16, 19], back: [6, 9],
-                                    frontStill: 0, leftStill: 10, rightStill: 15, backStill: 5
+                                    frontWalk: [1, 4], leftWalk: [11, 14], rightWalk: [16, 19], backWalk: [6, 9],
+                                    front: 0, left: 10, right: 15, back: 5
                                 }, game.loadImageMap(), char.dialogue);
                                 break;
                             case "player3":
@@ -457,8 +459,8 @@ define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlay
                                     framesPerRow: 4,
                                     animateSpeed: 1 / 12
                                 }, [char.direction], 'normal', 0, {
-                                    front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
-                                    frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
+                                    frontWalk: [0, 3], leftWalk: [4, 7], rightWalk: [8, 11], backWalk: [12, 15],
+                                    front: 0, left: 5, right: 9, back: 12
                                 }, game.loadImageMap(), char.dialogue);
                                 break;
                         }
@@ -475,8 +477,8 @@ define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlay
                             framesPerRow: char.framesPerRow,
                             animateSpeed: char.animateSpeed
                         }, ['front'], 'normal', 0, {
-                            front: [0, 3], left: [4, 7], right: [8, 11], back: [12, 15],
-                            frontStill: 0, leftStill: 5, rightStill: 9, backStill: 12
+                            frontWalk: [0, 3], leftWalk: [4, 7], rightWalk: [8, 11], backWalk: [12, 15],
+                            front: 0, left: 5, right: 9, back: 12
                         }, game.loadImageMap());
                         level.setCharacter(charTemp);
                     }
@@ -680,8 +682,8 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
             var thisGame = this;
             xhr.addEventListener("readystatechange", function (e) {
                 if (xhr.readyState == 4 && xhr.status == 200) {
-                    var levelTemp = JSON.parse(xhr.responseText);
-                    thisGame.level = new Level_1.Level(thisGame, levelTemp.width, levelTemp.height, levelTemp.floor, levelTemp.playerPos, levelTemp.characters, levelTemp.entities, seed);
+                    var lvl = JSON.parse(xhr.responseText);
+                    thisGame.level = new Level_1.Level(thisGame, lvl.width, lvl.height, lvl.floor, lvl.playerPos, lvl.characters, lvl.entities, seed);
                 }
             });
         };
@@ -775,13 +777,14 @@ define("Character", ["require", "exports", "Entity"], function (require, exports
                 this.orientation = this.direction[0];
             switch (this.action) {
                 case 'normal':
-                    this.frameIndex = eval('this.orientationFrames.' + this.orientation + 'Still');
+                    this.frameIndex = eval('this.orientationFrames.' + this.orientation);
                     this.frameCount = 0;
                     break;
                 case 'walking':
+                case 'running':
                     this.frameIndex = Math.floor(this.frameCount * this.animateSpeed) % this.properties.totalFrames;
-                    var totalFramesTemp = eval('this.orientationFrames.' + this.orientation + '[1] - this.orientationFrames.' + this.orientation + '[0] + 1');
-                    var startingFrame = eval('this.orientationFrames.' + this.orientation + '[0]');
+                    var totalFramesTemp = eval('this.orientationFrames.' + this.orientation + 'Walk[1] - this.orientationFrames.' + this.orientation + 'Walk[0] + 1');
+                    var startingFrame = eval('this.orientationFrames.' + this.orientation + 'Walk[0]');
                     this.frameIndex = startingFrame + this.frameIndex % totalFramesTemp;
                     this.frameCount++;
                     this.isCollide(game);
@@ -820,7 +823,7 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
     var canvas, mainBody, resizeTimer, debug = null;
     var paintBgColor = "#200040";
     var frameCounter = false;
-    var debugVisible = false;
+    var debugVisible = true;
     var pixelFactor = 3;
     var seedFunction;
     function gameInit(seedFunctionTemp) {
@@ -891,6 +894,7 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         debug += "topLeftCornerPosX : " + game.level.topLeftCornerPosX + "<br>";
         debug += "topLeftCornerPosY : " + game.level.topLeftCornerPosY + "<br>";
         debug += "orientation : " + game.level.getPlayer().direction + "<br>";
+        debug += "action : " + game.level.getPlayer().action + "<br>";
         return debug;
     }
     function canvasSizeReset() {

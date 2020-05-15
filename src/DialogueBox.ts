@@ -29,10 +29,10 @@ export class DialogueBox {
         this.yPosDraw = Math.round(game.canvas.height - this.height - this.padding*2);
     }
 
-    setText(game:Game,text:string){
+    setText(ctx:CanvasRenderingContext2D,text:string){
         this.renderIndex = 0;
         this.textLength = text.length;
-        this.text = this.getLines(game.ctx,text);
+        this.text = this.getLines(ctx,text);
     }
 
     resetText(){
@@ -71,12 +71,14 @@ export class DialogueBox {
     }
 
     draw(game:Game){
-        game.ctx.fillStyle = this.dialogueGradient(game.ctx,"#ccffff");
-        game.level.drawRoundRect(game.ctx,this.xPosDraw,this.yPosDraw,this.width,this.height,8);
-        game.ctx.fill();
-        game.ctx.lineWidth = 2;
-        game.ctx.strokeStyle = "#336666"
-        game.ctx.stroke();
+        let c = game.ctx;
+
+        c.fillStyle = this.dialogueGradient(c,"#ccffff");
+        game.level.drawRoundRect(c,this.xPosDraw,this.yPosDraw,this.width,this.height,8);
+        c.fill();
+        c.lineWidth = 2;
+        c.strokeStyle = "#336666"
+        c.stroke();
 
         let thisBox = this;
 
@@ -101,12 +103,11 @@ export class DialogueBox {
             renderedLines = this.text;
         }
         
-
-        game.ctx.fillStyle = "#000000";
-        game.ctx.font = "16px Determination";
-        game.ctx.textAlign = "left";
+        c.fillStyle = "#000000";
+        c.font = "16px Determination";
+        c.textAlign = "left";
         renderedLines.forEach(function(line,index){
-            game.ctx.fillText(line,Math.floor(thisBox.xPosDraw + thisBox.padding),Math.floor(thisBox.yPosDraw - 4 + 16 * (index+1) + thisBox.padding));
+            c.fillText(line,Math.floor(thisBox.xPosDraw + thisBox.padding),Math.floor(thisBox.yPosDraw - 4 + 16 * (index+1) + thisBox.padding));
         });
 
         if(this.renderIndex < this.textLength) this.renderIndex += 1/2;

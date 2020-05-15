@@ -59,16 +59,16 @@ export class Game {
 
         xhr.addEventListener("readystatechange",function(e){
             if (xhr.readyState == 4 && xhr.status == 200) {
-                let levelTemp = JSON.parse(xhr.responseText);
+                let lvl = JSON.parse(xhr.responseText);
                 
                 thisGame.level = new Level(
                     thisGame,
-                    levelTemp.width,
-                    levelTemp.height,
-                    levelTemp.floor,
-                    levelTemp.playerPos,
-                    levelTemp.characters,
-                    levelTemp.entities,
+                    lvl.width,
+                    lvl.height,
+                    lvl.floor,
+                    lvl.playerPos,
+                    lvl.characters,
+                    lvl.entities,
                     seed
                 );
             }

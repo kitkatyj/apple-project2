@@ -81,7 +81,7 @@ export class Dialogue {
                 else {
                     this.dialogueIndex++;
 
-                    game.level.dialogueBox.setText(game,this.dialogues[this.dialogueIndex]);
+                    game.level.dialogueBox.setText(game.ctx,this.dialogues[this.dialogueIndex]);
                 }
 
                 let targetOrientation = '';

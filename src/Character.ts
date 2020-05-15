@@ -2,14 +2,14 @@ import {Game, ImageMap} from './Game';
 import {Entity,SpriteProperties} from './Entity';
 
 export interface OrientationFrames {
-    front : number[];
-    left : number[];
-    right : number[];
-    back : number[];
-    frontStill : number;
-    leftStill : number;
-    rightStill : number;
-    backStill : number;
+    front : number;
+    left : number;
+    right : number;
+    back : number;
+    frontWalk : number[];
+    leftWalk : number[];
+    rightWalk : number[];
+    backWalk : number[];
 }
 
 export interface Hitbox {
@@ -123,13 +123,14 @@ export class Character extends Entity {
         
         switch(this.action){
             case 'normal':
-                this.frameIndex = eval('this.orientationFrames.'+this.orientation+'Still');
+                this.frameIndex = eval('this.orientationFrames.'+this.orientation);
                 this.frameCount = 0;
                 break;
             case 'walking':
+            case 'running':
                 this.frameIndex = Math.floor(this.frameCount * this.animateSpeed) % this.properties.totalFrames;
-                let totalFramesTemp = eval('this.orientationFrames.'+this.orientation+'[1] - this.orientationFrames.'+this.orientation+'[0] + 1');
-                let startingFrame = eval('this.orientationFrames.'+this.orientation+'[0]');
+                let totalFramesTemp = eval('this.orientationFrames.'+this.orientation+'Walk[1] - this.orientationFrames.'+this.orientation+'Walk[0] + 1');
+                let startingFrame = eval('this.orientationFrames.'+this.orientation+'Walk[0]');
                 this.frameIndex = startingFrame + this.frameIndex % totalFramesTemp;
                 this.frameCount++;
 

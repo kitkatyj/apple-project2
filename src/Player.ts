@@ -21,6 +21,7 @@ export class Player extends Character {
             if(game.keyState[16]){
                 this.moveSpeed = this.tempMoveSpeed * 2;
                 this.animateSpeed = this.properties.animateSpeed * 2;
+                this.action = 'running';
             }
     
             let orientationBuilder:string[] = [];
