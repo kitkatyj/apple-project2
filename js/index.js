@@ -820,14 +820,19 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         mainBody.style.margin = "0";
         mainBody.appendChild(canvas);
         canvasSizeReset();
-        document.getElementById("seed").style.display = "block";
         if (localStorage.getItem("levelSeed")) {
             document.getElementById("seedInput").setAttribute("value", localStorage.getItem("levelSeed"));
         }
         loadGame();
-        document.querySelectorAll("input[name=player]").forEach(function (choice) {
-            choice.addEventListener("change", loadGame);
+        document.querySelector("#settings > a").addEventListener("click", function () {
+            if (this.parentElement.className === 'open') {
+                this.parentElement.className = '';
+            }
+            else {
+                this.parentElement.className = 'open';
+            }
         });
+        document.getElementById("debugBtn").addEventListener("click", toggleDebug);
         document.getElementById("seedBtn").addEventListener("click", loadGame);
         window.addEventListener("resize", function (e) {
             clearTimeout(resizeTimer);
@@ -836,6 +841,9 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         window.requestAnimationFrame(draw);
     }
     exports.gameInit = gameInit;
+    function toggleDebug() {
+        debugVisible = !debugVisible;
+    }
     function loadGame() {
         game = new Game_1.Game(canvas, seedFunction);
         var seedInputValue = document.getElementById("seedInput").value;
@@ -859,6 +867,9 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         game.frameCount++;
         if (game.level && debugVisible) {
             debug.innerHTML = debugStatement();
+        }
+        else {
+            debug.innerHTML = "";
         }
         window.requestAnimationFrame(draw);
     }

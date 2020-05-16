@@ -2,64 +2,26 @@
     <head>
         <title>Apple Project 2</title>
         <link rel="shortcut icon" href="">
-        <link rel="preload" as="font" href="fonts/DeterminationMonoWeb.woff" type="font/woff" crossorigin="anonymous">
+        <link rel="stylesheet" href="css/all.min.css">
+        <link rel="stylesheet" href="css/style.css">
         <script src="js/lib/require.js" data-main="js/index"></script>
-        <style>
-            @font-face {
-                font-family: 'Determination';
-                src: url('fonts/DeterminationMonoWeb.woff');
-            }
-            html {
-                background-color: #200040;
-            }
-
-            body {
-                color: #ffffff;
-                font-family: Arial, Helvetica, sans-serif;
-                display:flex;
-                justify-content: center;
-                align-items: center;
-            }
-
-            h1 {color:#dddddd;}
-
-            #ph {
-                display: inline-block;
-                text-align: center;
-            }
-            
-            canvas {
-                image-rendering: -moz-crisp-edges;
-                image-rendering: -webkit-crisp-edges;
-                image-rendering: pixelated;
-                image-rendering: crisp-edges;
-            }
-
-            #seed {
-                display:none;
-                position: absolute;
-                color: white;
-            }
-
-            #seed {bottom:0; left:0;}
-
-            #debug {
-                position: absolute;
-                top:0; left:0;
-                color:white;
-                max-width: 560px;
-                z-index: 99;
-            }
-        </style>
     </head>
     <body>
         <section id="debug">
     
         </section>
-        <section id="seed">
-            <span>seed:</span>
-            <input type="text" name="seedInput" id="seedInput" value="hello!">
-            <input type="button" name="seedBtn" id="seedBtn" value="update">
+        <section id="settings">
+            <a href="#"><i class="fas fa-cog"></i><span>Settings</span></a>
+            <section>
+                <section>
+                    <span>seed:</span>
+                    <input type="text" name="seedInput" id="seedInput" value="hello!">
+                    <input type="button" name="seedBtn" id="seedBtn" value="update">
+                </section>
+                <section>
+                    <input type="button" name="debugBtn" id="debugBtn" value="debug">
+                </section>
+            </section>
         </section>
         <section id="ph">
             <h1>Apple Project</h1>

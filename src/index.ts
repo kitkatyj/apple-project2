@@ -24,17 +24,21 @@ export function gameInit(seedFunctionTemp:Function){
 
     canvasSizeReset();
 
-    document.getElementById("seed").style.display = "block";
-
     if(localStorage.getItem("levelSeed")){
         document.getElementById("seedInput").setAttribute("value",localStorage.getItem("levelSeed"));
     }
 
     loadGame();
 
-    document.querySelectorAll("input[name=player]").forEach(function(choice){
-        choice.addEventListener("change",loadGame);
+    document.querySelector("#settings > a").addEventListener("click",function(){
+        if(this.parentElement.className === 'open'){
+            this.parentElement.className = '';
+        } else {
+            this.parentElement.className = 'open';
+        }
     });
+
+    document.getElementById("debugBtn").addEventListener("click",toggleDebug);
 
     document.getElementById("seedBtn").addEventListener("click",loadGame);
 
@@ -44,6 +48,10 @@ export function gameInit(seedFunctionTemp:Function){
     });
 
     window.requestAnimationFrame(draw);
+}
+
+function toggleDebug(){
+    debugVisible = !debugVisible;
 }
 
 function loadGame(){
@@ -75,6 +83,9 @@ function draw(){
 
     if(game.level && debugVisible){
         debug.innerHTML = debugStatement();
+    }
+    else {
+        debug.innerHTML = "";
     }
 
     window.requestAnimationFrame(draw);
