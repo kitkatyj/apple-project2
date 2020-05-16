@@ -57,60 +57,41 @@ export class Level {
 
         let applePlayer:Player;
 
-        // Apple Player different art variants
-        switch(document.querySelector("input[name=player]:checked").getAttribute("value")){
-            case "player1":
-                applePlayer = new Player({
-                        xPos:playerPosTemp[0],
-                        yPos:playerPosTemp[1],
-                        width:32,
-                        height:32,
-                        src:'res/yx/apple.png',
-                        totalFrames:20,
-                        framesPerRow:5,
-                        animateSpeed:1/12
-                    }
-                    ,['front'],'normal',0,
-                    {
-                        frontWalk:[1,4],leftWalk:[11,14],rightWalk:[16,19],backWalk:[6,9],
-                        front:0,left:10,right:15,back:5
-                    },
-                    game.loadImageMap()
-                );
-                break;
-            case "player2":
-                    applePlayer = new Player({
-                        xPos:playerPosTemp[0],
-                        yPos:playerPosTemp[1],
-                        src:'res/yj/apple.png',
-                        totalFrames:20,
-                        framesPerRow:5,
-                        animateSpeed:1/12
-                    },['front'],'normal',0,
-                    {
-                        frontWalk:[1,4],leftWalk:[11,14],rightWalk:[16,19],backWalk:[6,9],
-                        front:0,left:10,right:15,back:5
-                    },
-                    game.loadImageMap()
-                );
-                break;
-            case "player3":
-                applePlayer = new Player({
-                    xPos:playerPosTemp[0],
-                    yPos:playerPosTemp[1],
-                    src:'res/yy/apple.png',
-                    totalFrames:16,
-                    framesPerRow:4,
-                    animateSpeed:1/12
-                },['front'],'normal',0,
-                    {
-                        frontWalk:[0,3],leftWalk:[4,7],rightWalk:[8,11],backWalk:[12,15],
-                        front:0,left:5,right:9,back:12
-                    },
-                    game.loadImageMap()
-                );
-                break;
-        }
+        applePlayer = new Player({
+                xPos:playerPosTemp[0],
+                yPos:playerPosTemp[1],
+                width:32,
+                height:32,
+                src:'res/apple320.png',
+                totalFrames:40,
+                framesPerRow:10,
+                animateSpeed:1/12
+            }
+            ,['front'],'normal',0,
+            {
+                front:{
+                    normal:0,
+                    walking:[1,4],
+                    running:[5,9]
+                },
+                back:{
+                    normal:10,
+                    walking:[11,14],
+                    running:[15,19]
+                },
+                left:{
+                    normal:20,
+                    walking:[21,24],
+                    running:[25,29]
+                },
+                right:{
+                    normal:30,
+                    walking:[31,34],
+                    running:[35,39]
+                }
+            },
+            game.loadImageMap()
+        );
 
         let levelMap:boolean[][] = [];
 
@@ -129,57 +110,34 @@ export class Level {
                 if(char.name === "clementine"){
                     let npClementine:NonPlayer;
 
-                    // Clementine different art variants
-                    switch(document.querySelector("input[name=player]:checked").getAttribute("value")){
-                        case "player1":
-                            npClementine = new NonPlayer({
-                                src: 'res/yx/clem.png',
-                                xPos: pos[0],
-                                yPos: pos[1],
-                                width: char.width,
-                                height: char.height,
-                                totalFrames:20,
-                                framesPerRow:5,
-                                animateSpeed:1/12
-                            },[char.direction],'normal',0,
-                            {
-                                frontWalk:[1,4],leftWalk:[11,14],rightWalk:[16,19],backWalk:[6,9],
-                                front:0,left:10,right:15,back:5
-                            },game.loadImageMap(),char.dialogue);
-                            break;
-                        case "player2":
-                            npClementine = new NonPlayer({
-                                src: 'res/yj/clem.png',
-                                xPos: pos[0],
-                                yPos: pos[1],
-                                width: char.width,
-                                height: char.height,
-                                totalFrames:20,
-                                framesPerRow:5,
-                                animateSpeed:1/12
-                            },[char.direction],'normal',0,
-                            {
-                                frontWalk:[1,4],leftWalk:[11,14],rightWalk:[16,19],backWalk:[6,9],
-                                front:0,left:10,right:15,back:5
-                            },game.loadImageMap(),char.dialogue);
-                            break;
-                        case "player3":
-                            npClementine = new NonPlayer({
-                                src: 'res/yy/clem.png',
-                                xPos: pos[0],
-                                yPos: pos[1],
-                                width: char.width,
-                                height: char.height,
-                                totalFrames:16,
-                                framesPerRow:4,
-                                animateSpeed:1/12
-                            },[char.direction],'normal',0,
-                            {
-                                frontWalk:[0,3],leftWalk:[4,7],rightWalk:[8,11],backWalk:[12,15],
-                                front:0,left:5,right:9,back:12
-                            },game.loadImageMap(),char.dialogue);
-                            break;
-                    }
+                    npClementine = new NonPlayer({
+                        src: 'res/clem.png',
+                        xPos: pos[0],
+                        yPos: pos[1],
+                        width: char.width,
+                        height: char.height,
+                        totalFrames:20,
+                        framesPerRow:5,
+                        animateSpeed:1/12
+                    },[char.direction],'normal',0,
+                    {
+                        front:{
+                            normal:0,
+                            walking:[1,4]
+                        },
+                        back:{
+                            normal:5,
+                            walking:[6,9]
+                        },
+                        left:{
+                            normal:10,
+                            walking:[11,14]
+                        },
+                        right:{
+                            normal:15,
+                            walking:[16,19]
+                        }
+                    },game.loadImageMap(),char.dialogue);
 
                     level.setCharacter(npClementine);
                 }
@@ -194,8 +152,22 @@ export class Level {
                         framesPerRow: char.framesPerRow,
                         animateSpeed: char.animateSpeed
                     },['front'],'normal',0,{
-                        frontWalk:[0,3],leftWalk:[4,7],rightWalk:[8,11],backWalk:[12,15],
-                        front:0,left:5,right:9,back:12
+                        front:{
+                            normal:0,
+                            walking:[1,4]
+                        },
+                        back:{
+                            normal:5,
+                            walking:[6,9]
+                        },
+                        left:{
+                            normal:10,
+                            walking:[11,14]
+                        },
+                        right:{
+                            normal:15,
+                            walking:[16,19]
+                        }
                     },game.loadImageMap());
 
                     level.setCharacter(charTemp);

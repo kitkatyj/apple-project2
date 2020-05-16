@@ -35,16 +35,17 @@
                 image-rendering: crisp-edges;
             }
 
-            #choices,#seed {
+            #seed {
                 display:none;
                 position: absolute;
                 color: white;
             }
 
-            #choices {top:0; left:0;}
             #seed {bottom:0; left:0;}
 
             #debug {
+                position: absolute;
+                top:0; left:0;
                 color:white;
                 max-width: 560px;
                 z-index: 99;
@@ -52,20 +53,10 @@
         </style>
     </head>
     <body>
-        <section id="choices">
-            <input type="radio" name="player" id="player1" value="player1" checked>
-            <label for="player1">YX's</label>
-
-            <input type="radio" name="player" id="player2" value="player2">
-            <label for="player2">YJ's</label>
-
-            <input type="radio" name="player" id="player3" value="player3">
-            <label for="player3">YY's</label>
+        <section id="debug">
+    
         </section>
         <section id="seed">
-            <section id="debug">
-    
-            </section>
             <span>seed:</span>
             <input type="text" name="seedInput" id="seedInput" value="hello!">
             <input type="button" name="seedBtn" id="seedBtn" value="update">

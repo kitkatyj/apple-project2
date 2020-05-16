@@ -15,13 +15,14 @@ export class Player extends Character {
 
         if(game.level.dialogueBox.text.length === 0){
             if(game.keyState[37] || game.keyState[65] || game.keyState[39] || game.keyState[68] || game.keyState[38] || game.keyState[87] || game.keyState[40] || game.keyState[83]){
-                this.action = 'walking';
-            }
-    
-            if(game.keyState[16]){
-                this.moveSpeed = this.tempMoveSpeed * 2;
-                this.animateSpeed = this.properties.animateSpeed * 2;
-                this.action = 'running';
+                if(game.keyState[16]){
+                    this.moveSpeed = this.tempMoveSpeed * 2;
+                    this.animateSpeed = this.properties.animateSpeed * 2;
+                    this.action = 'running';
+                }
+                else {
+                    this.action = 'walking';
+                }
             }
     
             let orientationBuilder:string[] = [];

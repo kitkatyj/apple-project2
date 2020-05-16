@@ -87,12 +87,14 @@ define("Player", ["require", "exports", "Character"], function (require, exports
             this.animateSpeed = this.properties.animateSpeed;
             if (game.level.dialogueBox.text.length === 0) {
                 if (game.keyState[37] || game.keyState[65] || game.keyState[39] || game.keyState[68] || game.keyState[38] || game.keyState[87] || game.keyState[40] || game.keyState[83]) {
-                    this.action = 'walking';
-                }
-                if (game.keyState[16]) {
-                    this.moveSpeed = this.tempMoveSpeed * 2;
-                    this.animateSpeed = this.properties.animateSpeed * 2;
-                    this.action = 'running';
+                    if (game.keyState[16]) {
+                        this.moveSpeed = this.tempMoveSpeed * 2;
+                        this.animateSpeed = this.properties.animateSpeed * 2;
+                        this.action = 'running';
+                    }
+                    else {
+                        this.action = 'walking';
+                    }
                 }
                 var orientationBuilder = [];
                 if (game.keyState[37] || game.keyState[65]) {
@@ -361,49 +363,37 @@ define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlay
             var level = this;
             var playerPosTemp = playerPos;
             var applePlayer;
-            switch (document.querySelector("input[name=player]:checked").getAttribute("value")) {
-                case "player1":
-                    applePlayer = new Player_1.Player({
-                        xPos: playerPosTemp[0],
-                        yPos: playerPosTemp[1],
-                        width: 32,
-                        height: 32,
-                        src: 'res/yx/apple.png',
-                        totalFrames: 20,
-                        framesPerRow: 5,
-                        animateSpeed: 1 / 12
-                    }, ['front'], 'normal', 0, {
-                        frontWalk: [1, 4], leftWalk: [11, 14], rightWalk: [16, 19], backWalk: [6, 9],
-                        front: 0, left: 10, right: 15, back: 5
-                    }, game.loadImageMap());
-                    break;
-                case "player2":
-                    applePlayer = new Player_1.Player({
-                        xPos: playerPosTemp[0],
-                        yPos: playerPosTemp[1],
-                        src: 'res/yj/apple.png',
-                        totalFrames: 20,
-                        framesPerRow: 5,
-                        animateSpeed: 1 / 12
-                    }, ['front'], 'normal', 0, {
-                        frontWalk: [1, 4], leftWalk: [11, 14], rightWalk: [16, 19], backWalk: [6, 9],
-                        front: 0, left: 10, right: 15, back: 5
-                    }, game.loadImageMap());
-                    break;
-                case "player3":
-                    applePlayer = new Player_1.Player({
-                        xPos: playerPosTemp[0],
-                        yPos: playerPosTemp[1],
-                        src: 'res/yy/apple.png',
-                        totalFrames: 16,
-                        framesPerRow: 4,
-                        animateSpeed: 1 / 12
-                    }, ['front'], 'normal', 0, {
-                        frontWalk: [0, 3], leftWalk: [4, 7], rightWalk: [8, 11], backWalk: [12, 15],
-                        front: 0, left: 5, right: 9, back: 12
-                    }, game.loadImageMap());
-                    break;
-            }
+            applePlayer = new Player_1.Player({
+                xPos: playerPosTemp[0],
+                yPos: playerPosTemp[1],
+                width: 32,
+                height: 32,
+                src: 'res/apple320.png',
+                totalFrames: 40,
+                framesPerRow: 10,
+                animateSpeed: 1 / 12
+            }, ['front'], 'normal', 0, {
+                front: {
+                    normal: 0,
+                    walking: [1, 4],
+                    running: [5, 9]
+                },
+                back: {
+                    normal: 10,
+                    walking: [11, 14],
+                    running: [15, 19]
+                },
+                left: {
+                    normal: 20,
+                    walking: [21, 24],
+                    running: [25, 29]
+                },
+                right: {
+                    normal: 30,
+                    walking: [31, 34],
+                    running: [35, 39]
+                }
+            }, game.loadImageMap());
             var levelMap = [];
             for (var i = 0; i < level.blockHeight; i++) {
                 levelMap[i] = [];
@@ -417,53 +407,33 @@ define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlay
                 char.position.forEach(function (pos) {
                     if (char.name === "clementine") {
                         var npClementine = void 0;
-                        switch (document.querySelector("input[name=player]:checked").getAttribute("value")) {
-                            case "player1":
-                                npClementine = new NonPlayer_1.NonPlayer({
-                                    src: 'res/yx/clem.png',
-                                    xPos: pos[0],
-                                    yPos: pos[1],
-                                    width: char.width,
-                                    height: char.height,
-                                    totalFrames: 20,
-                                    framesPerRow: 5,
-                                    animateSpeed: 1 / 12
-                                }, [char.direction], 'normal', 0, {
-                                    frontWalk: [1, 4], leftWalk: [11, 14], rightWalk: [16, 19], backWalk: [6, 9],
-                                    front: 0, left: 10, right: 15, back: 5
-                                }, game.loadImageMap(), char.dialogue);
-                                break;
-                            case "player2":
-                                npClementine = new NonPlayer_1.NonPlayer({
-                                    src: 'res/yj/clem.png',
-                                    xPos: pos[0],
-                                    yPos: pos[1],
-                                    width: char.width,
-                                    height: char.height,
-                                    totalFrames: 20,
-                                    framesPerRow: 5,
-                                    animateSpeed: 1 / 12
-                                }, [char.direction], 'normal', 0, {
-                                    frontWalk: [1, 4], leftWalk: [11, 14], rightWalk: [16, 19], backWalk: [6, 9],
-                                    front: 0, left: 10, right: 15, back: 5
-                                }, game.loadImageMap(), char.dialogue);
-                                break;
-                            case "player3":
-                                npClementine = new NonPlayer_1.NonPlayer({
-                                    src: 'res/yy/clem.png',
-                                    xPos: pos[0],
-                                    yPos: pos[1],
-                                    width: char.width,
-                                    height: char.height,
-                                    totalFrames: 16,
-                                    framesPerRow: 4,
-                                    animateSpeed: 1 / 12
-                                }, [char.direction], 'normal', 0, {
-                                    frontWalk: [0, 3], leftWalk: [4, 7], rightWalk: [8, 11], backWalk: [12, 15],
-                                    front: 0, left: 5, right: 9, back: 12
-                                }, game.loadImageMap(), char.dialogue);
-                                break;
-                        }
+                        npClementine = new NonPlayer_1.NonPlayer({
+                            src: 'res/clem.png',
+                            xPos: pos[0],
+                            yPos: pos[1],
+                            width: char.width,
+                            height: char.height,
+                            totalFrames: 20,
+                            framesPerRow: 5,
+                            animateSpeed: 1 / 12
+                        }, [char.direction], 'normal', 0, {
+                            front: {
+                                normal: 0,
+                                walking: [1, 4]
+                            },
+                            back: {
+                                normal: 5,
+                                walking: [6, 9]
+                            },
+                            left: {
+                                normal: 10,
+                                walking: [11, 14]
+                            },
+                            right: {
+                                normal: 15,
+                                walking: [16, 19]
+                            }
+                        }, game.loadImageMap(), char.dialogue);
                         level.setCharacter(npClementine);
                     }
                     else {
@@ -477,8 +447,22 @@ define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlay
                             framesPerRow: char.framesPerRow,
                             animateSpeed: char.animateSpeed
                         }, ['front'], 'normal', 0, {
-                            frontWalk: [0, 3], leftWalk: [4, 7], rightWalk: [8, 11], backWalk: [12, 15],
-                            front: 0, left: 5, right: 9, back: 12
+                            front: {
+                                normal: 0,
+                                walking: [1, 4]
+                            },
+                            back: {
+                                normal: 5,
+                                walking: [6, 9]
+                            },
+                            left: {
+                                normal: 10,
+                                walking: [11, 14]
+                            },
+                            right: {
+                                normal: 15,
+                                walking: [16, 19]
+                            }
                         }, game.loadImageMap());
                         level.setCharacter(charTemp);
                     }
@@ -777,14 +761,14 @@ define("Character", ["require", "exports", "Entity"], function (require, exports
                 this.orientation = this.direction[0];
             switch (this.action) {
                 case 'normal':
-                    this.frameIndex = eval('this.orientationFrames.' + this.orientation);
+                    this.frameIndex = eval('this.orientationFrames.' + this.orientation + '.' + this.action);
                     this.frameCount = 0;
                     break;
                 case 'walking':
                 case 'running':
                     this.frameIndex = Math.floor(this.frameCount * this.animateSpeed) % this.properties.totalFrames;
-                    var totalFramesTemp = eval('this.orientationFrames.' + this.orientation + 'Walk[1] - this.orientationFrames.' + this.orientation + 'Walk[0] + 1');
-                    var startingFrame = eval('this.orientationFrames.' + this.orientation + 'Walk[0]');
+                    var totalFramesTemp = eval('this.orientationFrames.' + this.orientation + '.' + this.action + '[1] - this.orientationFrames.' + this.orientation + '.' + this.action + '[0] + 1');
+                    var startingFrame = eval('this.orientationFrames.' + this.orientation + '.' + this.action + '[0]');
                     this.frameIndex = startingFrame + this.frameIndex % totalFramesTemp;
                     this.frameCount++;
                     this.isCollide(game);
@@ -823,7 +807,7 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
     var canvas, mainBody, resizeTimer, debug = null;
     var paintBgColor = "#200040";
     var frameCounter = false;
-    var debugVisible = true;
+    var debugVisible = false;
     var pixelFactor = 3;
     var seedFunction;
     function gameInit(seedFunctionTemp) {
@@ -836,7 +820,6 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         mainBody.style.margin = "0";
         mainBody.appendChild(canvas);
         canvasSizeReset();
-        document.getElementById("choices").style.display = "block";
         document.getElementById("seed").style.display = "block";
         if (localStorage.getItem("levelSeed")) {
             document.getElementById("seedInput").setAttribute("value", localStorage.getItem("levelSeed"));

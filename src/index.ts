@@ -4,7 +4,7 @@ let game:Game = null;
 let canvas,mainBody,resizeTimer,debug = null;
 let paintBgColor = "#200040";
 let frameCounter:boolean = false;
-let debugVisible:boolean = true;
+let debugVisible:boolean = false;
 let pixelFactor = 3;
 let seedFunction:Function;
 
@@ -24,7 +24,6 @@ export function gameInit(seedFunctionTemp:Function){
 
     canvasSizeReset();
 
-    document.getElementById("choices").style.display = "block";
     document.getElementById("seed").style.display = "block";
 
     if(localStorage.getItem("levelSeed")){
