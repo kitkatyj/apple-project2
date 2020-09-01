@@ -16,12 +16,48 @@ body {
 
 h1 {color:#dddddd;}
 
-#ph {
+button,[type="button"],[type="reset"],[type="submit"] {
+    font-size: 1em;
+    background-color: #ffffff;
+    padding:0.25em 0.5em;
+    border:2px solid rgba(0,0,0,0.4);
+    box-shadow: none;
+    border-radius: 0.5em;
+    line-height: 1;
+}
+button:hover,[type="button"]:hover,[type="reset"]:hover,[type="submit"]:hover {
+    background-color: #ddd;
+}
+button:active,[type="button"]:active,[type="reset"]:active,[type="submit"]:active {
+    background-color: #888;
+    color:#fff;
+}
+button > span {
+    margin:0.25em;
+}
+
+#start {
+    font-size:1.25em;
     display: inline-block;
     text-align: center;
 }
 
-canvas {
+#start button {
+    background:none;
+    border-color: #fce8cc;
+    color: #fce8cc;
+}
+#start button:hover {
+    background-color:#fce8cc;
+    color:#402000;
+    border-color: #8c6940;
+}
+
+#applelogo {
+    width:50%;
+}
+
+canvas,#applelogo {
     image-rendering: -moz-crisp-edges;
     image-rendering: -webkit-crisp-edges;
     image-rendering: pixelated;
@@ -33,6 +69,7 @@ canvas {
     position: absolute;
     color: white;
     top:1em; right:1em;
+    transform: rotate(90deg);
 }
 
 #settings > a {
@@ -51,12 +88,16 @@ canvas {
 #settings > section {
     display: none;
     margin-top: 0.5em;
-    border-radius: 0.5em;
+    border-radius: 1em;
     background-color: rgba(0,0,0,0.5);
 }
 
 #settings > section > section {
     padding: 0.5em;
+}
+
+#settings.open {
+    transform: rotate(0deg);
 }
 
 #settings.open > section {

@@ -23,6 +23,9 @@ export class Player extends Character {
                 else {
                     this.action = 'walking';
                 }
+
+                // console.log('playing');
+                // this.sounds[0].audio.play();
             }
     
             let orientationBuilder:string[] = [];

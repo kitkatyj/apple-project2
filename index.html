@@ -2,30 +2,23 @@
     <head>
         <title>Apple Project 2</title>
         <link rel="shortcut icon" href="">
+        <link rel="preload" as="font" href="fonts/DeterminationMonoWeb.woff" type="font/woff2">
         <link rel="stylesheet" href="css/all.min.css">
         <link rel="stylesheet" href="css/style.css">
         <script src="js/lib/require.js" data-main="js/index"></script>
     </head>
     <body>
+        <section id="start">
+            <h1>Apple Project</h1>
+            <img id="applelogo" src="res/applelogo.png" alt="Apple Project Logo">
+            <p>Copyright &copy; kitkatyj + natsonice 2020</p>
+            <button id="playBtn"><span class="fas fa-play"></span><span>Play</span></button>
+        </section>
         <section id="debug">
     
         </section>
         <section id="settings">
-            <a href="#"><i class="fas fa-cog"></i><span>Settings</span></a>
-            <section>
-                <section>
-                    <span>seed:</span>
-                    <input type="text" name="seedInput" id="seedInput" value="hello!">
-                    <input type="button" name="seedBtn" id="seedBtn" value="update">
-                </section>
-                <section>
-                    <input type="button" name="debugBtn" id="debugBtn" value="debug">
-                </section>
-            </section>
-        </section>
-        <section id="ph">
-            <h1>Apple Project</h1>
-            <p>Copyright &copy; 2020 Kat YJ</p>
+            
         </section>
         <script>
             require(['index','lib/seedrandom'],function(index,seedrandom){

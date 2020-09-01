@@ -12,23 +12,31 @@ export function gameInit(seedFunctionTemp:Function){
 
     console.log("Ready!");
 
-    document.getElementById("ph").remove();
+    seedFunction = seedFunctionTemp;
+    document.getElementById("playBtn").addEventListener("click",loadGame);
+}
 
+function toggleDebug(){
+    debugVisible = !debugVisible;
+}
+
+function loadGame(){
     canvas = document.createElement("canvas");
     mainBody = document.getElementsByTagName("body")[0];
     debug = document.getElementById("debug");
-    seedFunction = seedFunctionTemp;
 
     mainBody.style.margin = "0";
     mainBody.appendChild(canvas);
 
     canvasSizeReset();
 
-    if(localStorage.getItem("levelSeed")){
-        document.getElementById("seedInput").setAttribute("value",localStorage.getItem("levelSeed"));
-    }
-
-    loadGame();
+    window.addEventListener("resize",function(e){
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(canvasSizeReset,250);
+    });
+    
+    document.getElementById("start").remove();
+    document.getElementById("settings").innerHTML = "<a href='#'><i class='fas fa-cog'></i><span>Settings</span></a><section><section><span>seed:</span><input type='text' name='seedInput' id='seedInput' value='hello!'><input type='button' name='seedBtn' id='seedBtn' value='update'></section><section><input type='button' name='debugBtn' id='debugBtn' value='debug'></section></section>";
 
     document.querySelector("#settings > a").addEventListener("click",function(){
         if(this.parentElement.className === 'open'){
@@ -37,34 +45,22 @@ export function gameInit(seedFunctionTemp:Function){
             this.parentElement.className = 'open';
         }
     });
-
+    
     document.getElementById("debugBtn").addEventListener("click",toggleDebug);
-
     document.getElementById("seedBtn").addEventListener("click",loadGame);
 
-    window.addEventListener("resize",function(e){
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(canvasSizeReset,250);
-    });
+    if(localStorage.getItem("levelSeed")){
+        document.getElementById("seedInput").setAttribute("value",localStorage.getItem("levelSeed"));
+    }
 
-    window.requestAnimationFrame(draw);
-}
-
-function toggleDebug(){
-    debugVisible = !debugVisible;
-}
-
-function loadGame(){
     game = new Game(canvas,seedFunction);
 
     let seedInputValue = (<HTMLInputElement>document.getElementById("seedInput")).value;
 
-    document.querySelectorAll("input[name=player]").forEach(function(choice){
-        (<HTMLInputElement>choice).blur();
-    });
-
     game.loadLevel(seedInputValue);
     localStorage.setItem("levelSeed",seedInputValue);
+
+    window.requestAnimationFrame(draw);
 }
 
 function draw(){    
