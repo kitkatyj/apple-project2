@@ -14,8 +14,6 @@ body {
     align-items: center;
 }
 
-h1 {color:#dddddd;}
-
 button,[type="button"],[type="reset"],[type="submit"] {
     font-size: 1em;
     background-color: #ffffff;
@@ -24,6 +22,7 @@ button,[type="button"],[type="reset"],[type="submit"] {
     box-shadow: none;
     border-radius: 0.5em;
     line-height: 1;
+    cursor: pointer;
 }
 button:hover,[type="button"]:hover,[type="reset"]:hover,[type="submit"]:hover {
     background-color: #ddd;
@@ -43,6 +42,7 @@ button > span {
 }
 
 #start button {
+    font-size:1.25em;
     background:none;
     border-color: #fce8cc;
     color: #fce8cc;
@@ -52,12 +52,16 @@ button > span {
     color:#402000;
     border-color: #8c6940;
 }
-
-#applelogo {
-    width:50%;
+#start h1 {
+    background-image: url('../res/appletitle2.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    width:300px; height:164px;
+    text-indent: -9999px;
+    margin:0 auto;
 }
 
-canvas,#applelogo {
+canvas,#applelogo,#start h1 {
     image-rendering: -moz-crisp-edges;
     image-rendering: -webkit-crisp-edges;
     image-rendering: pixelated;
@@ -110,4 +114,10 @@ canvas,#applelogo {
     color:white;
     max-width: 560px;
     z-index: 99;
+}
+
+@media screen and (min-width: 540px) {
+    #start h1 {
+        width:450px; height:246px;
+    }
 }
