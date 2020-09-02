@@ -13,7 +13,13 @@ export function gameInit(seedFunctionTemp:Function){
     console.log("Ready!");
 
     seedFunction = seedFunctionTemp;
-    document.getElementById("playBtn").addEventListener("click",loadGame);
+
+    if(!JSON.parse(localStorage.getItem("showStart"))){
+        loadGame();
+        (<HTMLInputElement>document.getElementById("showStart")).checked = false;
+    } else {
+        document.getElementById("playBtn").addEventListener("click",loadGame);
+    }
 }
 
 function toggleDebug(){
@@ -36,7 +42,7 @@ function loadGame(){
     });
     
     document.getElementById("start").remove();
-    document.getElementById("settings").innerHTML = "<a href='#'><i class='fas fa-cog'></i><span>Settings</span></a><section><section><span>seed:</span><input type='text' name='seedInput' id='seedInput' value='hello!'><input type='button' name='seedBtn' id='seedBtn' value='update'></section><section><input type='button' name='debugBtn' id='debugBtn' value='debug'></section></section>";
+    document.getElementById("settings").innerHTML = settingsScreen();
 
     document.querySelector("#settings > a").addEventListener("click",function(){
         if(this.parentElement.className === 'open'){
@@ -46,21 +52,35 @@ function loadGame(){
         }
     });
     
-    document.getElementById("debugBtn").addEventListener("click",toggleDebug);
-    document.getElementById("seedBtn").addEventListener("click",loadGame);
+    document.getElementById("showDebug").addEventListener("click",toggleDebug);
+    document.getElementById("seedBtn").addEventListener("click",loadGame2);
+    
+    document.getElementById("showStart").addEventListener("change",function(e){
+        localStorage.setItem("showStart",JSON.stringify((<HTMLInputElement>document.getElementById("showStart")).checked));
+    });
 
-    if(localStorage.getItem("levelSeed")){
-        document.getElementById("seedInput").setAttribute("value",localStorage.getItem("levelSeed"));
+    document.getElementById("showDebug").addEventListener("change",function(e){
+        localStorage.setItem("debug",JSON.stringify((<HTMLInputElement>document.getElementById("showDebug")).checked));
+    })
+
+    if(localStorage.getItem("levelSeed")) document.getElementById("seedInput").setAttribute("value",localStorage.getItem("levelSeed"));
+    if(JSON.parse(localStorage.getItem("debug"))){
+        debugVisible = true; 
+        (<HTMLInputElement>document.getElementById("showDebug")).checked = true;
     }
 
+    loadGame2();
+
+    window.requestAnimationFrame(draw);
+}
+
+function loadGame2(){
     game = new Game(canvas,seedFunction);
 
     let seedInputValue = (<HTMLInputElement>document.getElementById("seedInput")).value;
 
     game.loadLevel(seedInputValue);
     localStorage.setItem("levelSeed",seedInputValue);
-
-    window.requestAnimationFrame(draw);
 }
 
 function draw(){    
@@ -85,6 +105,19 @@ function draw(){
     }
 
     window.requestAnimationFrame(draw);
+}
+
+function settingsScreen(){
+    let settings = "";
+
+    settings += "<a href='#'><i class='fas fa-cog'></i><span>Settings</span></a>";
+    settings += "<section>";
+    settings += "<section><span>seed:</span><input type='text' name='seedInput' id='seedInput' value='hello!'><input type='button' name='seedBtn' id='seedBtn' value='update'></section>";
+    settings += "<section><label for='showDebug'><span>show debug</span><input type='checkbox' name='showDebug' id='showDebug'></label></section>";
+    settings += "<section><label for='showStart'><span>show start screen</span><input id='showStart' name='showStart' type='checkbox' checked></label></section>";
+    settings += "</section>"
+
+    return settings;
 }
 
 function debugStatement(){

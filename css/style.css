@@ -14,21 +14,29 @@ body {
     align-items: center;
 }
 
-button,[type="button"],[type="reset"],[type="submit"] {
+input[type="text"],button,[type="button"],[type="reset"],[type="submit"] {
     font-size: 1em;
-    background-color: #ffffff;
     padding:0.25em 0.5em;
     border:2px solid rgba(0,0,0,0.4);
     box-shadow: none;
     border-radius: 0.5em;
     line-height: 1;
+    margin:0 0.25em;
+}
+
+input[type="text"] {
+    background-color: #ffffff;
+}
+
+button,[type="button"],[type="reset"],[type="submit"] {
+    background-color: #fce8cc;
     cursor: pointer;
 }
 button:hover,[type="button"]:hover,[type="reset"]:hover,[type="submit"]:hover {
-    background-color: #ddd;
+    background-color: #ffd9a4;
 }
 button:active,[type="button"]:active,[type="reset"]:active,[type="submit"]:active {
-    background-color: #888;
+    background-color: #8c6940;
     color:#fff;
 }
 button > span {
@@ -94,6 +102,7 @@ canvas,#applelogo,#start h1 {
     margin-top: 0.5em;
     border-radius: 1em;
     background-color: rgba(0,0,0,0.5);
+    box-shadow: 0.25em 0.25em 0 rgba(0,0,0,0.2);
 }
 
 #settings > section > section {
