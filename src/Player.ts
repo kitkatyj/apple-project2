@@ -23,9 +23,6 @@ export class Player extends Character {
                 else {
                     this.action = 'walking';
                 }
-
-                // console.log('playing');
-                // this.sounds[0].audio.play();
             }
     
             let orientationBuilder:string[] = [];
@@ -49,6 +46,11 @@ export class Player extends Character {
         this.setPosDraw(game);
 
         this.setDirection(game);
+
+        if((this.sound == undefined ||  this.sound.playState == "playFinished") && this.action == "walking" && this.direction.length > 0){
+            let walkSounds = ['walk1','walk2','walk3','walk4'];
+            this.sound = game.createjs.Sound.play( walkSounds[Math.floor(Math.random() * walkSounds.length)]);
+        }
         
         this.setFrameStart();
         this.drawShadow(game);

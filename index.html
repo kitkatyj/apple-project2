@@ -20,8 +20,8 @@
             
         </section>
         <script>
-            require(['index','lib/seedrandom'],function(index,seedrandom){
-                index.gameInit(seedrandom);
+            require(['index','lib/seedrandom','lib/soundjs.min'],function(index,seedrandom){
+                index.gameInit(seedrandom,createjs);
             });
         </script>
     </body>

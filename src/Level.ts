@@ -44,7 +44,16 @@ export class Level {
             this.floorImg.src = "res/"+this.floorSrc;
         }
 
-        this.entities = {bottom:[],solid:[],ground:[],top:[]}
+        let sounds = [
+            {src:"grass1.ogg",id:"walk1"},
+            {src:"grass2.ogg",id:"walk2"},
+            {src:"grass3.ogg",id:"walk3"},
+            {src:"grass4.ogg",id:"walk4"}
+        ]
+
+        game.createjs.Sound.registerSounds(sounds,'audio/');
+
+        this.entities = {bottom:[],solid:[],ground:[],top:[]};
 
         this.seed = seed;
         this.seedGen = game.seedFunction(this.seed);

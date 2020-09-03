@@ -114,6 +114,10 @@ define("Player", ["require", "exports", "Character"], function (require, exports
             }
             this.setPosDraw(game);
             this.setDirection(game);
+            if ((this.sound == undefined || this.sound.playState == "playFinished") && this.action == "walking" && this.direction.length > 0) {
+                var walkSounds = ['walk1', 'walk2', 'walk3', 'walk4'];
+                this.sound = game.createjs.Sound.play(walkSounds[Math.floor(Math.random() * walkSounds.length)]);
+            }
             this.setFrameStart();
             this.drawShadow(game);
             game.ctx.drawImage(this.img, this.frameStartX, this.frameStartY, this.properties.width, this.properties.height, this.properties.xPosDraw, this.properties.yPosDraw, this.properties.width, this.properties.height);
@@ -356,6 +360,13 @@ define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlay
                 this.floorImg = new Image();
                 this.floorImg.src = "res/" + this.floorSrc;
             }
+            var sounds = [
+                { src: "grass1.ogg", id: "walk1" },
+                { src: "grass2.ogg", id: "walk2" },
+                { src: "grass3.ogg", id: "walk3" },
+                { src: "grass4.ogg", id: "walk4" }
+            ];
+            game.createjs.Sound.registerSounds(sounds, 'audio/');
             this.entities = { bottom: [], solid: [], ground: [], top: [] };
             this.seed = seed;
             this.seedGen = game.seedFunction(this.seed);
@@ -631,7 +642,7 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Game = (function () {
-        function Game(canvas, seedFunction) {
+        function Game(canvas, seedFunction, createjs) {
             this.fps = 0;
             this.hitboxVisible = false;
             this.frameCount = 0;
@@ -642,7 +653,9 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
             this.canvas = canvas;
             this.ctx = canvas.getContext('2d');
             this.seedFunction = seedFunction;
+            this.createjs = createjs;
             var thisGame = this;
+            createjs.Sound.alternateExtensions = ["mp3"];
             setInterval(function () {
                 thisGame.fps = thisGame.frameCount;
                 thisGame.frameCount = 0;
@@ -810,9 +823,11 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
     var debugVisible = false;
     var pixelFactor = 3;
     var seedFunction;
-    function gameInit(seedFunctionTemp) {
+    var createjs = null;
+    function gameInit(seedFunctionTemp, createjsTemp) {
         console.log("Ready!");
         seedFunction = seedFunctionTemp;
+        createjs = createjsTemp;
         if (!JSON.parse(localStorage.getItem("showStart"))) {
             loadGame();
             document.getElementById("showStart").checked = false;
@@ -864,10 +879,13 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         window.requestAnimationFrame(draw);
     }
     function loadGame2() {
-        game = new Game_1.Game(canvas, seedFunction);
+        game = new Game_1.Game(canvas, seedFunction, createjs);
         var seedInputValue = document.getElementById("seedInput").value;
         game.loadLevel(seedInputValue);
         localStorage.setItem("levelSeed", seedInputValue);
+        if (!createjs.Sound.initializeDefaultPlugins()) {
+            console.warn("sound won't be played");
+        }
     }
     function draw() {
         var _a;
@@ -913,7 +931,7 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         debug += "blockHeight : " + game.level.blockHeight + "<br>";
         debug += "topLeftCornerPosX : " + game.level.topLeftCornerPosX + "<br>";
         debug += "topLeftCornerPosY : " + game.level.topLeftCornerPosY + "<br>";
-        debug += "orientation : " + game.level.getPlayer().direction + "<br>";
+        debug += "direcrtion : " + game.level.getPlayer().direction + "<br>";
         debug += "action : " + game.level.getPlayer().action + "<br>";
         return debug;
     }

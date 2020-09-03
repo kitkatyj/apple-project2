@@ -32,6 +32,7 @@ export class Character extends Entity {
     animateSpeed : number;
 
     hitbox : Hitbox;
+    sound : any;
 
     constructor(properties:SpriteProperties,direction:string[],action:string,frameCount:number,orientationFrames:OrientationFrames,imageMap:ImageMap[]){
         super(properties,imageMap);

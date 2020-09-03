@@ -17,6 +17,7 @@ export class Game {
     keyUpState : boolean[] = [];
 
     seedFunction : Function;
+    createjs : any;
 
     level : Level;
     private images : ImageMap[] = [];
@@ -24,11 +25,12 @@ export class Game {
     context : AudioContext;
     // bufferLoader : BufferLoader;
 
-    constructor(canvas:HTMLCanvasElement,seedFunction:Function){
+    constructor(canvas:HTMLCanvasElement,seedFunction:Function,createjs:any){
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
 
         this.seedFunction = seedFunction;
+        this.createjs = createjs;
 
         let thisGame = this;
 
@@ -43,6 +45,8 @@ export class Game {
         // )
 
         // this.bufferLoader.load();
+
+        createjs.Sound.alternateExtensions = ["mp3"];
 
         setInterval(function(){
             thisGame.fps = thisGame.frameCount;

@@ -7,12 +7,14 @@ let frameCounter:boolean = false;
 let debugVisible:boolean = false;
 let pixelFactor = 3;
 let seedFunction:Function;
+let createjs = null;
 
-export function gameInit(seedFunctionTemp:Function){
+export function gameInit(seedFunctionTemp:Function,createjsTemp:any){
 
     console.log("Ready!");
 
     seedFunction = seedFunctionTemp;
+    createjs = createjsTemp;
 
     if(!JSON.parse(localStorage.getItem("showStart"))){
         loadGame();
@@ -75,12 +77,14 @@ function loadGame(){
 }
 
 function loadGame2(){
-    game = new Game(canvas,seedFunction);
+    game = new Game(canvas,seedFunction,createjs);
 
     let seedInputValue = (<HTMLInputElement>document.getElementById("seedInput")).value;
 
     game.loadLevel(seedInputValue);
     localStorage.setItem("levelSeed",seedInputValue);
+
+    if (!createjs.Sound.initializeDefaultPlugins()) {console.warn("sound won't be played")}
 }
 
 function draw(){    
@@ -140,7 +144,7 @@ function debugStatement(){
     debug += "topLeftCornerPosX : "+game.level.topLeftCornerPosX + "<br>";
     debug += "topLeftCornerPosY : "+game.level.topLeftCornerPosY + "<br>";
     // debug += "keyState : "+game.keyState + "<br>";
-    debug += "orientation : "+game.level.getPlayer().direction + "<br>";
+    debug += "direcrtion : "+game.level.getPlayer().direction + "<br>";
     debug += "action : "+game.level.getPlayer().action + "<br>";
  
     return debug;
