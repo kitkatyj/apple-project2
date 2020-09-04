@@ -27,6 +27,9 @@ export function gameInit(seedFunctionTemp:Function,createjsTemp:any){
 function toggleDebug(){
     debugVisible = !debugVisible;
 }
+function toggleHitbox(){
+    game.hitboxVisible = !game.hitboxVisible;
+}
 
 function loadGame(){
     canvas = document.createElement("canvas");
@@ -54,7 +57,6 @@ function loadGame(){
         }
     });
     
-    document.getElementById("showDebug").addEventListener("click",toggleDebug);
     document.getElementById("seedBtn").addEventListener("click",loadGame2);
     
     document.getElementById("showStart").addEventListener("change",function(e){
@@ -63,7 +65,13 @@ function loadGame(){
 
     document.getElementById("showDebug").addEventListener("change",function(e){
         localStorage.setItem("debug",JSON.stringify((<HTMLInputElement>document.getElementById("showDebug")).checked));
-    })
+        toggleDebug();
+    });
+
+    document.getElementById("showHitbox").addEventListener("change",function(e){
+        localStorage.setItem("showHitbox",JSON.stringify((<HTMLInputElement>document.getElementById("showHitbox")).checked));
+        toggleHitbox();
+    });
 
     if(localStorage.getItem("levelSeed")) document.getElementById("seedInput").setAttribute("value",localStorage.getItem("levelSeed"));
     if(JSON.parse(localStorage.getItem("debug"))){
@@ -83,6 +91,11 @@ function loadGame2(){
 
     game.loadLevel(seedInputValue);
     localStorage.setItem("levelSeed",seedInputValue);
+
+    if(JSON.parse(localStorage.getItem("showHitbox"))){
+        game.hitboxVisible = true; 
+        (<HTMLInputElement>document.getElementById("showHitbox")).checked = true;
+    }
 
     if (!createjs.Sound.initializeDefaultPlugins()) {console.warn("sound won't be played")}
 }
@@ -118,6 +131,7 @@ function settingsScreen(){
     settings += "<section>";
     settings += "<section><span>seed:</span><input type='text' name='seedInput' id='seedInput' value='hello!'><input type='button' name='seedBtn' id='seedBtn' value='update'></section>";
     settings += "<section><label for='showDebug'><span>show debug</span><input type='checkbox' name='showDebug' id='showDebug'></label></section>";
+    settings += "<section><label for='showHitbox'><span>show hitboxes</span><input type='checkbox' name='showHitbox' id='showHitbox'></label></section>";
     settings += "<section><label for='showStart'><span>show start screen</span><input id='showStart' name='showStart' type='checkbox' checked></label></section>";
     settings += "</section>"
 
@@ -144,7 +158,7 @@ function debugStatement(){
     debug += "topLeftCornerPosX : "+game.level.topLeftCornerPosX + "<br>";
     debug += "topLeftCornerPosY : "+game.level.topLeftCornerPosY + "<br>";
     // debug += "keyState : "+game.keyState + "<br>";
-    debug += "direcrtion : "+game.level.getPlayer().direction + "<br>";
+    debug += "direction : "+game.level.getPlayer().direction + "<br>";
     debug += "action : "+game.level.getPlayer().action + "<br>";
  
     return debug;

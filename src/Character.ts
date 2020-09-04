@@ -106,7 +106,7 @@ export class Character extends Entity {
         game.ctx.fillRect(
             game.level.topLeftCornerPosX+this.properties.xPos*game.blockLength+this.hitbox.xPos,
             game.level.topLeftCornerPosY+this.properties.yPos*game.blockLength+this.hitbox.yPos,
-            this.hitbox.width/2,this.hitbox.height
+            this.hitbox.width,this.hitbox.height
         );
     }
 

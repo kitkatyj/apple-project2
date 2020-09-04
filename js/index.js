@@ -772,7 +772,7 @@ define("Character", ["require", "exports", "Entity"], function (require, exports
         };
         Character.prototype.drawHitBox = function (game) {
             game.ctx.fillStyle = "#ff0000";
-            game.ctx.fillRect(game.level.topLeftCornerPosX + this.properties.xPos * game.blockLength + this.hitbox.xPos, game.level.topLeftCornerPosY + this.properties.yPos * game.blockLength + this.hitbox.yPos, this.hitbox.width / 2, this.hitbox.height);
+            game.ctx.fillRect(game.level.topLeftCornerPosX + this.properties.xPos * game.blockLength + this.hitbox.xPos, game.level.topLeftCornerPosY + this.properties.yPos * game.blockLength + this.hitbox.yPos, this.hitbox.width, this.hitbox.height);
         };
         Character.prototype.drawShadow = function (game) {
             game.ctx.fillStyle = "#000000";
@@ -853,6 +853,9 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
     function toggleDebug() {
         debugVisible = !debugVisible;
     }
+    function toggleHitbox() {
+        game.hitboxVisible = !game.hitboxVisible;
+    }
     function loadGame() {
         canvas = document.createElement("canvas");
         mainBody = document.getElementsByTagName("body")[0];
@@ -874,13 +877,17 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
                 this.parentElement.className = 'open';
             }
         });
-        document.getElementById("showDebug").addEventListener("click", toggleDebug);
         document.getElementById("seedBtn").addEventListener("click", loadGame2);
         document.getElementById("showStart").addEventListener("change", function (e) {
             localStorage.setItem("showStart", JSON.stringify(document.getElementById("showStart").checked));
         });
         document.getElementById("showDebug").addEventListener("change", function (e) {
             localStorage.setItem("debug", JSON.stringify(document.getElementById("showDebug").checked));
+            toggleDebug();
+        });
+        document.getElementById("showHitbox").addEventListener("change", function (e) {
+            localStorage.setItem("showHitbox", JSON.stringify(document.getElementById("showHitbox").checked));
+            toggleHitbox();
         });
         if (localStorage.getItem("levelSeed"))
             document.getElementById("seedInput").setAttribute("value", localStorage.getItem("levelSeed"));
@@ -896,6 +903,10 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         var seedInputValue = document.getElementById("seedInput").value;
         game.loadLevel(seedInputValue);
         localStorage.setItem("levelSeed", seedInputValue);
+        if (JSON.parse(localStorage.getItem("showHitbox"))) {
+            game.hitboxVisible = true;
+            document.getElementById("showHitbox").checked = true;
+        }
         if (!createjs.Sound.initializeDefaultPlugins()) {
             console.warn("sound won't be played");
         }
@@ -926,6 +937,7 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         settings += "<section>";
         settings += "<section><span>seed:</span><input type='text' name='seedInput' id='seedInput' value='hello!'><input type='button' name='seedBtn' id='seedBtn' value='update'></section>";
         settings += "<section><label for='showDebug'><span>show debug</span><input type='checkbox' name='showDebug' id='showDebug'></label></section>";
+        settings += "<section><label for='showHitbox'><span>show hitboxes</span><input type='checkbox' name='showHitbox' id='showHitbox'></label></section>";
         settings += "<section><label for='showStart'><span>show start screen</span><input id='showStart' name='showStart' type='checkbox' checked></label></section>";
         settings += "</section>";
         return settings;
@@ -944,7 +956,7 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         debug += "blockHeight : " + game.level.blockHeight + "<br>";
         debug += "topLeftCornerPosX : " + game.level.topLeftCornerPosX + "<br>";
         debug += "topLeftCornerPosY : " + game.level.topLeftCornerPosY + "<br>";
-        debug += "direcrtion : " + game.level.getPlayer().direction + "<br>";
+        debug += "direction : " + game.level.getPlayer().direction + "<br>";
         debug += "action : " + game.level.getPlayer().action + "<br>";
         return debug;
     }
