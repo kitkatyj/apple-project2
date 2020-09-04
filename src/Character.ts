@@ -32,7 +32,9 @@ export class Character extends Entity {
     animateSpeed : number;
 
     hitbox : Hitbox;
+    // walkSoundInterval : number;
     sound : any;
+    soundTick : number = 0;
 
     constructor(properties:SpriteProperties,direction:string[],action:string,frameCount:number,orientationFrames:OrientationFrames,imageMap:ImageMap[]){
         super(properties,imageMap);
@@ -124,10 +126,13 @@ export class Character extends Entity {
     setDirection(game:Game){
         if(this.direction[0]) this.orientation = this.direction[0];
         
+        
         switch(this.action){
             case 'normal':
                 this.frameIndex = eval('this.orientationFrames.'+this.orientation+'.'+this.action);
                 this.frameCount = 0;
+
+                // clearInterval(this.walkSoundInterval); this.walkSoundInterval = null;
                 break;
             case 'walking':
             case 'running':
@@ -136,6 +141,17 @@ export class Character extends Entity {
                 let startingFrame = eval('this.orientationFrames.'+this.orientation+'.'+this.action+'[0]');
                 this.frameIndex = startingFrame + this.frameIndex % totalFramesTemp;
                 this.frameCount++;
+
+                // if(!this.walkSoundInterval) {
+                //     let walkSounds = ['walk1','walk2','walk3','walk4'];
+                //     let soundInstance = game.createjs.Sound.play( walkSounds[Math.floor(Math.random() * walkSounds.length)] );
+                //     soundInstance.volume = (this.action == 'running') ? 0.2 : 0.1;
+                    
+                //     this.walkSoundInterval = setInterval(function(){
+                //         soundInstance = game.createjs.Sound.play( walkSounds[Math.floor(Math.random() * walkSounds.length)] );
+                //         soundInstance.volume = 0.2;
+                //     },400);
+                // }
 
                 this.isCollide(game);
 
