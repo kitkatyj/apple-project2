@@ -12,6 +12,10 @@ export class DialogueBox {
 
     renderIndex : number = 0;
 
+    sound : any;
+    soundTick : number = 0;
+    soundSrc : string;
+
     reset(game:Game){
         if(game.canvas.width > 300){
             this.width = 256;
@@ -29,10 +33,12 @@ export class DialogueBox {
         this.yPosDraw = Math.round(game.canvas.height - this.height - this.padding*2);
     }
 
-    setText(ctx:CanvasRenderingContext2D,text:string){
+    setText(ctx:CanvasRenderingContext2D,text:string,soundSrc?:string){
         this.renderIndex = 0;
         this.textLength = text.length;
         this.text = this.getLines(ctx,text);
+        
+        if(soundSrc) this.soundSrc = soundSrc;
     }
 
     resetText(){
@@ -98,6 +104,19 @@ export class DialogueBox {
                     }
                 }
             });
+
+            let stepTicks = 10;
+            let stepVolume = 0.2;
+
+            if(this.sound) this.soundTick++;
+
+            if(
+                (this.sound == undefined ||  this.soundTick >= stepTicks * (0.5 + Math.random() * 0.5))
+            ){
+                this.sound = game.createjs.Sound.play( this.soundSrc );
+                this.sound.volume = stepVolume * (0.5 + Math.random() * 0.5);
+                this.soundTick = 0;
+            }
         }
         else {
             renderedLines = this.text;

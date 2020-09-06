@@ -7,10 +7,10 @@ export class NonPlayer extends Character {
 
     dialogue : Dialogue;
 
-    constructor(properties:SpriteProperties,direction:string[],action:string,frameCount:number,orientationFrames:OrientationFrames,imageMap:ImageMap[],dialogues:string[]){
+    constructor(properties:SpriteProperties,direction:string[],action:string,frameCount:number,orientationFrames:OrientationFrames,imageMap:ImageMap[],dialogues:string[],dialogueSoundSrc?:string){
         super(properties,direction,action,frameCount,orientationFrames,imageMap);
 
-        this.dialogue = new Dialogue(dialogues,imageMap);
+        this.dialogue = new Dialogue(dialogues,imageMap,dialogueSoundSrc);
     }
 
     draw(game:Game){

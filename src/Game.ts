@@ -22,9 +22,6 @@ export class Game {
     level : Level;
     private images : ImageMap[] = [];
 
-    context : AudioContext;
-    // bufferLoader : BufferLoader;
-
     constructor(canvas:HTMLCanvasElement,seedFunction:Function,createjs:any){
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
@@ -33,18 +30,6 @@ export class Game {
         this.createjs = createjs;
 
         let thisGame = this;
-
-        //@ts-ignore
-        // this.context = new (window.AudioContext || window.webkitAudioContext)();
-        // let thisContext = this.context
-        // this.bufferLoader = new BufferLoader(
-        //     thisContext,
-        //     [
-        //         'audio/grass1.mp3'
-        //     ]
-        // )
-
-        // this.bufferLoader.load();
 
         createjs.Sound.alternateExtensions = ["mp3"];
 
@@ -59,8 +44,6 @@ export class Game {
             }
 
             thisGame.keyState[e.keyCode || e.which] = true;
-
-            // thisGame.bufferLoader.playSound(thisGame.bufferLoader.bufferList[0]);
         });
 
         document.addEventListener("keyup",function(e){
@@ -107,63 +90,3 @@ export class Game {
         return this.images;
     }
 }
-
-// class BufferLoader {
-//     context : AudioContext;
-//     urlList : string[] = [];
-//     onload : Function;
-//     bufferList : AudioBuffer[] = [];
-//     loadCount : number = 0;
-
-//     constructor(context:AudioContext,urlList:string[],callback?:Function){
-//         this.context = context;
-//         this.urlList = urlList;
-//         this.onload = callback;
-//     }
-
-//     loadBuffer(url:string, index:number){
-//         let request = new XMLHttpRequest();
-//         request.open("GET",url,true);
-//         request.responseType = "arraybuffer";
-
-//         let loader = this;
-
-//         request.onload = function(){
-//             loader.context.decodeAudioData(
-//                 request.response,
-//                 function(buffer){
-//                     if(!buffer){
-//                         alert('error decoding file data: ' + url);
-//                         return;
-//                     }
-//                     loader.bufferList[index] = buffer;
-//                     if (++loader.loadCount == loader.urlList.length)
-//                         loader.onload(loader.bufferList);
-//                 },
-//                 function(error){
-//                     console.error('decodeAudioData error', error);
-//                 }
-//             );
-//         }
-
-//         request.onerror = function(){
-//             console.error('BufferLoader: XHR error');
-//         }
-
-//         request.send();
-//     }
-
-//     load(){
-//         for(let i = 0; i < this.urlList.length; ++i){
-//             this.loadBuffer(this.urlList[i],i);
-//         }
-//     }
-
-//     playSound(buffer:AudioBuffer){
-//         var source = this.context.createBufferSource();
-//         source.buffer = buffer;
-
-//         source.connect(this.context.destination);
-//         source.start(0);
-//     }
-// }

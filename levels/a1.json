@@ -24,7 +24,8 @@
             "name":"clementine",
             "position":[[6,4]],
             "direction":"left",
-            "dialogue":["Hello! I'm Clementine.","Welcome to The Void. A world between worlds."]
+            "dialogue":["Hello! I'm Clementine.","Welcome to The Void. A world between worlds."],
+            "dialogueSoundSrc":"clem_blip"
         }
     ],
     "playerPos":[4,4]

@@ -144,11 +144,13 @@ define("Dialogue", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Dialogue = (function () {
-        function Dialogue(dialogues, imageMap) {
+        function Dialogue(dialogues, imageMap, soundSrc) {
             this.dialogues = [];
             this.bubbleFrameCount = 0;
             this.dialogueIndex = -1;
             this.dialogues = dialogues;
+            if (soundSrc)
+                this.soundSrc = soundSrc;
             var thisDialogue = this;
             imageMap.forEach(function (img) {
                 if (img.src === 'speech.png') {
@@ -202,7 +204,7 @@ define("Dialogue", ["require", "exports"], function (require, exports) {
                     }
                     else {
                         this.dialogueIndex++;
-                        game.level.dialogueBox.setText(game.ctx, this.dialogues[this.dialogueIndex]);
+                        game.level.dialogueBox.setText(game.ctx, this.dialogues[this.dialogueIndex], this.soundSrc);
                     }
                     var targetOrientation = '';
                     switch (nonPlayer.orientation) {
@@ -235,9 +237,9 @@ define("NonPlayer", ["require", "exports", "Character", "Dialogue"], function (r
     Object.defineProperty(exports, "__esModule", { value: true });
     var NonPlayer = (function (_super) {
         __extends(NonPlayer, _super);
-        function NonPlayer(properties, direction, action, frameCount, orientationFrames, imageMap, dialogues) {
+        function NonPlayer(properties, direction, action, frameCount, orientationFrames, imageMap, dialogues, dialogueSoundSrc) {
             var _this = _super.call(this, properties, direction, action, frameCount, orientationFrames, imageMap) || this;
-            _this.dialogue = new Dialogue_1.Dialogue(dialogues, imageMap);
+            _this.dialogue = new Dialogue_1.Dialogue(dialogues, imageMap, dialogueSoundSrc);
             return _this;
         }
         NonPlayer.prototype.draw = function (game) {
@@ -263,6 +265,7 @@ define("DialogueBox", ["require", "exports"], function (require, exports) {
             this.text = [];
             this.padding = 10;
             this.renderIndex = 0;
+            this.soundTick = 0;
         }
         DialogueBox.prototype.reset = function (game) {
             if (game.canvas.width > 300) {
@@ -278,10 +281,12 @@ define("DialogueBox", ["require", "exports"], function (require, exports) {
             this.xPosDraw = Math.round(game.canvas.width / 2 - this.width / 2);
             this.yPosDraw = Math.round(game.canvas.height - this.height - this.padding * 2);
         };
-        DialogueBox.prototype.setText = function (ctx, text) {
+        DialogueBox.prototype.setText = function (ctx, text, soundSrc) {
             this.renderIndex = 0;
             this.textLength = text.length;
             this.text = this.getLines(ctx, text);
+            if (soundSrc)
+                this.soundSrc = soundSrc;
         };
         DialogueBox.prototype.resetText = function () {
             this.text = [];
@@ -335,6 +340,15 @@ define("DialogueBox", ["require", "exports"], function (require, exports) {
                         }
                     }
                 });
+                var stepTicks = 10;
+                var stepVolume = 0.2;
+                if (this.sound)
+                    this.soundTick++;
+                if ((this.sound == undefined || this.soundTick >= stepTicks * (0.5 + Math.random() * 0.5))) {
+                    this.sound = game.createjs.Sound.play(this.soundSrc);
+                    this.sound.volume = stepVolume * (0.5 + Math.random() * 0.5);
+                    this.soundTick = 0;
+                }
             }
             else {
                 renderedLines = this.text;
@@ -376,7 +390,8 @@ define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlay
                 { src: "grass1.ogg", id: "walk1" },
                 { src: "grass2.ogg", id: "walk2" },
                 { src: "grass3.ogg", id: "walk3" },
-                { src: "grass4.ogg", id: "walk4" }
+                { src: "grass4.ogg", id: "walk4" },
+                { src: "clem_blip.ogg", id: "clem_blip" }
             ];
             game.createjs.Sound.registerSounds(sounds, 'audio/');
             this.entities = { bottom: [], solid: [], ground: [], top: [] };
@@ -456,7 +471,7 @@ define("Level", ["require", "exports", "Entity", "Character", "Player", "NonPlay
                                 normal: 15,
                                 walking: [16, 19]
                             }
-                        }, game.loadImageMap(), char.dialogue);
+                        }, game.loadImageMap(), char.dialogue, char.dialogueSoundSrc);
                         level.setCharacter(npClementine);
                     }
                     else {

@@ -48,7 +48,8 @@ export class Level {
             {src:"grass1.ogg",id:"walk1"},
             {src:"grass2.ogg",id:"walk2"},
             {src:"grass3.ogg",id:"walk3"},
-            {src:"grass4.ogg",id:"walk4"}
+            {src:"grass4.ogg",id:"walk4"},
+            {src:"clem_blip.ogg",id:"clem_blip"}
         ]
 
         game.createjs.Sound.registerSounds(sounds,'audio/');
@@ -146,7 +147,7 @@ export class Level {
                             normal:15,
                             walking:[16,19]
                         }
-                    },game.loadImageMap(),char.dialogue);
+                    },game.loadImageMap(),char.dialogue,char.dialogueSoundSrc);
 
                     level.setCharacter(npClementine);
                 }

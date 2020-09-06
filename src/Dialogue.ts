@@ -5,11 +5,15 @@ export class Dialogue {
     dialogues : string[] = [];
     bubbleImg : HTMLImageElement;
     bubbleFrameCount : number = 0;
+    
+    soundSrc : string;
 
     dialogueIndex : number = -1;
 
-    constructor(dialogues:string[],imageMap:ImageMap[]){
+    constructor(dialogues:string[],imageMap:ImageMap[],soundSrc?:string){
         this.dialogues = dialogues;
+
+        if(soundSrc) this.soundSrc = soundSrc;
 
         let thisDialogue = this;
 
@@ -81,7 +85,7 @@ export class Dialogue {
                 else {
                     this.dialogueIndex++;
 
-                    game.level.dialogueBox.setText(game.ctx,this.dialogues[this.dialogueIndex]);
+                    game.level.dialogueBox.setText(game.ctx,this.dialogues[this.dialogueIndex],this.soundSrc);
                 }
 
                 let targetOrientation = '';
