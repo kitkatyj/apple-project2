@@ -1,5 +1,6 @@
 import {Game, ImageMap} from './Game';
 import {Entity,SpriteProperties} from './Entity';
+import { Sound } from './Sound';
 
 interface ActionFrames {
     normal : number;
@@ -32,9 +33,8 @@ export class Character extends Entity {
     animateSpeed : number;
 
     hitbox : Hitbox;
-    // walkSoundInterval : number;
-    sound : any;
-    soundTick : number = 0;
+
+    sound:Sound;
 
     constructor(properties:SpriteProperties,direction:string[],action:string,frameCount:number,orientationFrames:OrientationFrames,imageMap:ImageMap[]){
         super(properties,imageMap);

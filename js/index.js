@@ -115,20 +115,20 @@ define("Player", ["require", "exports", "Character"], function (require, exports
             this.setPosDraw(game);
             this.setDirection(game);
             if (this.sound)
-                this.soundTick++;
+                this.sound.soundTick++;
             var stepTicks = 30;
             var stepVolume = 0.1;
             if (this.action == "running") {
                 stepTicks = 20;
                 stepVolume = 0.2;
             }
-            if ((this.sound == undefined || this.soundTick >= stepTicks * (0.8 + Math.random() * 0.2))
+            if ((this.sound == undefined || this.sound.soundTick >= stepTicks * (0.8 + Math.random() * 0.2))
                 && (this.action == "walking" || this.action == "running")
                 && this.direction.length > 0) {
                 var walkSounds = ['walk1', 'walk2', 'walk3', 'walk4'];
                 this.sound = game.createjs.Sound.play(walkSounds[Math.floor(Math.random() * walkSounds.length)]);
-                this.sound.volume = stepVolume * (0.5 + Math.random() * 0.5);
-                this.soundTick = 0;
+                this.sound.soundObj.volume = stepVolume * (0.5 + Math.random() * 0.5);
+                this.sound.soundTick = 0;
             }
             this.setFrameStart();
             this.drawShadow(game);
@@ -723,6 +723,17 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
     }());
     exports.Game = Game;
 });
+define("Sound", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Sound = (function () {
+        function Sound() {
+            this.soundTick = 0;
+        }
+        return Sound;
+    }());
+    exports.Sound = Sound;
+});
 define("Character", ["require", "exports", "Entity"], function (require, exports, Entity_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -734,7 +745,6 @@ define("Character", ["require", "exports", "Entity"], function (require, exports
             _this.orientation = 'front';
             _this.action = 'normal';
             _this.tempMoveSpeed = 1;
-            _this.soundTick = 0;
             _this.direction = direction;
             _this.action = action;
             _this.frameCount = frameCount;

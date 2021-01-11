@@ -49,7 +49,7 @@ export class Level {
             {src:"grass2.ogg",id:"walk2"},
             {src:"grass3.ogg",id:"walk3"},
             {src:"grass4.ogg",id:"walk4"},
-            {src:"clem_blip.ogg",id:"clem_blip"}
+            {src:"clem_blip.ogg",id:"clem_blip"} // load this when nonplayer is loaded instead
         ]
 
         game.createjs.Sound.registerSounds(sounds,'audio/');
