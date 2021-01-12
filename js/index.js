@@ -73,7 +73,18 @@ define("Entity", ["require", "exports"], function (require, exports) {
     }());
     exports.Entity = Entity;
 });
-define("Player", ["require", "exports", "Character"], function (require, exports, Character_1) {
+define("Sound", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var Sound = (function () {
+        function Sound() {
+            this.soundTick = 0;
+        }
+        return Sound;
+    }());
+    exports.Sound = Sound;
+});
+define("Player", ["require", "exports", "Character", "Sound"], function (require, exports, Character_1, Sound_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var Player = (function (_super) {
@@ -126,7 +137,9 @@ define("Player", ["require", "exports", "Character"], function (require, exports
                 && (this.action == "walking" || this.action == "running")
                 && this.direction.length > 0) {
                 var walkSounds = ['walk1', 'walk2', 'walk3', 'walk4'];
-                this.sound = game.createjs.Sound.play(walkSounds[Math.floor(Math.random() * walkSounds.length)]);
+                if (this.sound == undefined)
+                    this.sound = new Sound_1.Sound();
+                this.sound.soundObj = game.createjs.Sound.play(walkSounds[Math.floor(Math.random() * walkSounds.length)]);
                 this.sound.soundObj.volume = stepVolume * (0.5 + Math.random() * 0.5);
                 this.sound.soundTick = 0;
             }
@@ -723,17 +736,6 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
     }());
     exports.Game = Game;
 });
-define("Sound", ["require", "exports"], function (require, exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var Sound = (function () {
-        function Sound() {
-            this.soundTick = 0;
-        }
-        return Sound;
-    }());
-    exports.Sound = Sound;
-});
 define("Character", ["require", "exports", "Entity"], function (require, exports, Entity_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -858,29 +860,31 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
     var canvas, mainBody, resizeTimer, debug = null;
     var paintBgColor = "#200040";
     var frameCounter = false;
-    var debugVisible = false;
     var pixelFactor = 3;
     var seedFunction;
     var createjs = null;
+    var config = {
+        showStart: true,
+        debugVisible: false,
+        hitboxVisible: false,
+        pixelFactor: 3
+    };
     function gameInit(seedFunctionTemp, createjsTemp) {
         console.log("Ready!");
         seedFunction = seedFunctionTemp;
         createjs = createjsTemp;
-        if (!JSON.parse(localStorage.getItem("showStart"))) {
+        if (localStorage.getItem("config")) {
+            config = JSON.parse(localStorage.getItem("config"));
+        }
+        if (config.showStart) {
+            document.getElementById("playBtn").addEventListener("click", loadGame);
+        }
+        else {
             loadGame();
             document.getElementById("showStart").checked = false;
         }
-        else {
-            document.getElementById("playBtn").addEventListener("click", loadGame);
-        }
     }
     exports.gameInit = gameInit;
-    function toggleDebug() {
-        debugVisible = !debugVisible;
-    }
-    function toggleHitbox() {
-        game.hitboxVisible = !game.hitboxVisible;
-    }
     function loadGame() {
         canvas = document.createElement("canvas");
         mainBody = document.getElementsByTagName("body")[0];
@@ -904,31 +908,35 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         });
         document.getElementById("seedBtn").addEventListener("click", loadGame2);
         document.getElementById("showStart").addEventListener("change", function (e) {
-            localStorage.setItem("showStart", JSON.stringify(document.getElementById("showStart").checked));
+            config.showStart = document.getElementById("showStart").checked;
+            updateConfig();
         });
         document.getElementById("showDebug").addEventListener("change", function (e) {
-            localStorage.setItem("debug", JSON.stringify(document.getElementById("showDebug").checked));
-            toggleDebug();
+            config.debugVisible = document.getElementById("showDebug").checked;
+            updateConfig();
         });
         document.getElementById("showHitbox").addEventListener("change", function (e) {
-            localStorage.setItem("showHitbox", JSON.stringify(document.getElementById("showHitbox").checked));
-            toggleHitbox();
+            config.hitboxVisible = document.getElementById("showHitbox").checked;
+            game.hitboxVisible = !game.hitboxVisible;
+            updateConfig();
         });
         if (localStorage.getItem("levelSeed"))
             document.getElementById("seedInput").setAttribute("value", localStorage.getItem("levelSeed"));
-        if (JSON.parse(localStorage.getItem("debug"))) {
-            debugVisible = true;
+        if (config.debugVisible) {
             document.getElementById("showDebug").checked = true;
         }
         loadGame2();
         window.requestAnimationFrame(draw);
+    }
+    function updateConfig() {
+        localStorage.setItem("config", JSON.stringify(config));
     }
     function loadGame2() {
         game = new Game_1.Game(canvas, seedFunction, createjs);
         var seedInputValue = document.getElementById("seedInput").value;
         game.loadLevel(seedInputValue);
         localStorage.setItem("levelSeed", seedInputValue);
-        if (JSON.parse(localStorage.getItem("showHitbox"))) {
+        if (config.hitboxVisible) {
             game.hitboxVisible = true;
             document.getElementById("showHitbox").checked = true;
         }
@@ -948,7 +956,7 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
             game.ctx.fillText(game.fps.toString(), canvas.width, 16);
         }
         game.frameCount++;
-        if (game.level && debugVisible) {
+        if (game.level && config.debugVisible) {
             debug.innerHTML = debugStatement();
         }
         else {
@@ -966,6 +974,12 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         settings += "<section><label for='showStart'><span>show start screen</span><input id='showStart' name='showStart' type='checkbox' checked></label></section>";
         settings += "</section>";
         return settings;
+    }
+    function drawJoystick() {
+        var joystick = "";
+        joystick += "<div id='ring'></div>";
+        joystick += "<div id='stick'></div>";
+        return joystick;
     }
     function debugStatement() {
         var debug = "";

@@ -4,10 +4,16 @@ let game:Game = null;
 let canvas,mainBody,resizeTimer,debug = null;
 let paintBgColor = "#200040";
 let frameCounter:boolean = false;
-let debugVisible:boolean = false;
 let pixelFactor = 3;
 let seedFunction:Function;
 let createjs = null;
+
+let config = {
+    showStart:true,
+    debugVisible:false,
+    hitboxVisible:false,
+    pixelFactor:3
+}
 
 export function gameInit(seedFunctionTemp:Function,createjsTemp:any){
 
@@ -16,19 +22,16 @@ export function gameInit(seedFunctionTemp:Function,createjsTemp:any){
     seedFunction = seedFunctionTemp;
     createjs = createjsTemp;
 
-    if(!JSON.parse(localStorage.getItem("showStart"))){
+    if(localStorage.getItem("config")){
+        config = JSON.parse(localStorage.getItem("config"));
+    }
+
+    if(config.showStart){
+        document.getElementById("playBtn").addEventListener("click",loadGame);
+    } else {
         loadGame();
         (<HTMLInputElement>document.getElementById("showStart")).checked = false;
-    } else {
-        document.getElementById("playBtn").addEventListener("click",loadGame);
     }
-}
-
-function toggleDebug(){
-    debugVisible = !debugVisible;
-}
-function toggleHitbox(){
-    game.hitboxVisible = !game.hitboxVisible;
 }
 
 function loadGame(){
@@ -60,28 +63,34 @@ function loadGame(){
     document.getElementById("seedBtn").addEventListener("click",loadGame2);
     
     document.getElementById("showStart").addEventListener("change",function(e){
-        localStorage.setItem("showStart",JSON.stringify((<HTMLInputElement>document.getElementById("showStart")).checked));
+        config.showStart = (<HTMLInputElement>document.getElementById("showStart")).checked;
+        updateConfig();
     });
 
     document.getElementById("showDebug").addEventListener("change",function(e){
-        localStorage.setItem("debug",JSON.stringify((<HTMLInputElement>document.getElementById("showDebug")).checked));
-        toggleDebug();
+        config.debugVisible = (<HTMLInputElement>document.getElementById("showDebug")).checked;
+        updateConfig();
     });
 
     document.getElementById("showHitbox").addEventListener("change",function(e){
-        localStorage.setItem("showHitbox",JSON.stringify((<HTMLInputElement>document.getElementById("showHitbox")).checked));
-        toggleHitbox();
+        config.hitboxVisible = (<HTMLInputElement>document.getElementById("showHitbox")).checked;
+        game.hitboxVisible = !game.hitboxVisible;
+        updateConfig();
     });
 
     if(localStorage.getItem("levelSeed")) document.getElementById("seedInput").setAttribute("value",localStorage.getItem("levelSeed"));
-    if(JSON.parse(localStorage.getItem("debug"))){
-        debugVisible = true; 
+
+    if(config.debugVisible){
         (<HTMLInputElement>document.getElementById("showDebug")).checked = true;
     }
 
     loadGame2();
 
     window.requestAnimationFrame(draw);
+}
+
+function updateConfig(){
+    localStorage.setItem("config",JSON.stringify(config));
 }
 
 function loadGame2(){
@@ -92,7 +101,7 @@ function loadGame2(){
     game.loadLevel(seedInputValue);
     localStorage.setItem("levelSeed",seedInputValue);
 
-    if(JSON.parse(localStorage.getItem("showHitbox"))){
+    if(config.hitboxVisible){
         game.hitboxVisible = true; 
         (<HTMLInputElement>document.getElementById("showHitbox")).checked = true;
     }
@@ -114,7 +123,7 @@ function draw(){
     }
     game.frameCount++;
 
-    if(game.level && debugVisible){
+    if(game.level && config.debugVisible){
         debug.innerHTML = debugStatement();
     }
     else {
@@ -136,6 +145,15 @@ function settingsScreen(){
     settings += "</section>"
 
     return settings;
+}
+
+function drawJoystick(){
+    let joystick = "";
+
+    joystick += "<div id='ring'></div>";
+    joystick += "<div id='stick'></div>";
+
+    return joystick;
 }
 
 function debugStatement(){

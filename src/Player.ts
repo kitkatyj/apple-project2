@@ -1,6 +1,7 @@
 import { Character, OrientationFrames } from "./Character";
 import { SpriteProperties } from "./Entity";
 import { ImageMap, Game } from "./Game";
+import { Sound } from "./Sound";
 
 export class Player extends Character {
     constructor(properties:SpriteProperties,direction:string[],action:string,frameCount:number,orientationFrames:OrientationFrames,imageMap:ImageMap[]){
@@ -59,7 +60,11 @@ export class Player extends Character {
             && this.direction.length > 0
         ){
             let walkSounds = ['walk1','walk2','walk3','walk4'];
-            this.sound = game.createjs.Sound.play( walkSounds[Math.floor(Math.random() * walkSounds.length)] );
+            
+            if(this.sound == undefined) this.sound = new Sound();
+
+            this.sound.soundObj = game.createjs.Sound.play( walkSounds[Math.floor(Math.random() * walkSounds.length)] );
+            
             this.sound.soundObj.volume = stepVolume * (0.5 + Math.random() * 0.5);
             this.sound.soundTick = 0;
         }
