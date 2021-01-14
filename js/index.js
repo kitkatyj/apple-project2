@@ -97,7 +97,7 @@ define("Player", ["require", "exports", "Character", "Sound"], function (require
             this.moveSpeed = this.tempMoveSpeed;
             this.animateSpeed = this.properties.animateSpeed;
             if (game.level.dialogueBox.text.length === 0) {
-                if (game.keyState[37] || game.keyState[65] || game.keyState[39] || game.keyState[68] || game.keyState[38] || game.keyState[87] || game.keyState[40] || game.keyState[83]) {
+                if (game.keyState[37] || game.keyState[65] || game.keyState[39] || game.keyState[68] || game.keyState[38] || game.keyState[87] || game.keyState[40] || game.keyState[83] || game.joystickState.moveX != 0 || game.joystickState.moveY != 0) {
                     if (game.keyState[16]) {
                         this.moveSpeed = this.tempMoveSpeed * 2;
                         this.animateSpeed = this.properties.animateSpeed * 2;
@@ -108,16 +108,16 @@ define("Player", ["require", "exports", "Character", "Sound"], function (require
                     }
                 }
                 var orientationBuilder = [];
-                if (game.keyState[37] || game.keyState[65]) {
+                if (game.keyState[37] || game.keyState[65] || game.joystickState.moveX < 0) {
                     orientationBuilder.push('left');
                 }
-                if (game.keyState[39] || game.keyState[68]) {
+                if (game.keyState[39] || game.keyState[68] || game.joystickState.moveX > 0) {
                     orientationBuilder.push('right');
                 }
-                if (game.keyState[38] || game.keyState[87]) {
+                if (game.keyState[38] || game.keyState[87] || game.joystickState.moveY < 0) {
                     orientationBuilder.push('back');
                 }
-                if (game.keyState[40] || game.keyState[83]) {
+                if (game.keyState[40] || game.keyState[83] || game.joystickState.moveY > 0) {
                     orientationBuilder.push('front');
                 }
                 if (orientationBuilder.length > 0)
@@ -689,6 +689,11 @@ define("Game", ["require", "exports", "Level"], function (require, exports, Leve
             this.blockLength = 32;
             this.keyState = [];
             this.keyUpState = [];
+            this.joystickState = {
+                down: false,
+                moveX: 0,
+                moveY: 0
+            };
             this.images = [];
             this.canvas = canvas;
             this.ctx = canvas.getContext('2d');
@@ -857,7 +862,7 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var game = null;
-    var canvas, mainBody, resizeTimer, debug = null;
+    var canvas, mainBody, gameBody, resizeTimer, debug = null;
     var paintBgColor = "#200040";
     var frameCounter = false;
     var pixelFactor = 3;
@@ -867,7 +872,8 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         showStart: true,
         debugVisible: false,
         hitboxVisible: false,
-        pixelFactor: 3
+        pixelFactor: 3,
+        joystickSize: 128
     };
     function gameInit(seedFunctionTemp, createjsTemp) {
         console.log("Ready!");
@@ -888,9 +894,10 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
     function loadGame() {
         canvas = document.createElement("canvas");
         mainBody = document.getElementsByTagName("body")[0];
+        gameBody = document.getElementById("game");
         debug = document.getElementById("debug");
         mainBody.style.margin = "0";
-        mainBody.appendChild(canvas);
+        gameBody.appendChild(canvas);
         canvasSizeReset();
         window.addEventListener("resize", function (e) {
             clearTimeout(resizeTimer);
@@ -940,6 +947,54 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
             game.hitboxVisible = true;
             document.getElementById("showHitbox").checked = true;
         }
+        var joystick = {
+            obj: document.getElementById("joystick"),
+            stick: {
+                obj: null,
+                posX: 0, posY: 0
+            },
+            posX: 0, posY: 0
+        };
+        joystick.obj.innerHTML = drawJoystick();
+        joystick.stick.obj = document.getElementById("stick");
+        gameBody.addEventListener("touchstart", function (e) {
+            joystick.obj.style.display = "block";
+            joystick.posX = e.touches[0].clientX - config.joystickSize / 2;
+            joystick.posY = e.touches[0].clientY - config.joystickSize / 2;
+            joystick.obj.style.left = joystick.posX.toString();
+            joystick.obj.style.top = joystick.posY.toString();
+            game.joystickState.down = true;
+        });
+        gameBody.addEventListener("touchmove", function (e) {
+            if (game.joystickState.down) {
+                joystick.stick.posX = e.touches[0].clientX - joystick.posX;
+                joystick.stick.posY = e.touches[0].clientY - joystick.posY;
+                var _x = joystick.stick.posX - config.joystickSize / 2;
+                var _y = joystick.stick.posY - config.joystickSize / 2;
+                joystick.stick.obj.style.left = (joystick.stick.posX - config.joystickSize / 4).toString();
+                joystick.stick.obj.style.top = (joystick.stick.posY - config.joystickSize / 4).toString();
+                if (_y > -0.5 * _x && _y > 0.5 * _x)
+                    game.joystickState.moveY = 1;
+                else if (_y < -0.5 * _x && _y < 0.5 * _x)
+                    game.joystickState.moveY = -1;
+                else
+                    game.joystickState.moveY = 0;
+                if (_y < -2 * _x && _y > 2 * _x)
+                    game.joystickState.moveX = -1;
+                else if (_y < 2 * _x && _y > -2 * _x)
+                    game.joystickState.moveX = 1;
+                else
+                    game.joystickState.moveX = 0;
+            }
+        });
+        gameBody.addEventListener("touchend", function (e) {
+            joystick.obj.style.display = "none";
+            game.joystickState.down = false;
+            game.joystickState.moveX = 0;
+            game.joystickState.moveY = 0;
+            joystick.stick.obj.style.left = config.joystickSize / 4;
+            joystick.stick.obj.style.top = config.joystickSize / 4;
+        });
         if (!createjs.Sound.initializeDefaultPlugins()) {
             console.warn("sound won't be played");
         }
@@ -977,8 +1032,7 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
     }
     function drawJoystick() {
         var joystick = "";
-        joystick += "<div id='ring'></div>";
-        joystick += "<div id='stick'></div>";
+        joystick += "<div id='ring'><div id='stick'></div></div>";
         return joystick;
     }
     function debugStatement() {
@@ -997,6 +1051,8 @@ define("index", ["require", "exports", "Game"], function (require, exports, Game
         debug += "topLeftCornerPosY : " + game.level.topLeftCornerPosY + "<br>";
         debug += "direction : " + game.level.getPlayer().direction + "<br>";
         debug += "action : " + game.level.getPlayer().action + "<br>";
+        debug += "joystickStateX : " + game.joystickState.moveX + "<br>";
+        debug += "joystickStateY : " + game.joystickState.moveY + "<br>";
         return debug;
     }
     function canvasSizeReset() {

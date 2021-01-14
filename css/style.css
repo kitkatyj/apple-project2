@@ -12,6 +12,15 @@ body {
     display:flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
+}
+.noselect {
+    -webkit-touch-callout: none;
+      -webkit-user-select: none;
+       -khtml-user-select: none;
+         -moz-user-select: none;
+          -ms-user-select: none;
+              user-select: none;
 }
 
 input[type="text"],button,[type="button"],[type="reset"],[type="submit"] {
@@ -69,6 +78,10 @@ button > span {
     margin:0 auto;
 }
 
+canvas {
+    max-height: -webkit-fill-available;
+}
+
 canvas,#applelogo,#start h1 {
     image-rendering: -moz-crisp-edges;
     image-rendering: -webkit-crisp-edges;
@@ -123,6 +136,30 @@ canvas,#applelogo,#start h1 {
     color:white;
     max-width: 560px;
     z-index: 99;
+}
+
+#joystick {
+    position:absolute;
+    display: none;
+    bottom:16px; left:16px;
+    z-index: 99;
+}
+
+#ring {
+    width:128px; height:128px;
+    box-sizing: border-box;
+    border:6px solid white;
+    border-radius: 64px;
+    background-color: rgba(0,0,0,0.4);
+}
+
+#stick {
+    position: absolute;
+    background-color: white;
+    width: 64px; height:64px;
+    border-radius: 32px;
+    left: 32px; top: 32px;
+    box-shadow: 0px 4px 4px rgba(0,0,0,0.4);
 }
 
 @media screen and (min-width: 540px) {

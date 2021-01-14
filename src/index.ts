@@ -1,7 +1,7 @@
 import {Game} from './Game';
 
 let game:Game = null;
-let canvas,mainBody,resizeTimer,debug = null;
+let canvas,mainBody,gameBody,resizeTimer,debug = null;
 let paintBgColor = "#200040";
 let frameCounter:boolean = false;
 let pixelFactor = 3;
@@ -12,7 +12,8 @@ let config = {
     showStart:true,
     debugVisible:false,
     hitboxVisible:false,
-    pixelFactor:3
+    pixelFactor:3,
+    joystickSize:128
 }
 
 export function gameInit(seedFunctionTemp:Function,createjsTemp:any){
@@ -37,10 +38,11 @@ export function gameInit(seedFunctionTemp:Function,createjsTemp:any){
 function loadGame(){
     canvas = document.createElement("canvas");
     mainBody = document.getElementsByTagName("body")[0];
+    gameBody = document.getElementById("game");
     debug = document.getElementById("debug");
 
     mainBody.style.margin = "0";
-    mainBody.appendChild(canvas);
+    gameBody.appendChild(canvas);
 
     canvasSizeReset();
 
@@ -106,6 +108,55 @@ function loadGame2(){
         (<HTMLInputElement>document.getElementById("showHitbox")).checked = true;
     }
 
+    let joystick = {
+        obj:document.getElementById("joystick"),
+        stick:{
+            obj:null,
+            posX:0, posY:0
+        },
+        posX:0, posY:0
+    }
+
+    joystick.obj.innerHTML = drawJoystick();
+    joystick.stick.obj = document.getElementById("stick");
+    gameBody.addEventListener("touchstart",function(e){
+        joystick.obj.style.display = "block";
+        joystick.posX = e.touches[0].clientX - config.joystickSize/2;
+        joystick.posY = e.touches[0].clientY - config.joystickSize/2;
+
+        joystick.obj.style.left = joystick.posX.toString();
+        joystick.obj.style.top = joystick.posY.toString();
+        game.joystickState.down = true;
+    });
+    gameBody.addEventListener("touchmove",function(e){
+        if(game.joystickState.down){
+            joystick.stick.posX = e.touches[0].clientX - joystick.posX;
+            joystick.stick.posY = e.touches[0].clientY - joystick.posY;
+
+            let _x = joystick.stick.posX - config.joystickSize/2;
+            let _y = joystick.stick.posY - config.joystickSize/2;
+
+            joystick.stick.obj.style.left = (joystick.stick.posX - config.joystickSize/4).toString();
+            joystick.stick.obj.style.top = (joystick.stick.posY - config.joystickSize/4).toString();
+
+            if (_y > -0.5*_x && _y > 0.5*_x) game.joystickState.moveY = 1;
+            else if (_y < -0.5*_x && _y < 0.5*_x) game.joystickState.moveY = -1;
+            else game.joystickState.moveY = 0;
+
+            if (_y < -2*_x && _y > 2*_x) game.joystickState.moveX = -1;
+            else if (_y < 2*_x && _y > -2*_x) game.joystickState.moveX = 1;
+            else game.joystickState.moveX = 0;
+        }
+    });
+    gameBody.addEventListener("touchend",function(e){
+        joystick.obj.style.display = "none";
+        game.joystickState.down = false;
+        game.joystickState.moveX = 0;
+        game.joystickState.moveY = 0;
+        joystick.stick.obj.style.left = config.joystickSize/4;
+        joystick.stick.obj.style.top = config.joystickSize/4;
+    });
+
     if (!createjs.Sound.initializeDefaultPlugins()) {console.warn("sound won't be played")}
 }
 
@@ -150,8 +201,7 @@ function settingsScreen(){
 function drawJoystick(){
     let joystick = "";
 
-    joystick += "<div id='ring'></div>";
-    joystick += "<div id='stick'></div>";
+    joystick += "<div id='ring'><div id='stick'></div></div>";
 
     return joystick;
 }
@@ -178,6 +228,8 @@ function debugStatement(){
     // debug += "keyState : "+game.keyState + "<br>";
     debug += "direction : "+game.level.getPlayer().direction + "<br>";
     debug += "action : "+game.level.getPlayer().action + "<br>";
+    debug += "joystickStateX : "+game.joystickState.moveX + "<br>";
+    debug += "joystickStateY : "+game.joystickState.moveY + "<br>";
  
     return debug;
 }

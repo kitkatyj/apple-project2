@@ -16,6 +16,12 @@ export class Game {
     keyState : boolean[] = [];
     keyUpState : boolean[] = [];
 
+    joystickState = {
+        down:false,
+        moveX:0,
+        moveY:0
+    }
+
     seedFunction : Function;
     createjs : any;
 

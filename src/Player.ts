@@ -15,7 +15,7 @@ export class Player extends Character {
         this.animateSpeed = this.properties.animateSpeed;
 
         if(game.level.dialogueBox.text.length === 0){
-            if(game.keyState[37] || game.keyState[65] || game.keyState[39] || game.keyState[68] || game.keyState[38] || game.keyState[87] || game.keyState[40] || game.keyState[83]){
+            if(game.keyState[37] || game.keyState[65] || game.keyState[39] || game.keyState[68] || game.keyState[38] || game.keyState[87] || game.keyState[40] || game.keyState[83] || game.joystickState.moveX != 0 || game.joystickState.moveY != 0){
                 if(game.keyState[16]){
                     this.moveSpeed = this.tempMoveSpeed * 2;
                     this.animateSpeed = this.properties.animateSpeed * 2;
@@ -28,16 +28,16 @@ export class Player extends Character {
     
             let orientationBuilder:string[] = [];
     
-            if(game.keyState[37] || game.keyState[65]){
+            if(game.keyState[37] || game.keyState[65] || game.joystickState.moveX < 0){
                 orientationBuilder.push('left');
             }
-            if(game.keyState[39] || game.keyState[68]){
+            if(game.keyState[39] || game.keyState[68] || game.joystickState.moveX > 0){
                 orientationBuilder.push('right');
             }
-            if(game.keyState[38] || game.keyState[87]){
+            if(game.keyState[38] || game.keyState[87] || game.joystickState.moveY < 0){
                 orientationBuilder.push('back');
             }
-            if(game.keyState[40] || game.keyState[83]){
+            if(game.keyState[40] || game.keyState[83] || game.joystickState.moveY > 0){
                 orientationBuilder.push('front');
             }
     
